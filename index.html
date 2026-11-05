@@ -147,6 +147,8 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 #viewer.on-video:not(.hg-fs) .plyr.plyr--hide-controls .plyr__controls{opacity:1!important;pointer-events:auto!important;transform:none!important}
 .hg-seek-btn{position:relative;flex:0 0 auto}
 .hg-seek-btn>svg{width:18px;height:18px;display:block}
+.hg-mute-btn{flex:0 0 auto}
+.hg-mute-btn>svg{width:20px;height:20px;display:block}
 .plyr__progress__container{display:flex;align-items:center;gap:2px}
 .plyr__progress__container>.plyr__progress{flex:1 1 auto;min-width:0}
 .hg-seek-btn .hg-seek-n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;line-height:1;pointer-events:none;padding-top:1px}
@@ -387,12 +389,12 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 01:44</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 02:00</span></p>
   </div>
 </section>
 
 <div class="viewer" id="viewer">
-  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div>
+  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline muted style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div>
   <div class="vtop"><div class="vtop-in">
     <button id="vClose" aria-label="بازگشت"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="vmeta"><div class="d" id="vDate"></div><div class="n" id="vNum"></div></div>
@@ -485,7 +487,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 01:44';
+var RUN_BUILD='2026-11-06 02:00';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1231,6 +1233,36 @@ function posterFor(item){return item?(item.thumb?(RAW_BASE+item.thumb):(item.blu
    سورسش blank.mp4 یک‌ثانیه‌ای Plyr است؛ پس currentTime/duration و همه‌ی رویدادها روی ویدیوی
    اشتباه می‌افتادند و hg-pos هیچ‌وقت ذخیره نمی‌شد. از این پس همه‌چیز روی المنت زنده است. */
 function liveVid(){return (plyr&&plyr.media)?plyr.media:vVid;}
+/* hg-v14: همه‌ی ویدیوها به‌صورت پیش‌فرض بی‌صدا (میوت) پخش می‌شوند؛ دکمه‌ی صدا کنار سیک‌بار
+   (همان ردیف دکمه‌های ±۱۰) میوت/آن‌میوت می‌کند. انتخاب صدادار کردن فقط برای همان ویدیوی جاری
+   است و با رفتن به ویدیوی بعدی دوباره به حالت پیش‌فرضِ بی‌صدا برمی‌گردد. */
+var vidMuted=true;
+function muteBtnSVG(){
+  return vidMuted
+   ? '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.5,12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45,2.45c0.03-0.2,0.05-0.41,0.05-0.63zM19,12c0,0.94-0.2,1.82-0.54,2.64l1.51,1.51C20.63,14.91,21,13.5,21,12c0-4.28-2.99-7.86-7-8.77v2.06c2.89,0.86,5,3.54,5,6.71zM4.27,3L3,4.27L7.73,9H3v6h4l5,5v-6.73l4.25,4.25c-0.67,0.52-1.42,0.93-2.25,1.18v2.06c1.38-0.31,2.63-0.95,3.69-1.81L19.73,21L21,19.73l-9-9L4.27,3zM12,4L9.91,6.09L12,8.18V4z"/></svg>'
+   : '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3,9v6h4l5,5V4L7,9H3zM16.5,12c0-1.77-1.02-3.29-2.5-4.03v8.05C15.48,15.29,16.5,13.77,16.5,12zM14,3.23v2.06c2.89,0.86,5,3.54,5,6.71s-2.11,5.85-5,6.71v2.06c4.01-0.91,7-4.49,7-8.77S18.01,4.14,14,3.23z"/></svg>';
+}
+function syncMuteBtn(){
+  var wrap=plyrWrapEl();if(!wrap)return;
+  var b=wrap.querySelector('.hg-mute-btn');if(!b)return;
+  b.innerHTML=muteBtnSVG();
+  b.setAttribute('aria-label',vidMuted?'با صدا کردن':'بی‌صدا کردن');
+  b.setAttribute('title',vidMuted?'با صدا':'بی‌صدا');
+  b.classList.toggle('is-muted',vidMuted);
+}
+function applyMuted(){
+  var m=liveVid();if(!m)return;
+  try{m.defaultMuted=vidMuted;}catch(e){}
+  try{if(vidMuted)m.setAttribute('muted','');else m.removeAttribute('muted');}catch(e){}
+  try{m.muted=vidMuted;}catch(e){}
+  if(plyr){try{plyr.muted=vidMuted;}catch(e){}}
+  syncMuteBtn();
+}
+function resetMutedDefault(){vidMuted=true;applyMuted();}
+function toggleMute(){
+  var m=liveVid();var cur=m?!!m.muted:vidMuted;
+  vidMuted=!cur;applyMuted();
+}
 function vidDur(){var m=liveVid();var d=m?m.duration:0;return (d&&isFinite(d)&&d>0)?d:0;}
 function plyrWrapEl(){return document.querySelector('#vStage .plyr');}
 var PLYR_I18N={restart:'شروع مجدد',rewind:'عقب {seektime} ثانیه',play:'پخش',pause:'مکث',fastForward:'جلو {seektime} ثانیه',seek:'نوار پخش',seekLabel:'{currentTime} از {duration}',played:'پخش‌شده',buffered:'بارگذاری‌شده',currentTime:'زمان کنونی',duration:'مدت زمان',volume:'بلندی صدا',mute:'بی‌صدا',unmute:'با صدا',enableCaptions:'روشن کردن زیرنویس',disableCaptions:'خاموش کردن زیرنویس',download:'دانلود',enterFullscreen:'تمام‌صفحه',exitFullscreen:'خروج از تمام‌صفحه',frameTitle:'پخش‌کننده‌ی ویدیو',captions:'زیرنویس‌ها',settings:'تنظیمات',pip:'تصویر در تصویر',menuBack:'بازگشت به منوی قبلی',speed:'سرعت پخش',normal:'معمولی',quality:'کیفیت',loop:'تکرار',start:'آغاز',end:'پایان',all:'همه',reset:'بازنشانی',disabled:'غیرفعال',enabled:'فعال',advertisement:'آگهی'};
@@ -1239,6 +1271,7 @@ function ensurePlyr(){
   if(plyrFailed||!window.Plyr)return false;
   try{
     plyr=new Plyr(vVid,{controls:['play-large','play','progress','current-time','duration','fullscreen'],seekTime:10,i18n:PLYR_I18N,storage:{enabled:false},keyboard:{focused:false,global:false},airplay:false});
+    applyMuted();
     try{plyr.on('enterfullscreen',function(){viewerEl.classList.add('hg-fs');fsLockLandscape();});plyr.on('exitfullscreen',function(){viewerEl.classList.remove('hg-fs');fsUnlock();});}catch(e){}
     addSeekButtons();
     syncVidWrap();
@@ -1281,6 +1314,18 @@ function addSeekButtons(){
     bf.addEventListener('click',function(ev){ev.stopPropagation();seekStep(10);});
     if(prog.nextSibling)prog.parentNode.insertBefore(bf,prog.nextSibling);else prog.parentNode.appendChild(bf);
   }
+  if(!ctl.querySelector('.hg-mute-btn')){
+    var bm=document.createElement('button');
+    bm.type='button';bm.className='plyr__control hg-mute-btn';bm.setAttribute('aria-label','با صدا کردن');
+    bm.innerHTML=muteBtnSVG();
+    bm.addEventListener('click',function(ev){ev.stopPropagation();toggleMute();});
+    var bfEl=ctl.querySelector('.hg-seek-btn[data-seek="10"]');
+    if(bfEl&&bfEl.nextSibling)prog.parentNode.insertBefore(bm,bfEl.nextSibling);
+    else if(bfEl)prog.parentNode.appendChild(bm);
+    else if(prog.nextSibling)prog.parentNode.insertBefore(bm,prog.nextSibling);
+    else prog.parentNode.appendChild(bm);
+  }
+  syncMuteBtn();
   syncCtrlH();
 }
 /* hg-v10 (بخش B2): مخفی‌سازی قطعی رابط ویدیو روی اسلایدهای عکس — علاوه بر کلاس وضعیت ویوئر و گارد CSS */
@@ -1312,11 +1357,12 @@ function setVidSource(u){
   if(!u||u===lastVidSrc){bindMediaEvents();return;}
   lastVidSrc=u;lastSrcSetAt=Date.now();
   var post=vSnapPoster||posterFor(vItems()[vIdx]);
-  if(ensurePlyr()&&plyr){try{var so={type:'video',sources:[{src:u}]};if(post)so.poster=post;plyr.source=so;if(post){try{plyr.poster=post;}catch(e){}liveVid().poster=post;}bindMediaEvents();addSeekButtons();return;}catch(e){plyrFailed=true;plyr=null;}}
+  if(ensurePlyr()&&plyr){try{var so={type:'video',sources:[{src:u}]};if(post)so.poster=post;plyr.source=so;if(post){try{plyr.poster=post;}catch(e){}liveVid().poster=post;}bindMediaEvents();addSeekButtons();applyMuted();return;}catch(e){plyrFailed=true;plyr=null;}}
   var m=liveVid();if(post)m.poster=post;if(m.src!==u)m.src=u;
+  applyMuted();
   bindMediaEvents();
 }
-function vidPlay(){var p;if(plyr){try{p=plyr.play();}catch(e){}}else{p=liveVid().play();}if(p&&p.catch)p.catch(function(){});}
+function vidPlay(){applyMuted();var p;if(plyr){try{p=plyr.play();}catch(e){}}else{p=liveVid().play();}if(p&&p.catch)p.catch(function(){});}
 function curItemIsVideo(){var L=vItems();var it=L&&L[vIdx];return !!(it&&isVideo(it));}
 /* hg-v9: ادامه‌ی تماشا — موقعیت هر فیلم در localStorage (hg-pos) می‌ماند؛ با باز شدن دوباره‌ی
    فیلمی که قبلاً دیده شده، قبل از پخش شیت «ادامه از جای قبلی / شروع از اول» نشان داده می‌شود */
@@ -1387,6 +1433,7 @@ function bindMediaEvents(){
   m.addEventListener('pause',function(){if(Date.now()-lastSrcSetAt<400)return;if(viewerId)savePosFor(viewerId);});
   m.addEventListener('ended',function(){if(viewerId)clearPos(viewerId);});
   m.addEventListener('loadeddata',function(){var it=vItems()[vIdx];if(it&&isVideo(it)&&viewerId===it.id)markLoaded(it);});
+  m.addEventListener('volumechange',function(){var mm=liveVid();vidMuted=!!(mm&&mm.muted);syncMuteBtn();});
   m.addEventListener('loadedmetadata',function(){var it=vItems()[vIdx];if(it&&isVideo(it)&&viewerId===it.id)onVidMetadata(it);});
   m.addEventListener('playing',function(){var it=vItems()[vIdx];if(it&&isVideo(it)&&viewerId===it.id)markLoaded(it);});
   m.addEventListener('error',function(){
@@ -1411,7 +1458,7 @@ function showCurrentMedia(){
   var item=vItems()[vIdx];if(!item)return;
   if(isVideo(item)&&!item.thumb)maybeThumb(item);
   if(isVideo(item)){
-    vImg.style.display='none';liveVid().style.display='block';syncVidWrap();addSeekButtons();
+    vImg.style.display='none';liveVid().style.display='block';syncVidWrap();addSeekButtons();resetMutedDefault();
     var postSrc=vSnapPoster||posterFor(item);
     if(postSrc){liveVid().poster=postSrc;if(plyr){try{plyr.poster=postSrc;}catch(e){}}}
     if(item.thumb){var tp=new Image();tp.onload=function(){if(viewerId===item.id)markLoaded(item);};tp.src=RAW_BASE+item.thumb;}
@@ -1452,6 +1499,7 @@ function showPhoto(i,dir){
   var L=vItems();if(!L.length)return;
   if(viewerId&&viewerId!==L[i].id)savePosFor(viewerId);
   vIdx=i;viewerId=L[i].id;vGateId=viewerId;vGateDone=false;vImg.style.filter='';resetZoom();syncFavBtn();hideProg();liveVid().removeAttribute('poster');vSnapPoster=null;
+  if(isVideo(L[i]))resetMutedDefault();
   viewerEl.classList.toggle('on-photo',!isVideo(L[i]));viewerEl.classList.toggle('on-video',!!isVideo(L[i]));
   document.getElementById('vNum').textContent=(i+1)+' از '+L.length;
   document.getElementById('vDate').textContent=faDate(L[i].created_at||Date.now());
