@@ -387,7 +387,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 21:13</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 21:46</span></p>
   </div>
 </section>
 
@@ -485,7 +485,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 21:13';
+var RUN_BUILD='2026-11-05 21:46';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -552,6 +552,9 @@ function pruneLoaded(){
 function upgradeCellsFor(it){
   var real=realThumbFor(it);if(!real)return;
   document.querySelectorAll('.cell[data-id="'+it.id+'"]').forEach(function(c){
+    /* hg-v12: اگر همین سلول در حال پخش پیش‌نمایش GIF است، تصویر وسط پخش کشیده نمی‌شود؛
+       prev پیش‌نمایش به تامنیل واقعی اشاره می‌کند تا موقع توقف، روی همان بنشیند. */
+    if(typeof pvActive!=='undefined'&&pvActive&&pvActive.cell===c){pvActive.prev=real;return;}
     var el=c.querySelector('img:not(.blurph)');if(!el||el.getAttribute('src')===real)return;
     var pre=new Image();
     pre.onload=function(){if(el.isConnected&&el.getAttribute('src')!==real)el.src=real;};
@@ -686,6 +689,43 @@ function pvSchedule(){
 }
 function pvObserve(cell,item){cell._pvItem=item;pvEnsureIO();if(pvIO)pvIO.observe(cell);}
 function pvResetObservers(){if(pvIO)pvIO.disconnect();pvVisibleIds={};}
+/* hg-v12: به‌محض ورود کارتِ فیلم به ویوپورت، تامنیل باکیفیت (item.thumb) باید جای بلور را بگیرد.
+   آبزرور جدا از پری‌لود GIF است: دیده‌شدن کارت کافی است؛ تامنیل کامل لود+دیکود می‌شود و بعد
+   markLoaded سواپ تک‌فریمیِ upgradeCellsFor و ثبت در رجیستری hg-loaded را انجام می‌دهد —
+   دقیقاً همان مسیر لودشدن در ویوئر، تا آپگرید بین رندرها و اجراها بماند. فقط فیلم‌ها؛
+   عکس‌ها عمداً دست نخورده‌اند. برای کاور پوشه/پسندیده‌ها هم فقط خودِ کاور ارتقا می‌یابد
+   (هیچ آیتمی داخل پوشه‌ی بازنشده لود نمی‌شود). */
+var hqIO=null,hqLoading={};
+function hqEnsureIO(){
+  if(hqIO||!('IntersectionObserver' in window))return;
+  hqIO=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting)return;
+      var c=en.target;try{hqIO.unobserve(c);}catch(e){}
+      if(c._hqItem)hqUpgrade(c._hqItem);
+    });
+  },{root:null,threshold:0.05});
+}
+function hqResetObservers(){if(hqIO)hqIO.disconnect();}
+function hqObserve(cell,item){
+  if(!cell||!item||!isVideo(item)||!item.thumb)return;
+  cell._hqItem=item;hqEnsureIO();
+  if(hqIO)hqIO.observe(cell);else hqUpgrade(item);
+}
+function hqUpgrade(item){
+  if(!item||!isVideo(item)||!item.thumb)return;
+  if(isLoaded(item)){upgradeCellsFor(item);return;}
+  if(hqLoading[item.id])return;
+  hqLoading[item.id]=1;
+  var pre=new Image();
+  pre.onload=function(){
+    delete hqLoading[item.id];
+    if(pre.decode){pre.decode().then(function(){markLoaded(item);},function(){markLoaded(item);});}
+    else markLoaded(item);
+  };
+  pre.onerror=function(){delete hqLoading[item.id];};
+  pre.src=RAW_BASE+item.thumb;
+}
 function cellPreviewOn(cell,item){
   if(!item||!item.preview)return;
   if(pvActive&&pvActive.cell===cell)return;
@@ -767,6 +807,7 @@ function buildCell(item,idx,list){
   }else{loadInto(item,el,activeView()==='single'?1200:undefined);}
   if(isVideo(item)&&!item.thumb)maybeThumb(item);
   if(isVideo(item)&&item.preview){attachPreviewHover(c,item);pvObserve(c,item);addPvButton(c,item);}
+  hqObserve(c,item);
   return c;
 }
 var FOLDER_PATH='M3 5.5A1.5 1.5 0 0 1 4.5 4h5l2 2.5h7A1.5 1.5 0 0 1 20 8v9.5a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3 17.5z';
@@ -777,6 +818,7 @@ function folderCell(f){
   var firstC=items.length?((f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0]):null;
   if(firstC&&!f.nopreview&&firstC.blur&&!isLoaded(firstC)){
     var bel=document.createElement('img');bel.alt='';bel.src=blurUri(firstC);c.appendChild(bel);c._coverId=firstC.id;
+    hqObserve(c,firstC);
   }
   else if(items.length&&!f.nopreview&&(coverWarmed[f.id]||isLoaded(firstC))){
     var first=firstC;
@@ -818,6 +860,7 @@ function favFolderCell(){
   var c=document.createElement('button');c.className='cell fcell favcell';c.dataset.fav='1';c.setAttribute('aria-label','پوشه پسندیده‌ها');
   if(favs.length&&!favNoPreview()&&favs[0].blur&&!isLoaded(favs[0])){
     var bel2=document.createElement('img');bel2.alt='';bel2.src=blurUri(favs[0]);c.appendChild(bel2);c._coverId=favs[0].id;
+    hqObserve(c,favs[0]);
   }
   else if(favs.length&&!favNoPreview()&&(favWarmed||isLoaded(favs[0]))){
     var first=favs[0];
@@ -861,7 +904,7 @@ function jalaliKey(ts){try{var ps=new Intl.DateTimeFormat('fa-IR',{year:'numeric
 function jalaliLabel(ts){try{return new Intl.DateTimeFormat('fa-IR',{month:'long',year:'numeric'}).format(new Date(ts||0));}catch(e){return '';}}
 function jalaliDay(ts){try{return new Intl.DateTimeFormat('fa-IR',{day:'numeric',month:'long'}).format(new Date(ts||0));}catch(e){return '';}}
 function render(){
-  pvStop();pvResetObservers();
+  pvStop();pvResetObservers();hqResetObservers();
   renderViewMode=viewMode;
   grid.innerHTML='';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
@@ -1493,7 +1536,7 @@ vFavBtn.addEventListener('click',function(ev){
   fetch(API+'/api/fav/'+encodeURIComponent(item.id),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fav:nf})}).then(function(r){if(!r.ok)throw new Error(r.status);}).catch(function(){item.fav=!nf;syncFavBtn();toast('ثبت مورد علاقه ناموفق بود');});
 });
 function renderFavs(){
-  pvStop();pvResetObservers();
+  pvStop();pvResetObservers();hqResetObservers();
   var favs=photos.filter(function(p){return p.fav;});
   favGrid.innerHTML='';
   favEmpty.style.display=favs.length?'none':'block';
@@ -1506,6 +1549,7 @@ function renderFavs(){
     if(isVideo(item)){var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg>';c.appendChild(b);}
     c.addEventListener('click',function(){openViewer(i,el,photos.filter(function(p){return p.fav;}));});
     if(isVideo(item)&&item.preview){attachPreviewHover(c,item);pvObserve(c,item);addPvButton(c,item);}
+    hqObserve(c,item);
     favGrid.appendChild(c);
     if(item.blur){el.src=blurUri(item);ph.style.display='none';}
     else if(item.manifest){var suF=streamUrlFor(item);if(suF){el.src=suF;el.addEventListener('loadeddata',function(){ph.style.display='none';},{once:true});}else{ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';}}
@@ -1773,7 +1817,7 @@ function openFolder(id){
   });
 }
 function renderFolder(){
-  pvStop();pvResetObservers();
+  pvStop();pvResetObservers();hqResetObservers();
   var f=folderById(curFolder);if(!f)return;
   var fv=effViewFor(f);renderViewMode=fv;
   folderTitleEl.textContent=f.name;
