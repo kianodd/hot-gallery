@@ -234,7 +234,6 @@ body.selecting .qpill{display:none}
 <div class="scrim" id="scrim"></div>
 <div class="menu" id="menu" role="menu">
   <button id="miQueue"><span>صف آپلود</span><span class="qbadge" id="qBadge"></span></button>
-  <button id="miSelect"><span>انتخاب</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
   <button id="miNewFolder"><span>پوشه‌ی جدید</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.5v5M9.5 13h5"/></svg></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
@@ -293,7 +292,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 19:09</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 19:14</span></p>
   </div>
 </section>
 
@@ -1102,7 +1101,6 @@ document.getElementById('selMove').addEventListener('click',function(){
 });
 document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
-document.getElementById('miSelect').addEventListener('click',function(){closeMenu();if(photos.length)enterSelect(null);else toast('چیزی برای انتخاب نیست');});
 document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
 document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');});
 /* theme */
