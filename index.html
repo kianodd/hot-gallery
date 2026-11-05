@@ -355,7 +355,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 18:20</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 18:25</span></p>
   </div>
 </section>
 
@@ -453,7 +453,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 18:20';
+var RUN_BUILD='2026-11-05 18:25';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2288,7 +2288,7 @@ function qRunSteps(q,sig){
 function urlMediaKind(u){
   try{
     var url=new URL(u);
-    var VID={mp4:1,webm:1,mov:1,m4v:1},IMG={jpg:1,jpeg:1,png:1,gif:1,webp:1,avif:1};
+    var VID={mp4:1,webm:1,mov:1,m4v:1,m3u8:1},IMG={jpg:1,jpeg:1,png:1,gif:1,webp:1,avif:1};
     var extOf=function(s){var m=String(s==null?'':s).split(/[?#]/)[0].toLowerCase().match(/\.([a-z0-9]{2,5})$/);return m?m[1]:'';};
     var e=extOf(url.pathname);
     if(VID[e])return 'video';if(IMG[e])return 'image';
