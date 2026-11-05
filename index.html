@@ -66,6 +66,7 @@ main{max-width:1100px;margin:0 auto;padding:0 0 calc(30px + env(safe-area-inset-
 .spin{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--hair);border-top-color:var(--faint);animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .badge{position:absolute;bottom:5px;inset-inline-end:7px;z-index:2;color:#fff;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:4px;text-shadow:0 1px 4px rgba(0,0,0,.65);pointer-events:none}
+.pvspin{position:absolute;top:6px;right:6px;width:18px;height:18px;border-radius:50%;border:2px solid rgba(255,255,255,.35);border-top-color:#fff;animation:sp .7s linear infinite;z-index:5;pointer-events:none;box-shadow:0 1px 4px rgba(0,0,0,.25)}
 .selmark{position:absolute;bottom:6px;inset-inline-end:6px;z-index:3;width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);background:rgba(0,0,0,.22);display:none;place-items:center;color:#fff;pointer-events:none;box-shadow:0 1px 5px rgba(0,0,0,.3)}
 body.selecting .selmark{display:grid}
 .cell.sel .selmark{background:var(--blue);border-color:var(--blue)}
@@ -376,7 +377,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:52</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:54</span></p>
   </div>
 </section>
 
@@ -474,7 +475,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 20:52';
+var RUN_BUILD='2026-11-05 20:54';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -611,11 +612,11 @@ function loadInto(item,el,w){
 var hoverCapable=false;try{hoverCapable=window.matchMedia('(hover: hover) and (pointer: fine)').matches;}catch(e){}
 var pvActive=null;
 function pvStop(){
+  if(pvPending){pvHideSpin(pvPending);pvPending=null;}
   if(!pvActive)return;var a=pvActive;pvActive=null;
   if(a.img&&a.img.isConnected&&a.prev!=null&&a.img.getAttribute('src')!==a.prev)a.img.src=a.prev;
 }
-function cellPreviewOn(cell,item){
-  if(!item||!item.preview)return;
+function pvShow(cell,item){
   if(pvActive&&pvActive.cell===cell)return;
   pvStop();
   var t=cell.querySelector('img:not(.blurph)');if(!t)return;
@@ -624,6 +625,53 @@ function cellPreviewOn(cell,item){
   t.src=RAW_BASE+item.preview;
 }
 function cellPreviewOff(cell){if(pvActive&&(!cell||pvActive.cell===cell))pvStop();}
+/* hg-v11: پری‌لود پیش‌نمایش + تامنیل کامل برای کارت‌های ویدیوییِ داخل ویوپورت + دو ویدیوی بعدی صف
+   (IntersectionObserver). رجیستری pvPre بین پری‌لود و هاور/هولد مشترک است تا هاور بداند GIF آماده است یا نه. */
+var pvPre={},pvPreImgs={},pvThumbPre={},pvPending=null,pvVisibleIds={};
+function pvPreload(item){
+  if(!item||!isVideo(item)||!item.preview)return;
+  if(item.thumb&&!pvThumbPre[item.id]){pvThumbPre[item.id]=1;var ti=new Image();ti.src=RAW_BASE+item.thumb;}
+  if(pvPre[item.id])return;
+  pvPre[item.id]='loading';
+  var im=new Image();pvPreImgs[item.id]=im;
+  im.onload=function(){pvPre[item.id]='ready';if(pvPending&&pvPending.item.id===item.id){var pd=pvPending;pvPending=null;pvHideSpin(pd);pvShow(pd.cell,pd.item);}};
+  im.onerror=function(){pvPre[item.id]='error';if(pvPending&&pvPending.item.id===item.id){pvHideSpin(pvPending);pvPending=null;}};
+  im.src=RAW_BASE+item.preview;
+}
+function pvShowSpin(cell){var sp=document.createElement('span');sp.className='pvspin';cell.appendChild(sp);return sp;}
+function pvHideSpin(pd){if(pd&&pd.spin&&pd.spin.parentNode)pd.spin.remove();}
+var pvIO=null,pvSchedT=null;
+function pvEnsureIO(){
+  if(pvIO||!('IntersectionObserver' in window))return;
+  pvIO=new IntersectionObserver(function(entries){
+    var changed=false;
+    entries.forEach(function(en){var id=en.target.dataset&&en.target.dataset.id;if(!id)return;if(en.isIntersecting){if(!pvVisibleIds[id]){pvVisibleIds[id]=1;changed=true;}}else if(pvVisibleIds[id]){delete pvVisibleIds[id];changed=true;}});
+    if(changed)pvSchedule();
+  },{root:null,threshold:0.05});
+}
+function pvSchedule(){
+  if(pvSchedT)return;
+  pvSchedT=setTimeout(function(){pvSchedT=null;
+    var cells=Array.prototype.slice.call(document.querySelectorAll('.cell[data-id]')).filter(function(c){return c._pvItem&&isVideo(c._pvItem)&&c._pvItem.preview;});
+    if(!cells.length)return;
+    var lastVis=-1;cells.forEach(function(c,i){if(pvVisibleIds[c.dataset.id])lastVis=i;});
+    var ahead=0;
+    cells.forEach(function(c,i){if(i<=lastVis)pvPreload(c._pvItem);else if(ahead<2){pvPreload(c._pvItem);ahead++;}});
+  },120);
+}
+function pvObserve(cell,item){cell._pvItem=item;pvEnsureIO();if(pvIO)pvIO.observe(cell);}
+function pvResetObservers(){if(pvIO)pvIO.disconnect();pvVisibleIds={};}
+function cellPreviewOn(cell,item){
+  if(!item||!item.preview)return;
+  if(pvActive&&pvActive.cell===cell)return;
+  var st=pvPre[item.id];
+  if(st==='ready'){pvShow(cell,item);return;}
+  if(st==='error')return;
+  pvPreload(item);
+  if(pvPending&&pvPending.cell!==cell)pvHideSpin(pvPending);
+  if(pvPending&&pvPending.cell===cell)return;
+  pvPending={cell:cell,item:item,spin:pvShowSpin(cell)};
+}
 document.addEventListener('scroll',function(){if(pvActive)pvStop();},{capture:true,passive:true});
 function attachPreviewHover(cell,item){
   if(!item||!item.preview)return;
@@ -693,7 +741,7 @@ function buildCell(item,idx,list){
     var bsp=c.querySelector('.badge span');if(bsp)bsp.textContent=fmtSize(item.size);
   }else{loadInto(item,el,activeView()==='single'?1200:undefined);}
   if(isVideo(item)&&!item.thumb)maybeThumb(item);
-  if(isVideo(item)&&item.preview)attachPreviewHover(c,item);
+  if(isVideo(item)&&item.preview){attachPreviewHover(c,item);pvObserve(c,item);}
   return c;
 }
 var FOLDER_PATH='M3 5.5A1.5 1.5 0 0 1 4.5 4h5l2 2.5h7A1.5 1.5 0 0 1 20 8v9.5a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3 17.5z';
@@ -787,7 +835,7 @@ function jalaliKey(ts){try{var ps=new Intl.DateTimeFormat('fa-IR',{year:'numeric
 function jalaliLabel(ts){try{return new Intl.DateTimeFormat('fa-IR',{month:'long',year:'numeric'}).format(new Date(ts||0));}catch(e){return '';}}
 function jalaliDay(ts){try{return new Intl.DateTimeFormat('fa-IR',{day:'numeric',month:'long'}).format(new Date(ts||0));}catch(e){return '';}}
 function render(){
-  pvStop();
+  pvStop();pvResetObservers();
   renderViewMode=viewMode;
   grid.innerHTML='';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
@@ -1399,7 +1447,7 @@ vFavBtn.addEventListener('click',function(ev){
   fetch(API+'/api/fav/'+encodeURIComponent(item.id),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fav:nf})}).then(function(r){if(!r.ok)throw new Error(r.status);}).catch(function(){item.fav=!nf;syncFavBtn();toast('ثبت مورد علاقه ناموفق بود');});
 });
 function renderFavs(){
-  pvStop();
+  pvStop();pvResetObservers();
   var favs=photos.filter(function(p){return p.fav;});
   favGrid.innerHTML='';
   favEmpty.style.display=favs.length?'none':'block';
@@ -1411,7 +1459,7 @@ function renderFavs(){
     c.appendChild(el);
     if(isVideo(item)){var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg>';c.appendChild(b);}
     c.addEventListener('click',function(){openViewer(i,el,photos.filter(function(p){return p.fav;}));});
-    if(isVideo(item)&&item.preview)attachPreviewHover(c,item);
+    if(isVideo(item)&&item.preview){attachPreviewHover(c,item);pvObserve(c,item);}
     favGrid.appendChild(c);
     if(item.blur){el.src=blurUri(item);ph.style.display='none';}
     else if(item.manifest){var suF=streamUrlFor(item);if(suF){el.src=suF;el.addEventListener('loadeddata',function(){ph.style.display='none';},{once:true});}else{ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';}}
@@ -1679,7 +1727,7 @@ function openFolder(id){
   });
 }
 function renderFolder(){
-  pvStop();
+  pvStop();pvResetObservers();
   var f=folderById(curFolder);if(!f)return;
   var fv=effViewFor(f);renderViewMode=fv;
   folderTitleEl.textContent=f.name;
