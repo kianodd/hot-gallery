@@ -141,6 +141,18 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .flip{position:fixed;z-index:96;object-fit:cover;pointer-events:none;margin:0}
 .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translate(-50%,14px);background:rgba(38,38,40,.96);color:#fff;font-size:14px;padding:11px 18px;border-radius:12px;z-index:130;opacity:0;pointer-events:none;transition:.25s;max-width:92vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.lockview{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
+.lockview.open{display:flex}
+.lk-ic{width:84px;height:84px;border-radius:20px;background:#000;display:grid;place-items:center;margin-bottom:10px;box-shadow:0 0 0 .5px var(--hair)}
+.lk-title{font-size:21px;font-weight:700}
+.lk-sub{color:var(--faint);font-size:14px;margin:0 0 16px}
+.lk-btn{display:flex;align-items:center;gap:9px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;padding:13px 24px;border-radius:999px}
+.lk-btn:active{filter:brightness(.88)}
+.lk-err{color:var(--red);font-size:13.5px;min-height:20px;margin:8px 0 0}
+.vprog{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(72vw,340px);display:none;z-index:2;text-align:center}
+.vp-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
+.vp-fill{height:100%;width:0;background:var(--blue);border-radius:3px;transition:width .2s}
+.vp-txt{color:#fff;font-size:13px;margin-top:9px;text-shadow:0 1px 4px rgba(0,0,0,.6)}
 .vtools button.favon{color:#ff2d55}
 .vtools button.favon svg{fill:#ff2d55}
 .qpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:65;background:rgba(38,38,40,.96);color:#fff;display:none;align-items:center;gap:9px;padding:10px 16px;border-radius:999px;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,.3);cursor:pointer;max-width:92vw;white-space:nowrap}
@@ -203,7 +215,7 @@ body.selecting .qpill{display:none}
   <div class="sheet" role="dialog" aria-modal="true">
     <div class="grab"></div>
     <h2>افزودن عکس یا فیلم</h2>
-    <p class="sub">لینک مستقیم عکس یا فیلم را بده؛ می‌توانی چند لینک را با فاصله یا در خط‌های جدا یکجا بچسبانی. آپلودها در پس‌زمینه و به‌ترتیب در صف انجام می‌شوند. (حداکثر ۱۰۰ مگابایت برای هر فایل)</p>
+    <p class="sub">لینک مستقیم عکس یا فیلم را بده؛ می‌توانی چند لینک را با فاصله یا در خط‌های جدا یکجا بچسبانی. آپلودها در پس‌زمینه و به‌ترتیب در صف انجام می‌شوند. (عکس تا ۱۰۰ مگابایت؛ فیلم تا ۵۰۰ مگابایت — فیلم‌ها تکه‌تکه ذخیره می‌شوند و موقع پخش، خود اپ تکه‌ها را کنار هم می‌چیند)</p>
     <input id="urlInput" type="url" dir="ltr" inputmode="url" placeholder="https://example.com/media.mp4" autocomplete="off">
     <button class="primary" id="doAdd">افزودن به صف</button>
     <button class="cancel" data-close-add="1">لغو</button>
@@ -230,11 +242,16 @@ body.selecting .qpill{display:none}
       <button class="opt" data-theme-opt="dark"><span>تاریک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
     </div>
     <p class="snote">در حالت خودکار، تم از تنظیمات سیستم دستگاه پیروی می‌کند.</p>
+    <p class="slabel" style="margin-top:26px">حریم خصوصی</p>
+    <div class="group">
+      <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
+    </div>
+    <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
   </div>
 </section>
 
 <div class="viewer" id="viewer">
-  <div class="vstage" id="vStage"><img id="vImg" alt=""><video id="vVid" controls playsinline style="display:none"></video></div>
+  <div class="vstage" id="vStage"><img id="vImg" alt=""><video id="vVid" controls playsinline style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div>
   <div class="vtop"><div class="vtop-in">
     <button id="vClose" aria-label="بازگشت"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="vmeta"><div class="d" id="vDate"></div><div class="n" id="vNum"></div></div>
@@ -276,6 +293,14 @@ body.selecting .qpill{display:none}
 
 <div class="qpill" id="qPill"><span class="spin"></span><span id="qPillText"></span></div>
 
+<div class="lockview" id="lockView">
+  <div class="lk-ic"><svg width="52" height="52" viewBox="0 0 52 52"><rect x="4" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="4" y="28" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="28" width="20" height="20" rx="5" fill="#ff2d55"/></svg></div>
+  <div class="lk-title">هات گالری</div>
+  <p class="lk-sub">برای ورود، اثر انگشتت را تأیید کن</p>
+  <button class="lk-btn" id="lockBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 10.2a2.1 2.1 0 0 1 2.1 2.1c0 1.9.35 3.4 1 5.2"/><path d="M9.9 12.3a2.1 2.1 0 0 1 2.1-2.1"/><path d="M12 7.2a5.1 5.1 0 0 1 5.1 5.1c0 1.6.18 2.9.55 4.3"/><path d="M6.9 12.3a5.1 5.1 0 0 1 1-2.9"/><path d="M12 4a8.2 8.2 0 0 1 8.2 8.3c0 1.9.28 3.6.85 5.2"/><path d="M3.8 12.3A8.2 8.2 0 0 1 6.6 6"/></svg><span>باز کردن با اثر انگشت</span></button>
+  <p class="lk-err" id="lockErr"></p>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -287,6 +312,7 @@ var photos=[],urls={},selecting=false,selected={};
 function isVideo(it){return it.kind==='video'||(it.mime&&it.mime.indexOf('video/')===0);}
 var RAW_BASE='https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
 function mediaUrl(item){
+  if(item.manifest)return Promise.resolve(urls[item.id]||'');
   if(!urls[item.id])urls[item.id]=RAW_BASE+item.path;
   return Promise.resolve(urls[item.id]);
 }
@@ -317,7 +343,11 @@ function render(){
     }
     var mk=document.createElement('span');mk.className='selmark';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);
     bindCell(c,item,idx,el);
-    grid.appendChild(c);loadInto(item,el);
+    grid.appendChild(c);
+    if(item.manifest){
+      ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';
+      var bsp=c.querySelector('.badge span');if(bsp)bsp.textContent=fmtSize(item.size);
+    }else{loadInto(item,el);}
   });
 }
 function bindCell(c,item,idx,el){
@@ -392,17 +422,52 @@ function buildStrip(){
     if(i===vIdx)t.className='on';
     t.addEventListener('click',function(ev){ev.stopPropagation();showPhoto(i,i>vIdx?1:-1);});
     vStrip.appendChild(t);
-    if(!urls[p.id])mediaUrl(p).then(function(u){t.src=isVideo(p)?u+'#t=0.1':u;}).catch(function(){});
+    if(!urls[p.id]&&p.path)mediaUrl(p).then(function(u){t.src=isVideo(p)?u+'#t=0.1':u;}).catch(function(){});
   });
 }
+var vProg=document.getElementById('vProg'),vProgFill=document.getElementById('vProgFill'),vProgTxt=document.getElementById('vProgTxt');
+function showProg(){vProg.style.display='block';vProgTxt.textContent='در حال بارگذاری فیلم… ۰٪';vProgFill.style.width='0%';}
+function hideProg(){vProg.style.display='none';}
+function updateProg(loaded,total){var pc=total?Math.floor(loaded/total*100):0;vProgTxt.textContent='در حال بارگذاری فیلم… '+pc+'٪ · '+fmtSize(loaded)+' از '+fmtSize(total);vProgFill.style.width=pc+'%';}
+var assembling={};
+function assembleVideo(item){
+  if(assembling[item.id]||urls[item.id])return;assembling[item.id]=true;
+  fetch(RAW_BASE+item.manifest).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(man){
+    var bufs=[],loaded=0,total=man.size||item.size||0,seq=Promise.resolve();
+    man.parts.forEach(function(p){
+      seq=seq.then(function(){
+        return fetch(RAW_BASE+p.path).then(function(r){if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}).then(function(ab){
+          bufs.push(ab);loaded+=ab.byteLength;
+          if(viewerId===item.id)updateProg(loaded,total);
+        });
+      });
+    });
+    return seq.then(function(){
+      var u=URL.createObjectURL(new Blob(bufs,{type:item.mime||'video/mp4'}));
+      urls[item.id]=u;delete assembling[item.id];
+      var cell=document.querySelector('.cell[data-id="'+item.id+'"] video');if(cell&&!cell.src)cell.src=u+'#t=0.1';
+      var th=document.querySelector('[data-strip="'+item.id+'"]');if(th&&!th.src)th.src=u+'#t=0.1';
+      if(viewerId===item.id){hideProg();showCurrentMedia();}
+    });
+  }).catch(function(){delete assembling[item.id];if(viewerId===item.id){hideProg();toast('بارگذاری فیلم ناموفق بود');}});
+}
 function showCurrentMedia(){
-  var item=vItems()[vIdx];if(!item)return;var u=urls[item.id];if(!u)return;
-  if(isVideo(item)){vImg.style.display='none';vVid.style.display='block';if(vVid.src!==u){vVid.src=u;}var pr=vVid.play();if(pr)pr.catch(function(){});}
-  else{vVid.pause();vVid.style.display='none';vImg.style.display='block';vImg.src=u;}
+  var item=vItems()[vIdx];if(!item)return;
+  if(isVideo(item)){
+    vImg.style.display='none';vVid.style.display='block';
+    if(item.manifest){
+      if(urls[item.id]){hideProg();if(vVid.src!==urls[item.id]){vVid.src=urls[item.id];}var p0=vVid.play();if(p0)p0.catch(function(){});}
+      else{vVid.removeAttribute('src');vVid.load();showProg();assembleVideo(item);}
+      return;
+    }
+    var u=urls[item.id];if(!u)return;
+    if(vVid.src!==u){vVid.src=u;}var pr=vVid.play();if(pr)pr.catch(function(){});
+  }
+  else{var u2=urls[item.id];if(!u2)return;vVid.pause();vVid.style.display='none';vImg.style.display='block';vImg.src=u2;}
 }
 function showPhoto(i,dir){
   var L=vItems();if(!L.length)return;
-  vIdx=i;viewerId=L[i].id;zoomed=false;vImg.style.transform='';syncFavBtn();
+  vIdx=i;viewerId=L[i].id;zoomed=false;vImg.style.transform='';syncFavBtn();hideProg();
   document.getElementById('vNum').textContent=(i+1)+' از '+L.length;
   document.getElementById('vDate').textContent=faDate(L[i].created_at||Date.now());
   if(urls[viewerId])showCurrentMedia();
@@ -431,7 +496,7 @@ function openViewer(i,thumbEl,list){
     });
   }
 }
-function closeViewer(){vVid.pause();viewerEl.classList.remove('open');viewerId=null;vList=null;zoomed=false;vImg.style.transform='';document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();}
+function closeViewer(){vVid.pause();hideProg();viewerEl.classList.remove('open');viewerId=null;vList=null;zoomed=false;vImg.style.transform='';document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();}
 function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
 document.getElementById('vClose').addEventListener('click',function(ev){ev.stopPropagation();closeViewer();});
 document.getElementById('vDelete').addEventListener('click',function(ev){
@@ -469,7 +534,9 @@ function renderFavs(){
     c.appendChild(el);
     if(isVideo(item)){var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg>';c.appendChild(b);}
     c.addEventListener('click',function(){openViewer(i,el,photos.filter(function(p){return p.fav;}));});
-    favGrid.appendChild(c);loadInto(item,el);
+    favGrid.appendChild(c);
+    if(item.manifest){ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';}
+    else{loadInto(item,el);}
   });
 }
 document.addEventListener('keydown',function(e){if(!viewerEl.classList.contains('open'))return;if(e.key==='Escape')closeViewer();if(e.key==='ArrowLeft')stepViewer(1);if(e.key==='ArrowRight')stepViewer(-1);});
@@ -524,6 +591,60 @@ function syncThemeOpts(){
 }
 document.querySelectorAll('[data-theme-opt]').forEach(function(b){b.addEventListener('click',function(){applyTheme(b.getAttribute('data-theme-opt'));syncThemeOpts();});});
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if((document.documentElement.dataset.themePref||'auto')==='auto')applyTheme('auto');});
+/* قفل اثر انگشت — فقط در حالت PWA (نصب‌شده) فعال می‌شود؛ اعتبار وب‌آتن روی خود دستگاه می‌ماند */
+var lockView=document.getElementById('lockView'),lockErr=document.getElementById('lockErr'),lockStateEl=document.getElementById('lockState');
+function isStandalone(){try{return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;}catch(e){return false;}}
+function b64u(buf){var s='',b=new Uint8Array(buf);for(var i=0;i<b.length;i++)s+=String.fromCharCode(b[i]);return btoa(s).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
+function unb64u(s){s=s.replace(/-/g,'+').replace(/_/g,'/');while(s.length%4)s+='=';var bin=atob(s),b=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)b[i]=bin.charCodeAt(i);return b.buffer;}
+function rndB(n){var b=new Uint8Array(n);crypto.getRandomValues(b);return b;}
+function lockEnabled(){try{return localStorage.getItem('hg-lock')==='1'&&!!localStorage.getItem('hg-lock-cred');}catch(e){return false;}}
+function syncLockOpt(){if(lockStateEl)lockStateEl.textContent=lockEnabled()?'روشن':'خاموش';}
+function waSupported(){return !!(window.PublicKeyCredential&&navigator.credentials&&navigator.credentials.create);}
+function tryUnlock(){
+  return navigator.credentials.get({publicKey:{challenge:rndB(32),rpId:location.hostname,allowCredentials:[{type:'public-key',id:unb64u(localStorage.getItem('hg-lock-cred'))}],userVerification:'required',timeout:60000}}).then(function(a){return !!a;}).catch(function(){return false;});
+}
+function enableLock(){
+  if(!waSupported()){toast('این دستگاه یا مرورگر، اثر انگشت وب را پشتیبانی نمی‌کند');return;}
+  PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(avail){
+    if(!avail){toast('حسگر اثر انگشت روی این دستگاه در دسترس نیست');return;}
+    return navigator.credentials.create({publicKey:{challenge:rndB(32),rp:{name:'هات گالری',id:location.hostname},user:{id:rndB(16),name:'hot-gallery',displayName:'هات گالری'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},attestation:'none',timeout:60000}});
+  }).then(function(cred){
+    if(!cred)return;
+    try{localStorage.setItem('hg-lock-cred',b64u(cred.rawId));localStorage.setItem('hg-lock','1');}catch(e){}
+    syncLockOpt();toast('قفل اثر انگشت فعال شد');
+  }).catch(function(){toast('فعال‌سازی ناموفق بود');});
+}
+function disableLock(){
+  if(!lockEnabled())return;
+  tryUnlock().then(function(ok){
+    if(!ok){toast('برای خاموش‌کردن، اول اثر انگشت را تأیید کن');return;}
+    try{localStorage.removeItem('hg-lock');localStorage.removeItem('hg-lock-cred');}catch(e){}
+    syncLockOpt();toast('قفل اثر انگشت خاموش شد');
+  });
+}
+document.getElementById('lockOpt').addEventListener('click',function(){lockEnabled()?disableLock():enableLock();});
+var lockBusy=false;
+function attemptUnlock(auto){
+  if(lockBusy)return;lockBusy=true;lockErr.textContent='';
+  tryUnlock().then(function(ok){
+    lockBusy=false;
+    if(ok){lockView.classList.remove('open');document.body.style.overflow='';}
+    else lockErr.textContent=auto?'برای باز کردن، دکمه‌ی اثر انگشت را بزن':'تأیید نشد؛ دوباره تلاش کن';
+  });
+}
+document.getElementById('lockBtn').addEventListener('click',function(){attemptUnlock(false);});
+function maybeLock(){
+  if(lockEnabled()&&isStandalone()&&!lockView.classList.contains('open')){
+    lockView.classList.add('open');document.body.style.overflow='hidden';attemptUnlock(true);
+  }
+}
+var hiddenAt=0;
+document.addEventListener('visibilitychange',function(){
+  if(document.hidden)hiddenAt=Date.now();
+  else if(hiddenAt&&Date.now()-hiddenAt>120000){hiddenAt=0;maybeLock();}
+});
+syncLockOpt();maybeLock();
+
 /* صف آپلود — آپلودها در پس‌زمینه و به‌ترتیب انجام می‌شوند؛ مورد کامل‌شده همان لحظه به گالری اضافه می‌شود */
 var queue=[],qRunning=false,qCtrl=null;
 var qList=document.getElementById('queueList'),qEmpty=document.getElementById('queueEmpty'),qClear=document.getElementById('qClear'),qBadge=document.getElementById('qBadge'),qPill=document.getElementById('qPill'),qPillText=document.getElementById('qPillText'),queueView=document.getElementById('queueView');
