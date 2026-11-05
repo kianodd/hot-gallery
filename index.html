@@ -753,7 +753,6 @@ function vPtrUp(e){
     flushTap();
     if(dx<-55&&Math.abs(dx)>Math.abs(dy))stepViewer(1);
     else if(dx>55&&Math.abs(dx)>Math.abs(dy))stepViewer(-1);
-    else if(dy>95&&Math.abs(dy)>Math.abs(dx))closeViewer();
     return;
   }
   if(Date.now()-pan.t0>400){flushTap();return;}
