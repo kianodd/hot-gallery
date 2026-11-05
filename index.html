@@ -162,6 +162,7 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .viewer.open{display:block;animation:vfade .22s ease}
 @keyframes vfade{from{opacity:0}to{opacity:1}}
 .vstage{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:hidden;touch-action:none}
+.vstage>img{width:100%;height:100%}
 .vstage img,.vstage video{max-width:100%;max-height:100%;object-fit:contain;transition:transform .28s cubic-bezier(.3,.8,.3,1),opacity .18s;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;transform-origin:50% 50%}
 .vstage video{width:100%}
 .vstage img.anim-next{animation:snext .26s cubic-bezier(.3,.8,.3,1)}
@@ -386,7 +387,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 21:09</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 21:13</span></p>
   </div>
 </section>
 
@@ -484,7 +485,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 21:09';
+var RUN_BUILD='2026-11-05 21:13';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
