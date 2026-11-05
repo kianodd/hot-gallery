@@ -1,5 +1,5 @@
 // هات گالری — سرویس‌ورکر: پوسته‌ی اپ برای نصب و اجرای آفلاین؛ لیست گالری آخرین نسخه‌ی کش‌شده را آفلاین نشان می‌دهد
-const CACHE = 'hg-v4';
+const CACHE = 'hg-v5';
 const RAW = 'https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
 
 // استریم فیلم از روی پارت‌های گیت‌هاب: سرویس‌ورکر (بخشی از خود اپ، روی دستگاه کاربر) درخواست‌های
@@ -164,10 +164,10 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // ناوبری: شبکه‌اول؛ پاسخ به‌عنوان index کش می‌شود تا آفلاین هم اپ باز شود
+  // ناوبری: شبکه‌اول با دور زدن کش HTTP (CDN پیجز تا ۱۰ دقیقه HTML قدیمی می‌دهد)؛ آفلاین از کش
   if (req.mode === 'navigate') {
     e.respondWith(
-      fetch(req)
+      fetch(req.url, { cache: 'no-store' })
         .then((r) => {
           const cl = r.clone();
           caches.open(CACHE).then((c) => c.put('./index.html', cl));
