@@ -73,6 +73,7 @@ body.selecting .pvbtn{display:none}
 .selmark{position:absolute;bottom:6px;inset-inline-end:6px;z-index:3;width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);background:rgba(0,0,0,.22);display:none;place-items:center;color:#fff;pointer-events:none;box-shadow:0 1px 5px rgba(0,0,0,.3)}
 body.selecting .selmark{display:grid}
 .cell.sel .selmark{background:var(--blue);border-color:var(--blue)}
+.fcell .selmark{bottom:34px}
 .cell.sel img,.cell.sel video{opacity:.82}
 body.selecting main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 #selTools{position:fixed;left:0;right:0;bottom:0;z-index:55;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-top:.5px solid var(--hair);display:none;padding:8px 18px calc(10px + env(safe-area-inset-bottom))}
@@ -138,6 +139,8 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
    و همیشه دیده می‌شوند؛ در فول‌اسکرین (کلاس hg-fs روی ویوئر) چیدمان پیش‌فرض Plyr برمی‌گردد. */
 #viewer.on-video .vstage{bottom:118px}
 #viewer.on-video.hg-fs .vstage{bottom:0}
+/* دکمه‌ی پخش بزرگ در حالت داک‌شده روی خودِ تصویر ویدیو وسط می‌نشیند، نه وسط کل کانتینرِ شامل نوار کنترل */
+#viewer.on-video:not(.hg-fs) .plyr__control--overlaid{top:calc((100% - var(--hg-ctrlh,0px))/2)}
 #viewer.on-video:not(.hg-fs) .plyr{display:flex;flex-direction:column;height:100%;align-items:stretch}
 #viewer.on-video:not(.hg-fs) .plyr__video-wrapper{flex:1 1 auto;min-height:0;order:1}
 #viewer.on-video:not(.hg-fs) .plyr__controls{position:static;flex:0 0 auto;order:2}
@@ -380,7 +383,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 21:00</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 21:07</span></p>
   </div>
 </section>
 
@@ -478,7 +481,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 21:00';
+var RUN_BUILD='2026-11-05 21:07';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -766,7 +769,7 @@ var FOLDER_PATH='M3 5.5A1.5 1.5 0 0 1 4.5 4h5l2 2.5h7A1.5 1.5 0 0 1 20 8v9.5a1.5
 var coverWarmed={};
 function folderCell(f){
   var items=folderItemsRec(f.id);
-  var c=document.createElement('button');c.className='cell fcell';c.dataset.fid=f.id;c.setAttribute('aria-label','پوشه '+f.name);
+  var c=document.createElement('button');c.className='cell fcell'+(selected[f.id]?' sel':'');c.dataset.fid=f.id;c.dataset.id=f.id;c.setAttribute('aria-label','پوشه '+f.name);
   var firstC=items.length?((f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0]):null;
   if(firstC&&!f.nopreview&&firstC.blur&&!isLoaded(firstC)){
     var bel=document.createElement('img');bel.alt='';bel.src=blurUri(firstC);c.appendChild(bel);c._coverId=firstC.id;
@@ -787,8 +790,9 @@ function folderCell(f){
   var nm=document.createElement('span');nm.className='fname';nm.textContent=f.name;bar.appendChild(nm);
   var ct=document.createElement('span');ct.className='fcount';ct.textContent=items.length;bar.appendChild(ct);
   c.appendChild(bar);
+  var mk2=document.createElement('span');mk2.className='selmark';mk2.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk2);
   var timer=null,longFired=false,sx=0,sy=0;
-  c.addEventListener('pointerdown',function(e){if(gPtrs.size>1)return;sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive||gPtrs.size>1)return;if(typeof reorderState!=='undefined'&&reorderState)return;longFired=true;folderActions(f);if(navigator.vibrate)navigator.vibrate(12);},480);lpRegister(cancel);});
+  c.addEventListener('pointerdown',function(e){if(gPtrs.size>1)return;sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive||gPtrs.size>1)return;if(typeof reorderState!=='undefined'&&reorderState)return;if(selecting)return;longFired=true;folderActions(f);if(navigator.vibrate)navigator.vibrate(12);},480);lpRegister(cancel);});
   function cancel(){if(timer){clearTimeout(timer);timer=null;}lpUnregister(cancel);}
   c.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancel();});
   c.addEventListener('pointerup',cancel);c.addEventListener('pointercancel',cancel);c.addEventListener('pointerleave',cancel);
@@ -797,7 +801,7 @@ function folderCell(f){
     if(Date.now()-lastPinchEnd<400)return;
     if(typeof reorderState!=='undefined'&&reorderState)return;
     if(longFired){longFired=false;return;}
-    if(selecting)return;
+    if(selecting){toggleSelect(f.id);return;}
     openFolder(f.id);
   });
   return c;
@@ -828,7 +832,7 @@ function favFolderCell(){
   var ct=document.createElement('span');ct.className='fcount';ct.textContent=favs.length;bar.appendChild(ct);
   c.appendChild(bar);
   var timer=null,longFired=false,sx=0,sy=0;
-  c.addEventListener('pointerdown',function(e){if(gPtrs.size>1)return;sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive||gPtrs.size>1)return;if(typeof reorderState!=='undefined'&&reorderState)return;longFired=true;favFolderActions();if(navigator.vibrate)navigator.vibrate(12);},480);lpRegister(cancel);});
+  c.addEventListener('pointerdown',function(e){if(gPtrs.size>1)return;sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive||gPtrs.size>1)return;if(typeof reorderState!=='undefined'&&reorderState)return;if(selecting)return;longFired=true;favFolderActions();if(navigator.vibrate)navigator.vibrate(12);},480);lpRegister(cancel);});
   function cancel(){if(timer){clearTimeout(timer);timer=null;}lpUnregister(cancel);}
   c.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancel();});
   c.addEventListener('pointerup',cancel);c.addEventListener('pointercancel',cancel);c.addEventListener('pointerleave',cancel);
@@ -1047,7 +1051,22 @@ function toggleSelect(id){if(selected[id])delete selected[id];else selected[id]=
 document.getElementById('selCancel').addEventListener('click',exitSelect);
 selDelete.addEventListener('click',function(){
   var ids=Object.keys(selected);if(!ids.length)return;
-  confirmSheet(ids.length===1?'حذف این مورد':'حذف '+ids.length+' مورد',function(){exitSelect();deleteIds(ids);});
+  var itemIds=ids.filter(function(id){return photos.some(function(p){return p.id===id;});});
+  var folderIds=ids.filter(function(id){return !!folderById(id);});
+  confirmSheet(ids.length===1?'حذف این مورد':'حذف '+ids.length+' مورد',function(){
+    exitSelect();
+    if(itemIds.length)deleteIds(itemIds);
+    folderIds.forEach(function(fid){
+      var f=folderById(fid);if(!f)return;var parentId=f.parent||null;
+      showBusy('در حال حذف پوشه…');
+      apiDel('/api/folder/'+fid).then(function(){
+        folders.forEach(function(x){if(x.parent===fid){if(parentId)x.parent=parentId;else delete x.parent;}});
+        folders=folders.filter(function(x){return x.id!==fid;});
+        photos.forEach(function(p){if(p.folder===fid){if(parentId)p.folder=parentId;else delete p.folder;}});
+        hideBusy();render();if(curFolder)renderFolder();
+      }).catch(function(){hideBusy();toast('حذف پوشه نشد');});
+    });
+  });
 });
 /* delete */
 var asWrap=document.getElementById('asWrap'),asConfirm=document.getElementById('asConfirm'),asCb=null;
@@ -1180,6 +1199,9 @@ function ensurePlyr(){
   }catch(e){plyrFailed=true;plyr=null;try{vVid.controls=true;}catch(_){}}
   return false;
 }
+function syncCtrlH(){var p=plyrWrapEl();if(!p)return;var c=p.querySelector('.plyr__controls');if(c&&c.offsetHeight)p.style.setProperty('--hg-ctrlh',c.offsetHeight+'px');}
+window.addEventListener('resize',function(){syncCtrlH();});
+window.addEventListener('orientationchange',function(){setTimeout(syncCtrlH,350);});
 function syncVidWrap(){var w=plyrWrapEl();if(w)w.style.display=(liveVid().style.display==='none')?'none':'';}
 /* hg-v11 (بازبینی): دکمه‌های سیک ±۱۰ ثانیه دو طرف نوار پیشرفت داخل .plyr__controls —
    هر لمس دقیقاً ∓۱۰ ثانیه (بدون انباشت)، با همان فیدبک دایره‌ای؛ روی پخش/مکث اثری ندارند. */
@@ -1212,6 +1234,7 @@ function addSeekButtons(){
     bf.addEventListener('click',function(ev){ev.stopPropagation();seekStep(10);});
     if(prog.nextSibling)prog.parentNode.insertBefore(bf,prog.nextSibling);else prog.parentNode.appendChild(bf);
   }
+  syncCtrlH();
 }
 /* hg-v10 (بخش B2): مخفی‌سازی قطعی رابط ویدیو روی اسلایدهای عکس — علاوه بر کلاس وضعیت ویوئر و گارد CSS */
 function hideVidUI(){
@@ -1234,6 +1257,7 @@ function fsLockLandscape(){
 function fsUnlock(){try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}}
 document.addEventListener('fullscreenchange',function(){
   if(document.fullscreenElement)viewerEl.classList.add('hg-fs');else viewerEl.classList.remove('hg-fs');
+  setTimeout(syncCtrlH,60);
   if(plyr)return;
   if(document.fullscreenElement)fsLockLandscape();else fsUnlock();
 });
@@ -1883,7 +1907,11 @@ function doMove(ids,target){
   }).catch(function(e){hideBusy();toast(e.message||'خطا در انتقال');});
 }
 document.getElementById('selMove').addEventListener('click',function(){
-  var ids=Object.keys(selected);if(!ids.length)return;
+  var allIds=Object.keys(selected);if(!allIds.length)return;
+  var ids=allIds.filter(function(id){return photos.some(function(p){return p.id===id;});});
+  var folderIds=allIds.filter(function(id){return !!folderById(id);});
+  if(!ids.length){toast('انتقال پوشه از منوی خود پوشه انجام می‌شود');return;}
+  if(folderIds.length)toast('فقط فایل‌ها منتقل می‌شوند؛ پوشه‌ها سر جایشان می‌مانند');
   var rows=[{label:'گالری اصلی',sub:'بدون پوشه',cb:function(){doMove(ids,null);}}];
   foldersHier().forEach(function(o){rows.push({label:folderPathShort(o.f),sub:folderItemsRec(o.f.id).length+' مورد',cb:function(){doMove(ids,o.f.id);}});});
   rows.push({label:'پوشه‌ی جدید',cb:function(){createFolder(function(nf){doMove(ids,nf.id);},(folderViewEl.classList.contains('open')&&curFolder)?curFolder:null);}});
