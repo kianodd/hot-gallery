@@ -704,9 +704,9 @@ var Q_ICONS={
 function fmtElapsed(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
 function fmtSize(b){if(!b)return '';if(b<1024)return b+' بایت';if(b<1048576)return (b/1024).toFixed(0)+' کیلوبایت';return (b/1048576).toFixed(1)+' مگابایت';}
 function qActiveN(){return queue.filter(function(q){return q.status==='wait'||q.status==='up';}).length;}
-function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return q.url;})));}catch(e){}}
+function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return {url:q.url,job:q.job||null};})));}catch(e){}}
 var qSeq=0;
-function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(u){if(!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,prog:null});});}catch(e){}}
+function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(en){var u=typeof en==='string'?en:(en&&en.url);var jb=typeof en==='string'?null:(en&&en.job);if(u&&!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:jb||null,prog:null});});}catch(e){}}
 function progText(q){
   var p=q.prog;if(!p||p.status!=='run')return null;
   if(p.phase==='save')return{txt:'در حال ذخیره‌سازی…',pct:null};
@@ -765,24 +765,78 @@ function qEnqueue(list){
   list.forEach(function(u){queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,prog:null});});
   qSave();qRender();qProcess();
 }
+function apiPost(path,body,signal){
+  return fetch(API+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:signal}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});});
+}
+function qRunSteps(q,sig){
+  // آپلود مرحله‌ای فیلم: هر گام ۸ پارت؛ با همان job ادامه پیدا می‌کند، حتی بعد از بستن و باز کردن اپ
+  var restarts=0;
+  function setP(d){q.prog={status:'run',phase:'up',loaded:d.loaded||0,total:d.total||0,partsDone:d.partsDone||0,partsTotal:d.partsTotal||0};paintProg(q);}
+  function stepLoop(){
+    return apiPost('/api/upload/step',{job:q.job},sig).then(function(s){
+      if(!s.ok){
+        if(restarts>=2)throw new Error((s.d&&s.d.error)||'خطای آپلود');
+        restarts++;
+        return apiPost('/api/upload/start',{url:q.url,job:q.job},sig).then(function(st){
+          if(!st.ok)throw new Error((st.d&&st.d.error)||'خطای آپلود');
+          if(st.d.done)return st.d.item;
+          if(st.d.noranged)return 'legacy';
+          setP(st.d);return stepLoop();
+        });
+      }
+      if(s.d.done)return s.d.item;
+      setP(s.d);
+      if(s.d.complete){
+        return apiPost('/api/upload/finish',{job:q.job},sig).then(function(f){
+          if(!f.ok||!f.d.item)throw new Error((f.d&&f.d.error)||'ثبت نهایی ناموفق بود');
+          return f.d.item;
+        });
+      }
+      return stepLoop();
+    });
+  }
+  return apiPost('/api/upload/start',{url:q.url,job:q.job},sig).then(function(st){
+    if(!st.ok)throw new Error((st.d&&st.d.error)||'شروع آپلود ناموفق بود');
+    if(st.d.done)return st.d.item;
+    if(st.d.noranged)return 'legacy';
+    setP(st.d);
+    return stepLoop();
+  });
+}
 function qProcess(){
   if(qRunning)return;
   var q=queue.find(function(x){return x.status==='wait';});
   if(!q){qRender();return;}
-  qRunning=true;q.status='up';q.t0=Date.now();q.prog=null;q.job='j'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);qRender();
+  qRunning=true;q.status='up';q.t0=Date.now();q.prog=null;
+  if(!q.job)q.job='j'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+  qSave();qRender();
   qCtrl=('AbortController' in window)?new AbortController():null;
-  var poll=setInterval(function(){fetch(API+'/api/progress/'+q.job).then(function(r){return r.json();}).then(function(p){if(p&&p.status==='run'){q.prog=p;paintProg(q);}}).catch(function(){});},1200);
-  fetch(API+'/api/add',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:q.url,job:q.job}),signal:qCtrl?qCtrl.signal:undefined}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(x){
-    clearInterval(poll);qRunning=false;qCtrl=null;
-    if(!x.ok||!x.d.item){q.status='err';q.error=(x.d&&x.d.error)||'آپلود ناموفق بود';}
-    else{q.status='done';q.item=x.d.item;if(!photos.some(function(p){return p.id===x.d.item.id;})){photos.unshift(x.d.item);render();}toast(isVideo(x.d.item)?'فیلم اضافه شد':'عکس اضافه شد');}
+  var sig=qCtrl?qCtrl.signal:undefined;
+  function finish(item){
+    qRunning=false;qCtrl=null;q.status='done';q.item=item;
+    if(!photos.some(function(p){return p.id===item.id;})){photos.unshift(item);render();}
+    toast(isVideo(item)?'فیلم اضافه شد':'عکس اضافه شد');
     qSave();qRender();qProcess();
-  }).catch(function(e){
-    clearInterval(poll);qRunning=false;qCtrl=null;
-    if(e&&e.name==='AbortError'){queue=queue.filter(function(x){return x!==q;});toast('آپلود لغو شد');}
-    else{q.status='err';q.error='خطا در ارتباط';}
+  }
+  function fail(e){
+    qRunning=false;qCtrl=null;
+    if(e&&e.name==='AbortError'){queue=queue.filter(function(x){return x!==q;});toast('آپلود لغو شد');if(q.job)apiPost('/api/upload/abort',{job:q.job}).catch(function(){});}
+    else{q.status='err';q.error=(e&&e.message)||'خطا در ارتباط';}
     qSave();qRender();qProcess();
-  });
+  }
+  var isVidUrl=/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(q.url);
+  var work=isVidUrl?qRunSteps(q,sig):Promise.resolve('legacy');
+  work.then(function(res){
+    if(res==='legacy'){
+      var poll=setInterval(function(){fetch(API+'/api/progress/'+q.job).then(function(r){return r.json();}).then(function(p){if(p&&p.status==='run'){q.prog=p;paintProg(q);}}).catch(function(){});},1200);
+      return apiPost('/api/add',{url:q.url,job:q.job},sig).then(function(x){
+        clearInterval(poll);
+        if(!x.ok||!x.d.item)throw new Error((x.d&&x.d.error)||'آپلود ناموفق بود');
+        return x.d.item;
+      }).catch(function(e){clearInterval(poll);throw e;});
+    }
+    return res;
+  }).then(finish).catch(fail);
 }
 /* add sheet */
 var addOverlay=document.getElementById('addOverlay'),urlInput=document.getElementById('urlInput'),doAdd=document.getElementById('doAdd');
