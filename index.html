@@ -234,7 +234,6 @@ body.selecting .qpill{display:none}
 <div class="scrim" id="scrim"></div>
 <div class="menu" id="menu" role="menu">
   <button id="miQueue"><span>صف آپلود</span><span class="qbadge" id="qBadge"></span></button>
-  <button id="miFav"><span>مورد علاقه‌ها</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" style="color:var(--faint)"><path d="M12 20.7C6.4 17 3 13.6 3 9.6 3 7 5 5 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5 19 5 21 7 21 9.6c0 4-3.4 7.4-9 11.1z"/></svg></button>
   <button id="miSelect"><span>انتخاب</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
   <button id="miNewFolder"><span>پوشه‌ی جدید</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.5v5M9.5 13h5"/></svg></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
@@ -294,7 +293,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 19:06</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 19:09</span></p>
   </div>
 </section>
 
@@ -318,7 +317,7 @@ body.selecting .qpill{display:none}
 <section class="view-settings" id="favView" aria-label="مورد علاقه‌ها">
   <div class="sbar">
     <button class="sback" id="favBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>گالری</span></button>
-    <div class="stitle">مورد علاقه‌ها</div>
+    <div class="stitle">پسندیده‌ها</div>
   </div>
   <div style="flex:1;overflow:auto">
     <div class="grid" id="favGrid"></div>
@@ -452,9 +451,52 @@ function folderCell(f){
   });
   return c;
 }
+var HEART_PATH='M12 20.7C6.4 17 3 13.6 3 9.6 3 7 5 5 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5 19 5 21 7 21 9.6c0 4-3.4 7.4-9 11.1z';
+var favWarmed=false;
+function favNoPreview(){try{return localStorage.getItem('hg-favnoprev')==='1';}catch(e){return false;}}
+function favFolderCell(){
+  var favs=photos.filter(function(p){return p.fav;});
+  var c=document.createElement('button');c.className='cell fcell';c.setAttribute('aria-label','پوشه پسندیده‌ها');
+  if(favs.length&&!favNoPreview()&&favWarmed){
+    var first=favs[0];
+    var el=document.createElement(isVideo(first)?'video':'img');el.alt='';
+    if(isVideo(first)){el.muted=true;el.playsInline=true;el.preload='metadata';}
+    c.appendChild(el);
+    if(first.manifest){var su=streamUrlFor(first);if(su)el.src=su;}
+    else loadInto(first,el);
+  }else{
+    var ph=document.createElement('span');ph.className='fempty';ph.innerHTML='<svg width="46" height="46" viewBox="0 0 24 24" fill="currentColor" style="color:#ff2d55"><path d="'+HEART_PATH+'"/></svg>';c.appendChild(ph);
+  }
+  var bar=document.createElement('span');bar.className='fbar';
+  bar.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="color:#ff2d55"><path d="'+HEART_PATH+'"/></svg>';
+  var nm=document.createElement('span');nm.className='fname';nm.textContent='پسندیده‌ها';bar.appendChild(nm);
+  var ct=document.createElement('span');ct.className='fcount';ct.textContent=favs.length;bar.appendChild(ct);
+  c.appendChild(bar);
+  var timer=null,longFired=false,sx=0,sy=0;
+  c.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive)return;longFired=true;favFolderActions();if(navigator.vibrate)navigator.vibrate(12);},480);});
+  function cancel(){if(timer){clearTimeout(timer);timer=null;}}
+  c.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancel();});
+  c.addEventListener('pointerup',cancel);c.addEventListener('pointercancel',cancel);c.addEventListener('pointerleave',cancel);
+  c.addEventListener('contextmenu',function(e){e.preventDefault();});
+  c.addEventListener('click',function(){
+    if(Date.now()-lastPinchEnd<400)return;
+    if(longFired){longFired=false;return;}
+    if(selecting)return;
+    openFavs();
+  });
+  return c;
+}
+function favFolderActions(){
+  var off=favNoPreview();
+  showSheet('پسندیده‌ها',[
+    {label:'باز کردن',cb:function(){openFavs();}},
+    {label:off?'روشن کردن پیش‌نمایش':'خاموش کردن پیش‌نمایش',sub:'کاور پوشه، عکس یا فیلم داخلش را نشان می‌دهد',cb:function(){try{localStorage.setItem('hg-favnoprev',off?'0':'1');}catch(e){}render();toast(off?'پیش‌نمایش روشن شد':'پیش‌نمایش خاموش شد');}}
+  ]);
+}
 function render(){
   grid.innerHTML='';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
+  grid.appendChild(favFolderCell());
   pinnedFirst(folders).forEach(function(f){grid.appendChild(folderCell(f));});
   var roots=rootItems();
   roots.forEach(function(item,idx){grid.appendChild(buildCell(item,idx,roots));});
@@ -912,8 +954,11 @@ menuBtn.addEventListener('click',function(){
   menu.classList.add('open');scrim.classList.add('open');
 });
 scrim.addEventListener('click',closeMenu);
-document.getElementById('miFav').addEventListener('click',function(){closeMenu();renderFavs();favViewEl.classList.add('open');pushLayer('panel',function(){favViewEl.classList.remove('open');});});
-document.getElementById('favBack').addEventListener('click',function(){favViewEl.classList.remove('open');releaseLayer('panel');});
+function openFavs(){
+  favWarmed=true;renderFavs();favViewEl.classList.add('open');
+  pushLayer('panel',function(){favViewEl.classList.remove('open');render();});
+}
+document.getElementById('favBack').addEventListener('click',function(){favViewEl.classList.remove('open');releaseLayer('panel');render();});
 
 /* ---------- پوشه‌ها: ساخت/تغییرنام/حذف، نمای پوشه، انتقال موارد ---------- */
 var folders=[];
