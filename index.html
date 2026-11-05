@@ -134,9 +134,9 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
    و همیشه دیده می‌شوند؛ در فول‌اسکرین (کلاس hg-fs روی ویوئر) چیدمان پیش‌فرض Plyr برمی‌گردد. */
 #viewer.on-video .vstage{bottom:118px}
 #viewer.on-video.hg-fs .vstage{bottom:0}
-#viewer.on-video:not(.hg-fs) .plyr{display:flex;flex-direction:column;height:100%}
-#viewer.on-video:not(.hg-fs) .plyr__video-wrapper{flex:1 1 auto;min-height:0}
-#viewer.on-video:not(.hg-fs) .plyr__controls{position:static;flex:0 0 auto}
+#viewer.on-video:not(.hg-fs) .plyr{display:flex;flex-direction:column;height:100%;align-items:stretch}
+#viewer.on-video:not(.hg-fs) .plyr__video-wrapper{flex:1 1 auto;min-height:0;order:1}
+#viewer.on-video:not(.hg-fs) .plyr__controls{position:static;flex:0 0 auto;order:2}
 #viewer.on-video:not(.hg-fs) .plyr.plyr--hide-controls .plyr__controls{opacity:1!important;pointer-events:auto!important;transform:none!important}
 .hg-seek-btn{position:relative;flex:0 0 auto}
 .hg-seek-btn .hg-seek-n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;line-height:1;pointer-events:none;padding-top:1px}
@@ -375,7 +375,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:35</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:37</span></p>
   </div>
 </section>
 
@@ -473,7 +473,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 20:35';
+var RUN_BUILD='2026-11-05 20:37';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1083,7 +1083,7 @@ function ensurePlyr(){
   }catch(e){plyrFailed=true;plyr=null;try{vVid.controls=true;}catch(_){}}
   return false;
 }
-function syncVidWrap(){var w=plyrWrapEl();if(w)w.style.display=(liveVid().style.display==='none')?'none':'block';}
+function syncVidWrap(){var w=plyrWrapEl();if(w)w.style.display=(liveVid().style.display==='none')?'none':'';}
 /* hg-v11 (بازبینی): دکمه‌های سیک ±۱۰ ثانیه دو طرف نوار پیشرفت داخل .plyr__controls —
    هر لمس دقیقاً ∓۱۰ ثانیه (بدون انباشت)، با همان فیدبک دایره‌ای؛ روی پخش/مکث اثری ندارند. */
 function seekStep(sec){
@@ -1143,7 +1143,7 @@ document.addEventListener('fullscreenchange',function(){
 function setVidSource(u){
   if(!u||u===lastVidSrc){bindMediaEvents();return;}
   lastVidSrc=u;lastSrcSetAt=Date.now();
-  if(ensurePlyr()&&plyr){try{plyr.source={type:'video',sources:[{src:u}]};bindMediaEvents();return;}catch(e){plyrFailed=true;plyr=null;}}
+  if(ensurePlyr()&&plyr){try{plyr.source={type:'video',sources:[{src:u}]};bindMediaEvents();addSeekButtons();return;}catch(e){plyrFailed=true;plyr=null;}}
   var m=liveVid();if(m.src!==u)m.src=u;
   bindMediaEvents();
 }
