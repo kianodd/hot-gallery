@@ -14,7 +14,7 @@
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <script>
-(function(){try{var t=localStorage.getItem('hg-theme')||'auto';var dark=t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.dataset.themePref=t;}catch(e){document.documentElement.dataset.theme='dark';}})();
+(function(){try{var t=localStorage.getItem('hg-theme')||'auto';var dark=t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.dataset.themePref=t;var a=localStorage.getItem('hg-accent');if(a)document.documentElement.style.setProperty('--blue',a);}catch(e){document.documentElement.dataset.theme='dark';}})();
 </script>
 <style>
 :root{--blue:#0a84ff;--red:#ff453a;--hair:rgba(120,120,128,.28)}
@@ -192,6 +192,39 @@ body.selecting .qpill{display:none}
 .qrow .acts{flex:0 0 auto;display:flex;align-items:center;gap:2px}
 .qrow .acts button{color:var(--blue);font-size:14px;padding:6px 5px}
 .qrow .acts button.x{color:var(--faint);font-size:18px;line-height:1}
+
+#tagBar{position:sticky;top:52px;z-index:49;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:.5px solid var(--hair);display:none;gap:8px;overflow-x:auto;padding:8px 12px;scrollbar-width:none}
+#tagBar::-webkit-scrollbar{display:none}
+#tagBar.show{display:flex}
+.tchip{flex:none;padding:7px 13px;border-radius:999px;background:var(--field);color:var(--text);font-size:13.5px;border:.5px solid var(--hair)}
+.tchip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+.tchip.clear{background:transparent;color:var(--blue);border-color:transparent}
+.grid.tl .tl-head{grid-column:1/-1;position:sticky;top:52px;z-index:6;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);padding:12px 14px 7px;font-size:19px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.grid.tl .tl-head .tl-sub{font-size:12.5px;color:var(--faint);font-weight:400;flex:none}
+.cell img.blurph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(14px);transform:scale(1.18);transition:opacity .45s ease;pointer-events:none}
+.cell img.blurph.gone{opacity:0}
+.cell img.mainimg{opacity:0;transition:opacity .35s ease}
+.cell img.mainimg.ld{opacity:1}
+.irow{display:flex;justify-content:space-between;align-items:center;gap:14px;padding:11px 16px;font-size:14.5px;position:relative}
+.irow + .irow:before{content:"";position:absolute;top:0;right:16px;left:0;border-top:.5px solid var(--hair)}
+.irow .k{color:var(--faint);flex:none}
+.irow .v{font-weight:500;text-align:left;word-break:break-all}
+.chips{display:flex;flex-wrap:wrap;gap:7px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--field);border-radius:999px;padding:6px 6px 6px 11px;font-size:13.5px}
+.chip button{color:var(--faint);font-size:16px;line-height:1;width:20px;height:20px;display:grid;place-items:center}
+.chip.auto{background:transparent;border:.5px solid var(--hair);color:var(--sub);padding:6px 11px}
+.tagadd{display:flex;gap:8px;margin-top:10px}
+.tagadd input{flex:1;height:42px;background:var(--field);border:0;border-radius:11px;padding:0 13px;font-size:14px;color:var(--text)}
+.tagadd button{color:var(--blue);font-size:15.5px;font-weight:600;padding:0 8px}
+.sw{width:34px;height:34px;border-radius:50%;position:relative;flex:none;display:grid;place-items:center;color:#fff}
+.sw .ckm{display:none}
+.sw.on{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px var(--blue)}
+.sw.on .ckm{display:block}
+@keyframes jig{from{transform:rotate(-1.1deg)}to{transform:rotate(1.1deg)}}
+.grid.reorder{touch-action:none}
+.grid.reorder .cell{animation:jig .26s ease-in-out infinite alternate}
+.grid.reorder .cell:nth-child(odd){animation-delay:.13s}
+.grid.reorder .cell.drag{animation:none;box-shadow:0 14px 34px rgba(0,0,0,.4);border-radius:6px}
 </style>
 </head>
 <body>
@@ -206,6 +239,7 @@ body.selecting .qpill{display:none}
     </button>
   </div>
 </header>
+<div id="tagBar"></div>
 <div id="selBar"><div class="selbar-in">
   <div class="t" id="selTitle">موارد را انتخاب کنید</div>
   <button class="selcancel" id="selCancel">لغو</button>
@@ -219,6 +253,10 @@ body.selecting .qpill{display:none}
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 9.5v5M9.9 12.4L12 14.5l2.1-2.1"/></svg>
     <span>انتقال</span>
   </button>
+  <button class="toolbtn" id="selTag" disabled style="color:var(--blue)">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.5v-8a1 1 0 0 1 1-1h8L21 12l-8.5 8.5z"/><circle cx="8" cy="8" r="1.6" fill="currentColor" stroke="none"/></svg>
+    <span>برچسب</span>
+  </button>
   <button class="toolbtn" id="selDelete" disabled>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2M6.5 7l1 12A1.5 1.5 0 0 0 9 20.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12M10 11v6M14 11v6"/></svg>
     <span>حذف</span>
@@ -230,6 +268,7 @@ body.selecting .qpill{display:none}
 <div class="menu" id="menu" role="menu">
   <button id="miQueue"><span>صف آپلود</span><span class="qbadge" id="qBadge"></span></button>
   <button id="miNewFolder"><span>پوشه‌ی جدید</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.5v5M9.5 13h5"/></svg></button>
+  <button id="miView"><span>نما</span><span id="miViewState" style="color:var(--faint);font-size:13.5px">گرید</span></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
 
@@ -282,21 +321,27 @@ body.selecting .qpill{display:none}
       <button class="opt" data-theme-opt="dark"><span>تاریک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
     </div>
     <p class="snote">در حالت خودکار، تم از تنظیمات سیستم دستگاه پیروی می‌کند.</p>
+    <p class="slabel" style="margin-top:26px">رنگ اصلی</p>
+    <div class="group" style="padding:14px 16px">
+      <div id="accentRow" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
+      <div style="display:flex;align-items:center;gap:10px;margin-top:14px"><span style="font-size:14.5px">رنگ دلخواه</span><input type="color" id="accentCustom" value="#0a84ff" style="width:46px;height:32px;border:0;background:none;padding:0;cursor:pointer"></div>
+    </div>
+    <p class="snote">رنگ دکمه‌ها، تیک انتخاب، برچسب فعال و نوار پیشرفت از این رنگ پیروی می‌کند.</p>
     <p class="slabel" style="margin-top:26px">حریم خصوصی</p>
     <div class="group">
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 19:17</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 16:42</span></p>
   </div>
 </section>
 
 <div class="viewer" id="viewer">
-  <div class="vstage" id="vStage"><img id="vImg" alt=""><video id="vVid" controls playsinline style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div>
+  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div>
   <div class="vtop"><div class="vtop-in">
     <button id="vClose" aria-label="بازگشت"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="vmeta"><div class="d" id="vDate"></div><div class="n" id="vNum"></div></div>
-    <div style="width:42px"></div>
+    <button id="vInfo" aria-label="اطلاعات"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 11.2V16"/><circle cx="12" cy="7.8" r="1.15" fill="currentColor" stroke="none"/></svg></button>
   </div></div>
   <div class="vbot">
     <div class="strip" id="vStrip"></div>
@@ -323,6 +368,8 @@ body.selecting .qpill{display:none}
   <div class="sbar">
     <button class="sback" id="folderBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>گالری</span></button>
     <div class="stitle" id="folderTitle">پوشه</div>
+    <button class="sback" id="folderDoneBtn" style="right:auto;left:8px;display:none;font-weight:700" aria-label="تمام">تمام</button>
+    <button class="sback" id="folderCancelBtn" style="right:auto;left:64px;display:none;color:var(--red)" aria-label="لغو مرتب‌سازی">لغو</button>
     <button class="sback" id="folderMenuBtn" style="right:auto;left:8px" aria-label="گزینه‌های پوشه"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg></button>
   </div>
   <div style="flex:1;overflow:auto">
@@ -355,6 +402,34 @@ body.selecting .qpill{display:none}
   <p class="lk-err" id="lockErr"></p>
 </div>
 
+
+<div class="overlay" id="infoOverlay"><div class="sc" data-close-info="1"></div>
+  <div class="sheet" role="dialog" aria-modal="true" style="max-height:86vh;overflow:auto">
+    <div class="grab"></div>
+    <h2>اطلاعات</h2>
+    <p class="sub" id="infoSub"></p>
+    <div class="group" id="infoRows" style="text-align:right"></div>
+    <p class="slabel" style="margin-top:20px">برچسب‌ها</p>
+    <div class="chips" id="infoTags"></div>
+    <div class="tagadd"><input id="tagInput" type="text" placeholder="برچسب تازه…" autocomplete="off" maxlength="40"><button id="tagAddBtn">افزودن</button></div>
+    <p class="slabel" style="margin-top:20px">برچسب‌های خودکار</p>
+    <div class="chips" id="infoAutoTags"></div>
+    <button class="cancel" id="autoTagBtn" style="text-align:center">ساخت برچسب خودکار</button>
+    <div class="group" id="infoActions" style="margin-top:14px"></div>
+    <button class="cancel" data-close-info="1">بستن</button>
+  </div>
+</div>
+
+<section class="view-settings" id="pickerView" aria-label="انتخاب کاور">
+  <div class="sbar">
+    <button class="sback" id="pickerBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>بازگشت</span></button>
+    <div class="stitle">انتخاب کاور پوشه</div>
+  </div>
+  <div style="flex:1;overflow:auto">
+    <div class="grid" id="pickerGrid"></div>
+  </div>
+</section>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -365,6 +440,51 @@ function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeo
 var photos=[],urls={},selecting=false,selected={};
 function isVideo(it){return it.kind==='video'||(it.mime&&it.mime.indexOf('video/')===0);}
 var RAW_BASE='https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
+/* بندانگشتی چندسایزه + نسخه‌ی بهینه: اول پروکسی weserv (WebP) امتحان می‌شود؛ weserv برای فایل‌های این
+   ریپو 404 می‌دهد (لایو تست شد)، پس با اولین خطا در نشست خاموش می‌شود و آدرس خام برمی‌گردد و نسخه‌ی
+   WebP بهینه با Canvas از روی خود عکس ساخته و کش می‌شود. فایل اصلی در ریپو همیشه دست‌نخورده می‌ماند. */
+var weservDead=false;
+function weservUrl(item,w,q){return 'https://images.weserv.nl/?url='+encodeURIComponent('ssl:raw.githubusercontent.com/kianodd/hot-gallery-data/main/'+item.path)+'&w='+w+'&output=webp&q='+(q||82);}
+function thumbUrl(item,w){
+  if(!item||isVideo(item)||item.manifest||!item.path)return null;
+  if(weservDead)return RAW_BASE+item.path;
+  return weservUrl(item,w||400);
+}
+function imgFallback(el,item){weservDead=true;if(item&&item.path){var raw=RAW_BASE+item.path;if(el.src!==raw)el.src=raw;}}
+function gridThumbW(){var cw=Math.min(window.innerWidth,1100)/gridCols*(window.devicePixelRatio||1);return cw<=220?200:cw<=480?400:800;}
+var webpCache={};
+function cacheWebp(item,img){
+  if(!item||webpCache[item.id]||!img.naturalWidth||img.naturalWidth<=1600)return;
+  try{var sc=1600/img.naturalWidth;var cv=document.createElement('canvas');cv.width=1600;cv.height=Math.max(1,Math.round(img.naturalHeight*sc));cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);webpCache[item.id]=cv.toDataURL('image/webp',0.82);}catch(e){}
+}
+var blurCache={};try{blurCache=JSON.parse(localStorage.getItem('hg-blur')||'{}')||{};}catch(e){blurCache={};}
+function saveBlur(item,img){
+  if(!item||blurCache[item.id]||!img.naturalWidth)return;
+  try{var cv=document.createElement('canvas');cv.width=24;cv.height=Math.max(1,Math.round(24*img.naturalHeight/img.naturalWidth));cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);blurCache[item.id]=cv.toDataURL('image/jpeg',0.6);var ks=Object.keys(blurCache);if(ks.length>120)ks.slice(0,ks.length-120).forEach(function(k){delete blurCache[k];});localStorage.setItem('hg-blur',JSON.stringify(blurCache));}catch(e){}
+}
+var viewMode='grid';try{viewMode=localStorage.getItem('hg-view')==='timeline'?'timeline':'grid';}catch(e){}
+var activeTags={};
+function itemTags(item){var out=[];((item.tags||[]).concat(item.auto_tags||[])).forEach(function(t){if(out.indexOf(t)<0)out.push(t);});return out;}
+function activeTagList(){return Object.keys(activeTags);}
+function filteredRoots(roots){
+  var at=activeTagList();if(!at.length)return roots;
+  return roots.filter(function(item){var tg=itemTags(item);return at.every(function(t){return tg.indexOf(t)>=0;});});
+}
+function renderTagBar(){
+  var bar=document.getElementById('tagBar');if(!bar)return;
+  var counts={};photos.forEach(function(p){itemTags(p).forEach(function(t){counts[t]=(counts[t]||0)+1;});});
+  var names=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
+  var at=activeTagList();
+  if(!names.length&&!at.length){bar.className='';bar.innerHTML='';return;}
+  bar.className='show';bar.innerHTML='';
+  names.forEach(function(t){
+    var b=document.createElement('button');b.className='tchip'+(activeTags[t]?' on':'');b.textContent=t+' · '+counts[t];
+    b.addEventListener('click',function(){if(activeTags[t])delete activeTags[t];else activeTags[t]=1;render();});
+    bar.appendChild(b);
+  });
+  if(at.length){var c=document.createElement('button');c.className='tchip clear';c.textContent='حذف فیلتر';c.addEventListener('click',function(){activeTags={};render();});bar.appendChild(c);}
+}
+
 var streamFailed={};
 function streamUrlFor(item){
   try{
@@ -380,8 +500,17 @@ function mediaUrl(item){
   return Promise.resolve(urls[item.id]);
 }
 function fmtDur(s){if(!isFinite(s))return '';s=Math.round(s);var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r;}
-function loadInto(item,el){
+function loadInto(item,el,w){
   mediaUrl(item).then(function(u){
+    if(!isVideo(item)&&!item.manifest){
+      el.crossOrigin='anonymous';
+      el.onerror=function(){imgFallback(el,item);};
+      el.src=thumbUrl(item,w||gridThumbW());
+      var cell0=el.closest('.cell');if(cell0){var ph0=cell0.querySelector('.ph');if(ph0)ph0.style.display='none';}
+      var th0=document.querySelector('[data-strip="'+item.id+'"]');if(th0&&!th0.src)th0.src=thumbUrl(item,200);
+      if(viewerId===item.id)showCurrentMedia();
+      return;
+    }
     var disp=isVideo(item)?u+'#t=0.1':u;
     el.src=disp;
     var cell=el.closest('.cell');if(cell){var ph=cell.querySelector('.ph');if(ph)ph.style.display='none';}
@@ -394,6 +523,17 @@ function buildCell(item,idx,list){
   var ph=document.createElement('span');ph.className='ph';ph.innerHTML='<span class="spin"></span>';c.appendChild(ph);
   var el=document.createElement(isVideo(item)?'video':'img');
   el.alt='';if(isVideo(item)){el.muted=true;el.playsInline=true;el.preload='metadata';}else{el.loading='lazy';}
+  var blurEl=null;
+  if(!isVideo(item)&&!item.manifest){
+    blurEl=document.createElement('img');blurEl.className='blurph';blurEl.alt='';blurEl.src=blurCache[item.id]||thumbUrl(item,20);blurEl.onerror=function(){if(blurEl.parentNode)blurEl.remove();};
+    c.appendChild(blurEl);
+    el.className='mainimg';
+    el.addEventListener('load',function(){
+      el.classList.add('ld');
+      if(blurEl&&blurEl.parentNode){blurEl.classList.add('gone');setTimeout(function(){if(blurEl.parentNode)blurEl.remove();},480);}
+      saveBlur(item,el);cacheWebp(item,el);queueAutoTag(item,el);
+    });
+  }
   c.appendChild(el);
   if(isVideo(item)){
     var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg><span></span>';c.appendChild(b);
@@ -415,12 +555,12 @@ function folderCell(f){
   var items=folderItems(f.id);
   var c=document.createElement('button');c.className='cell fcell';c.dataset.fid=f.id;c.setAttribute('aria-label','پوشه '+f.name);
   if(items.length&&!f.nopreview&&coverWarmed[f.id]){
-    var first=items[0];
+    var first=(f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0];
     var el=document.createElement(isVideo(first)?'video':'img');el.alt='';
     if(isVideo(first)){el.muted=true;el.playsInline=true;el.preload='metadata';}
     c.appendChild(el);
     if(first.manifest){var su=streamUrlFor(first);if(su)el.src=su;}
-    else loadInto(first,el);
+    else loadInto(first,el,400);
   }else{
     var ph=document.createElement('span');ph.className='fempty';ph.innerHTML='<svg width="46" height="46" viewBox="0 0 24 24" fill="currentColor"><path d="'+FOLDER_PATH+'"/></svg>';c.appendChild(ph);
   }
@@ -455,7 +595,7 @@ function favFolderCell(){
     if(isVideo(first)){el.muted=true;el.playsInline=true;el.preload='metadata';}
     c.appendChild(el);
     if(first.manifest){var su=streamUrlFor(first);if(su)el.src=su;}
-    else loadInto(first,el);
+    else loadInto(first,el,400);
   }else{
     var ph=document.createElement('span');ph.className='fempty';ph.innerHTML='<svg width="46" height="46" viewBox="0 0 24 24" fill="currentColor" style="color:#ff2d55"><path d="'+HEART_PATH+'"/></svg>';c.appendChild(ph);
   }
@@ -485,13 +625,30 @@ function favFolderActions(){
     {label:off?'روشن کردن پیش‌نمایش':'خاموش کردن پیش‌نمایش',sub:'کاور پوشه، عکس یا فیلم داخلش را نشان می‌دهد',cb:function(){try{localStorage.setItem('hg-favnoprev',off?'0':'1');}catch(e){}render();toast(off?'پیش‌نمایش روشن شد':'پیش‌نمایش خاموش شد');}}
   ]);
 }
+function jalaliKey(ts){try{var ps=new Intl.DateTimeFormat('fa-IR',{year:'numeric',month:'numeric'}).formatToParts(new Date(ts||0));var y='',m='';ps.forEach(function(p){if(p.type==='year')y=p.value;if(p.type==='month')m=p.value;});return y+'-'+m;}catch(e){var d=new Date(ts||0);return d.getFullYear()+'-'+(d.getMonth()+1);}}
+function jalaliLabel(ts){try{return new Intl.DateTimeFormat('fa-IR',{month:'long',year:'numeric'}).format(new Date(ts||0));}catch(e){return '';}}
+function jalaliDay(ts){try{return new Intl.DateTimeFormat('fa-IR',{day:'numeric',month:'long'}).format(new Date(ts||0));}catch(e){return '';}}
 function render(){
+  renderTagBar();
   grid.innerHTML='';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
   grid.appendChild(favFolderCell());
   folders.forEach(function(f){grid.appendChild(folderCell(f));});
-  var roots=rootItems();
-  roots.forEach(function(item,idx){grid.appendChild(buildCell(item,idx,roots));});
+  var roots=filteredRoots(rootItems());
+  if(viewMode==='timeline'){
+    grid.classList.add('tl');
+    var counts={};roots.forEach(function(it){var k=jalaliKey(it.created_at);counts[k]=(counts[k]||0)+1;});
+    var lastKey=null;
+    roots.forEach(function(item,idx){
+      var k=jalaliKey(item.created_at);
+      if(k!==lastKey){lastKey=k;var hd=document.createElement('div');hd.className='tl-head';var a=document.createElement('span');a.textContent=jalaliLabel(item.created_at);var b=document.createElement('span');b.className='tl-sub';b.textContent=counts[k]+' مورد · از '+jalaliDay(item.created_at);hd.appendChild(a);hd.appendChild(b);grid.appendChild(hd);}
+      grid.appendChild(buildCell(item,idx,roots));
+    });
+  }else{
+    grid.classList.remove('tl');
+    roots.forEach(function(item,idx){grid.appendChild(buildCell(item,idx,roots));});
+  }
+  var mv=document.getElementById('miViewState');if(mv)mv.textContent=viewMode==='timeline'?'تایم‌لاین':'گرید';
 }
 function bindCell(c,item,idx,el,list){
   var timer=null,sx=0,sy=0,longFired=false;
@@ -502,6 +659,7 @@ function bindCell(c,item,idx,el,list){
   c.addEventListener('contextmenu',function(e){e.preventDefault();});
   c.addEventListener('click',function(){
     if(Date.now()-lastPinchEnd<400)return;
+    if(typeof reorderState!=='undefined'&&reorderState)return;
     if(longFired){longFired=false;return;}
     if(selecting){toggleSelect(item.id);return;}
     var L=list||photos;var cur=L.indexOf(item);openViewer(cur<0?idx:cur,el,L);
@@ -512,7 +670,7 @@ function bindCell(c,item,idx,el,list){
 var COL_LEVELS=[2,3,4,5];
 var gridCols=parseInt(localStorage.getItem('hg-cols')||'',10);
 if(COL_LEVELS.indexOf(gridCols)<0)gridCols=window.innerWidth>=1000?5:window.innerWidth>=700?4:3;
-function applyCols(){grid.style.setProperty('--cols',gridCols);}
+function applyCols(){document.documentElement.style.setProperty('--cols',gridCols);}
 applyCols();
 var pinchActive=false,lastPinchEnd=0,pinchState=null;
 var pinchPtrs=new Map();
@@ -591,6 +749,7 @@ function updateSelUI(){
   selTitle.textContent=n?n+' مورد انتخاب شد':'موارد را انتخاب کنید';
   selDelete.disabled=!n;
   var smBtn=document.getElementById('selMove');if(smBtn)smBtn.disabled=!n;
+  var stBtn=document.getElementById('selTag');if(stBtn)stBtn.disabled=!n;
   document.querySelectorAll('.cell').forEach(function(c){c.classList.toggle('sel',!!selected[c.dataset.id]);});
 }
 function enterSelect(id){selecting=true;selected={};if(id)selected[id]=true;document.body.classList.add('selecting');updateSelUI();}
@@ -642,12 +801,12 @@ function faDate(ts){try{var d=new Date(ts);return d.toLocaleDateString('fa-IR',{
 function buildStrip(){
   vStrip.innerHTML='';
   vItems().forEach(function(p,i){
-    var t=document.createElement(isVideo(p)?'video':'img');t.setAttribute('data-strip',p.id);t.alt='';if(isVideo(p)){t.muted=true;t.playsInline=true;t.preload='metadata';}if(urls[p.id])t.src=isVideo(p)?urls[p.id]+'#t=0.1':urls[p.id];
+    var t=document.createElement(isVideo(p)?'video':'img');t.setAttribute('data-strip',p.id);t.alt='';if(isVideo(p)){t.muted=true;t.playsInline=true;t.preload='metadata';}if(urls[p.id])t.src=isVideo(p)?urls[p.id]+'#t=0.1':(thumbUrl(p,200)||urls[p.id]);
     if(i===vIdx)t.className='on';
     t.addEventListener('click',function(ev){ev.stopPropagation();showPhoto(i,i>vIdx?1:-1);});
     vStrip.appendChild(t);
     if(p.manifest&&!urls[p.id]){var su2=streamUrlFor(p);if(su2)t.src=su2;}
-    if(!urls[p.id]&&p.path)mediaUrl(p).then(function(u){t.src=isVideo(p)?u+'#t=0.1':u;}).catch(function(){});
+    if(!urls[p.id]&&p.path)mediaUrl(p).then(function(u){t.src=isVideo(p)?u+'#t=0.1':(thumbUrl(p,200)||u);}).catch(function(){});
   });
 }
 var vProg=document.getElementById('vProg'),vProgFill=document.getElementById('vProgFill'),vProgTxt=document.getElementById('vProgTxt');
@@ -690,7 +849,7 @@ function showCurrentMedia(){
     var u=urls[item.id];if(!u)return;
     if(vVid.src!==u){vVid.src=u;}var pr=vVid.play();if(pr)pr.catch(function(){});
   }
-  else{var u2=urls[item.id];if(!u2)return;vVid.pause();vVid.style.display='none';vImg.style.display='block';vImg.src=u2;}
+  else{var u2=urls[item.id];if(!u2)return;vVid.pause();vVid.style.display='none';vImg.style.display='block';var vsrc=webpCache[item.id]||thumbUrl(item,1600)||u2;vImg.onerror=function(){vImg.onerror=null;if(vImg.getAttribute('src')!==u2)vImg.src=u2;};if(vImg.getAttribute('src')!==vsrc)vImg.src=vsrc;}
 }
 function showPhoto(i,dir){
   var L=vItems();if(!L.length)return;
@@ -1005,7 +1164,7 @@ function renderFolder(){
   var items=folderItems(curFolder);
   folderGridEl.innerHTML='';
   folderEmptyEl.style.display=items.length?'none':'block';
-  items.forEach(function(item,i){folderGridEl.appendChild(buildCell(item,i,items));});
+  items.forEach(function(item,i){var cell=buildCell(item,i,items);folderGridEl.appendChild(cell);if(typeof reorderState!=='undefined'&&reorderState&&reorderState.folder===curFolder)bindReorder(cell);});
 }
 document.getElementById('folderBack').addEventListener('click',function(){folderViewEl.classList.remove('open');releaseLayer('panel');render();});
 function folderUpdate(f,patch,busyMsg,doneMsg){
@@ -1020,6 +1179,9 @@ function folderSheetRows(f,includeOpen){
   var rows=[];
   if(includeOpen)rows.push({label:'باز کردن',cb:function(){openFolder(f.id);}});
   rows.push({label:f.nopreview?'روشن کردن پیش‌نمایش':'خاموش کردن پیش‌نمایش',sub:'کاور پوشه، عکس یا فیلم داخلش را نشان می‌دهد',cb:function(){folderUpdate(f,{nopreview:!f.nopreview},'در حال ذخیره…',f.nopreview?'پیش‌نمایش روشن شد':'پیش‌نمایش خاموش شد');}});
+  rows.push({label:'تغییر کاور پوشه',sub:f.cover?'کاور دستی تنظیم شده است':'کاور فعلی، جدیدترین مورد پوشه است',cb:function(){openCoverPicker(f);}});
+  if(f.cover)rows.push({label:'حذف کاور دستی',cb:function(){folderUpdate(f,{cover:null},'در حال ذخیره…','کاور دستی حذف شد');}});
+  rows.push({label:'مرتب‌سازی دستی',sub:'ترتیب موارد داخل پوشه را با کشیدن عوض کن',cb:function(){if(curFolder!==f.id)openFolder(f.id);setTimeout(enterReorder,80);}});
   rows.push({label:'تغییر نام',cb:function(){renameFolder(f);}});
   rows.push({label:'حذف پوشه',danger:true,cb:function(){deleteFolder(f);}});
   return rows;
@@ -1080,7 +1242,7 @@ document.getElementById('selMove').addEventListener('click',function(){
 });
 document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
-document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
+document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncAccent();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
 document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');});
 /* theme */
 function applyTheme(pref){
@@ -1149,6 +1311,276 @@ document.addEventListener('visibilitychange',function(){
 });
 syncLockOpt();maybeLock();
 
+
+/* ---------- برچسب‌ها (۳)، برچسب خودکار (۴)، اطلاعات و EXIF (۳۱)، کاور دستی (۱۸)، مرتب‌سازی دستی (۱۹)، رنگ اصلی (۹۶) ---------- */
+function analyzeImage(item,img){
+  try{
+    var cv=document.createElement('canvas');cv.width=32;cv.height=32;var cx=cv.getContext('2d');cx.drawImage(img,0,0,32,32);
+    var d=cx.getImageData(0,0,32,32).data;var r=0,g=0,b=0,n=0,satSum=0;
+    for(var i=0;i<d.length;i+=16){var R=d[i],G=d[i+1],B=d[i+2];r+=R;g+=G;b+=B;var mx=Math.max(R,G,B),mn=Math.min(R,G,B);satSum+=mx?(mx-mn)/mx:0;n++;}
+    r/=n;g/=n;b/=n;var sat=satSum/n;var lum=(0.2126*r+0.7152*g+0.0722*b)/255;
+    var tags=['عکس'];
+    var mx2=Math.max(r,g,b),mn2=Math.min(r,g,b),hue=0;
+    if(mx2!==mn2){var dd=mx2-mn2;if(mx2===r)hue=((g-b)/dd)%6;else if(mx2===g)hue=(b-r)/dd+2;else hue=(r-g)/dd+4;hue*=60;if(hue<0)hue+=360;}
+    var fam=(mx2-mn2<18)?(lum>0.82?'سفید':lum<0.16?'سیاه':'خاکستری'):(hue<14||hue>=345?'قرمز':hue<45?'نارنجی':hue<70?'زرد':hue<160?'سبز':hue<200?'فیروزه‌ای':hue<255?'آبی':hue<290?'بنفش':'صورتی');
+    if(fam)tags.push(fam);
+    tags.push(lum<0.32?'تیره':lum>0.72?'روشن':'نور متوسط');
+    tags.push(sat>0.32?'رنگ‌های زنده':sat<0.12?'کم‌رنگ':'رنگ متعادل');
+    var W=item.w||img.naturalWidth||0,H=item.h||img.naturalHeight||0;
+    if(W&&H)tags.push(W>H*1.05?'منظره':H>W*1.05?'پرتره':'مربع');
+    try{var u=new URL(item.source);var fn=(u.pathname.split('/').pop()||'').replace(/\.[a-z0-9]+$/i,'');fn.split(/[^A-Za-z]+/).filter(function(w){return w.length>=3&&!/^(jpg|jpeg|png|webp|image|img|photo|full|thumb|com|www)$/i.test(w);}).slice(0,3).forEach(function(w){tags.push(w.toLowerCase());});tags.push(u.hostname.replace(/^www\./,''));}catch(e){}
+    var out=[];tags.forEach(function(t){if(t&&out.indexOf(t)<0)out.push(t);});return out.slice(0,12);
+  }catch(e){return null;}
+}
+var autoTried={},autoPending={},autoFlushT=null;
+function scheduleAutoFlush(){if(autoFlushT)return;autoFlushT=setTimeout(function(){autoFlushT=null;var m=autoPending;autoPending={};if(!Object.keys(m).length)return;apiPost('/api/tags',{auto_map:m}).catch(function(){});},4000);}
+function queueAutoTag(item,img){
+  if(!item||isVideo(item)||item.manifest||(item.auto_tags&&item.auto_tags.length)||autoTried[item.id])return;
+  autoTried[item.id]=1;
+  var tags=analyzeImage(item,img);if(!tags||!tags.length)return;
+  item.auto_tags=tags;autoPending[item.id]=tags;scheduleAutoFlush();
+  if(infoItem&&infoItem.id===item.id)renderInfoTags();
+}
+function runAutoTag(item,manual){
+  function done(img){var tags=analyzeImage(item,img);if(!tags){if(manual)toast('تحلیل عکس ناموفق بود');return;}item.auto_tags=tags;autoPending[item.id]=tags;scheduleAutoFlush();if(infoItem&&infoItem.id===item.id)renderInfoTags();if(manual)toast('برچسب خودکار ساخته شد');}
+  if(viewerId===item.id&&vImg.naturalWidth){done(vImg);return;}
+  var im=new Image();im.crossOrigin='anonymous';
+  im.onload=function(){done(im);};
+  im.onerror=function(){if(item.path&&im.getAttribute('src')!==RAW_BASE+item.path)im.src=RAW_BASE+item.path;else if(manual)toast('تحلیل عکس ناموفق بود');};
+  im.src=thumbUrl(item,400)||(RAW_BASE+item.path);
+}
+/* EXIF سمت کاربر (وقتی سرور ذخیره نکرده): پارس کوچک JPEG/TIFF */
+function clientImageDims(b){
+  try{
+    if(!b||b.length<10)return null;var dv=new DataView(b.buffer,b.byteOffset,b.byteLength);
+    if(b[0]===0x89&&b[1]===0x50)return{w:dv.getUint32(16),h:dv.getUint32(20)};
+    if(b[0]===0x47&&b[1]===0x49)return{w:dv.getUint16(6,true),h:dv.getUint16(8,true)};
+    if(b[0]===0xff&&b[1]===0xd8){var off=2;while(off+9<=b.length){if(b[off]!==0xff){off++;continue;}var m=b[off+1];if(m===0xd8||m===0x01||(m>=0xd0&&m<=0xd7)){off+=2;continue;}var len=dv.getUint16(off+2);if(len<2)break;if(m>=0xc0&&m<=0xcf&&m!==0xc4&&m!==0xc8&&m!==0xcc)return{w:dv.getUint16(off+7),h:dv.getUint16(off+5)};off+=2+len;}}
+  }catch(e){}
+  return null;
+}
+function clientJpegExif(b){
+  try{
+    if(!b||b.length<12||b[0]!==0xff||b[1]!==0xd8)return null;
+    var dv=new DataView(b.buffer,b.byteOffset,b.byteLength);var off=2;
+    while(off+10<=b.length){
+      if(b[off]!==0xff)break;var m=b[off+1];var len=dv.getUint16(off+2);if(len<2)break;
+      if(m===0xe1&&b[off+4]===0x45&&b[off+5]===0x78&&b[off+6]===0x69&&b[off+7]===0x66){
+        var base=off+10;var le=b[base]===0x49&&b[base+1]===0x49;
+        var u16=function(o){return dv.getUint16(o,le);},u32=function(o){return dv.getUint32(o,le);};
+        if(u16(base+2)!==42)return null;
+        var asc=function(o,n){var str='';for(var i=0;i<Math.min(n,64);i++){var c=b[o+i];if(!c)break;str+=String.fromCharCode(c);}return str.trim();};
+        function entries(o2){var map={};var n=u16(o2);for(var i=0;i<n&&i<64;i++){var e=o2+2+i*12;if(e+12>b.length)break;var tag=u16(e),ty=u16(e+2),cnt=u32(e+4);var vo=e+8;var sz=cnt*(ty===3?2:ty===4?4:1);if(sz>4)vo=base+u32(e+8);if(vo<0||vo>=b.length)continue;if(ty===2)map[tag]=asc(vo,cnt);else if(ty===3)map[tag]=u16(vo);else if(ty===4)map[tag]=u32(vo);}return map;}
+        var m0=entries(base+u32(base+4));var out={};
+        if(m0[0x010f])out.make=String(m0[0x010f]).slice(0,60);
+        if(m0[0x0110])out.model=String(m0[0x0110]).slice(0,60);
+        if(m0[0x0132])out.dt=String(m0[0x0132]).slice(0,30);
+        if(typeof m0[0x8769]==='number'){try{var mx=entries(base+m0[0x8769]);if(mx[0x9003])out.dt=String(mx[0x9003]).slice(0,30);}catch(e){}}
+        return Object.keys(out).length?out:null;
+      }
+      off+=2+len;
+    }
+  }catch(e){}
+  return null;
+}
+function ensureClientExif(item){
+  if(!item||isVideo(item)||item.manifest||!item.path||item._exifTried)return;
+  if(item.exif&&item.w)return;
+  item._exifTried=1;
+  fetch(RAW_BASE+item.path).then(function(r){return r.arrayBuffer();}).then(function(ab){
+    var b=new Uint8Array(ab);
+    var ex=clientJpegExif(b);if(ex&&!item.exif)item.exif=ex;
+    var dm=clientImageDims(b);if(dm&&!item.w){item.w=dm.w;item.h=dm.h;}
+    if(infoItem&&infoItem.id===item.id)fillInfoRows(item);
+  }).catch(function(){});
+}
+var infoItem=null;
+function fillInfoRows(item){
+  var rows=[];
+  rows.push(['نوع',isVideo(item)?'فیلم':'عکس']);
+  if(item.w&&item.h)rows.push(['ابعاد',item.w+' × '+item.h]);
+  else if(!isVideo(item)&&viewerId===item.id&&vImg.naturalWidth)rows.push(['ابعاد',vImg.naturalWidth+' × '+vImg.naturalHeight]);
+  if(item.mime)rows.push(['فرمت',item.mime]);
+  if(item.size)rows.push(['حجم',fmtSize(item.size)]);
+  rows.push(['تاریخ افزودن',faDate(item.created_at||Date.now())]);
+  var f=item.folder?folderById(item.folder):null;rows.push(['پوشه',f?f.name:'گالری اصلی']);
+  if(item.source){try{rows.push(['منبع',new URL(item.source).hostname]);}catch(e){}}
+  if(isVideo(item)&&item.parts)rows.push(['تعداد پارت',String(item.parts)]);
+  if(item.hash)rows.push(['هش',item.hash.slice(0,12)+'…']);
+  if(item.exif){if(item.exif.make||item.exif.model)rows.push(['دوربین',((item.exif.make||'')+' '+(item.exif.model||'')).trim()]);if(item.exif.dt)rows.push(['تاریخ ثبت',item.exif.dt]);}
+  var box=document.getElementById('infoRows');box.innerHTML='';
+  rows.forEach(function(r){
+    var d=document.createElement('div');d.className='irow';
+    var k=document.createElement('span');k.className='k';k.textContent=r[0];
+    var v=document.createElement('span');v.className='v';v.textContent=r[1];
+    d.appendChild(k);d.appendChild(v);box.appendChild(d);
+  });
+}
+function renderInfoTags(){
+  var it=infoItem;var box=document.getElementById('infoTags');var ab=document.getElementById('infoAutoTags');var act=document.getElementById('infoActions');
+  if(!it){box.innerHTML='';ab.innerHTML='';act.innerHTML='';return;}
+  box.innerHTML='';
+  if((it.tags||[]).length){
+    it.tags.forEach(function(t){
+      var ch=document.createElement('span');ch.className='chip';ch.appendChild(document.createTextNode(t));
+      var x=document.createElement('button');x.textContent='×';x.setAttribute('aria-label','حذف برچسب');
+      x.addEventListener('click',function(){
+        it.tags=(it.tags||[]).filter(function(z){return z!==t;});
+        apiPost('/api/tags',{ids:[it.id],tags:it.tags}).then(function(){renderInfoTags();renderTagBar();}).catch(function(e){toast(e.message||'خطا');});
+      });
+      ch.appendChild(x);box.appendChild(ch);
+    });
+  }else box.innerHTML='<span style="color:var(--faint);font-size:13.5px">هنوز برچسبی نیست</span>';
+  ab.innerHTML='';
+  if((it.auto_tags||[]).length){it.auto_tags.forEach(function(t){var ch=document.createElement('span');ch.className='chip auto';ch.textContent=t;ab.appendChild(ch);});}
+  else ab.innerHTML='<span style="color:var(--faint);font-size:13.5px">هنوز ساخته نشده است</span>';
+  act.innerHTML='';
+  if(it.folder){
+    var f2=folderById(it.folder);
+    if(f2){
+      var b=document.createElement('button');b.className='opt';
+      var sp=document.createElement('span');sp.textContent=f2.cover===it.id?'کاور فعلی پوشه است':'کاور پوشه شود';b.appendChild(sp);
+      if(f2.cover!==it.id)b.addEventListener('click',function(){closeInfo();folderUpdate(f2,{cover:it.id},'در حال ذخیره‌ی کاور…','کاور پوشه عوض شد');});
+      act.appendChild(b);
+    }
+  }
+}
+function openInfo(){
+  var item=vItems()[vIdx];if(!item)return;infoItem=item;
+  document.getElementById('infoSub').textContent=faDate(item.created_at||Date.now());
+  fillInfoRows(item);renderInfoTags();
+  document.getElementById('infoOverlay').classList.add('open');
+  pushLayer('sheet',closeInfoVisual);
+  ensureClientExif(item);
+}
+function closeInfoVisual(){document.getElementById('infoOverlay').classList.remove('open');infoItem=null;}
+function closeInfo(){closeInfoVisual();releaseLayer('sheet');}
+document.getElementById('vInfo').addEventListener('click',function(ev){ev.stopPropagation();openInfo();});
+document.querySelectorAll('[data-close-info]').forEach(function(el){el.addEventListener('click',closeInfo);});
+function addTagFromInput(){
+  var inp=document.getElementById('tagInput');var v=inp.value.trim();if(!v||!infoItem)return;inp.value='';
+  var parts=v.split(/[,،]/).map(function(x){return x.trim();}).filter(Boolean);if(!parts.length)return;
+  var it=infoItem;
+  apiPost('/api/tags',{ids:[it.id],add:parts}).then(function(){
+    var cur=new Set(it.tags||[]);parts.forEach(function(t){cur.add(t);});it.tags=Array.from(cur);
+    renderInfoTags();renderTagBar();toast('برچسب اضافه شد');
+  }).catch(function(e){toast(e.message||'خطا');});
+}
+document.getElementById('tagAddBtn').addEventListener('click',addTagFromInput);
+document.getElementById('tagInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addTagFromInput();}});
+document.getElementById('autoTagBtn').addEventListener('click',function(){if(infoItem)runAutoTag(infoItem,true);});
+document.getElementById('selTag').addEventListener('click',function(){
+  var ids=Object.keys(selected);if(!ids.length)return;
+  promptSheet('افزودن برچسب به '+ids.length+' مورد','','افزودن',function(v){
+    var parts=v.split(/[,،]/).map(function(x){return x.trim();}).filter(Boolean);if(!parts.length)return;
+    showBusy('در حال ذخیره‌ی برچسب…');
+    apiPost('/api/tags',{ids:ids,add:parts}).then(function(){
+      ids.forEach(function(id){var p=photos.find(function(x){return x.id===id;});if(p){var cur=new Set(p.tags||[]);parts.forEach(function(t){cur.add(t);});p.tags=Array.from(cur);}});
+      hideBusy();exitSelect();render();toast('برچسب اضافه شد');
+    }).catch(function(e){hideBusy();toast(e.message||'خطا');});
+  });
+});
+/* کاور دستی: انتخاب‌گر */
+var pickerFolder=null;
+function openCoverPicker(f){
+  pickerFolder=f;
+  var items=folderItems(f.id);
+  var g=document.getElementById('pickerGrid');g.innerHTML='';
+  items.forEach(function(item){
+    var c=document.createElement('button');c.className='cell';c.setAttribute('aria-label','انتخاب کاور');
+    var el=document.createElement(isVideo(item)?'video':'img');el.alt='';if(isVideo(item)){el.muted=true;el.playsInline=true;el.preload='metadata';}
+    c.appendChild(el);
+    if(f.cover===item.id){var mk=document.createElement('span');mk.className='selmark';mk.style.display='grid';mk.style.background='var(--blue)';mk.style.borderColor='var(--blue)';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);}
+    c.addEventListener('click',function(){closePicker();folderUpdate(f,{cover:item.id},'در حال ذخیره‌ی کاور…','کاور پوشه عوض شد');});
+    g.appendChild(c);
+    if(item.manifest){var su=streamUrlFor(item);if(su)el.src=su;}
+    else loadInto(item,el,400);
+  });
+  document.getElementById('pickerView').classList.add('open');
+  pushLayer('panel',closePickerVisual);
+}
+function closePickerVisual(){document.getElementById('pickerView').classList.remove('open');}
+function closePicker(){closePickerVisual();releaseLayer('panel');}
+document.getElementById('pickerBack').addEventListener('click',closePicker);
+/* مرتب‌سازی دستی داخل پوشه (۱۹) */
+var reorderState=null;
+function bindReorder(cell){
+  cell.addEventListener('pointerdown',function(e){
+    if(!reorderState)return;
+    e.preventDefault();
+    var sx=e.clientX,sy=e.clientY,dragging=false;
+    try{cell.setPointerCapture(e.pointerId);}catch(err){}
+    function mv(ev){
+      var dx=ev.clientX-sx,dy=ev.clientY-sy;
+      if(!dragging&&Math.hypot(dx,dy)>7){dragging=true;cell.classList.add('drag');}
+      if(!dragging)return;
+      cell.style.transform='translate('+dx+'px,'+dy+'px) scale(1.05)';
+      cell.style.pointerEvents='none';
+      var over=document.elementFromPoint(ev.clientX,ev.clientY);
+      cell.style.pointerEvents='';
+      var oc=over&&over.closest?over.closest('.cell'):null;
+      if(oc&&oc!==cell&&oc.parentNode===folderGridEl){
+        var kids=Array.from(folderGridEl.children);var from=kids.indexOf(cell),to=kids.indexOf(oc);
+        if(from>-1&&to>-1){folderGridEl.insertBefore(cell,from<to?oc.nextSibling:oc);sx=ev.clientX;sy=ev.clientY;cell.style.transform='scale(1.05)';}
+      }
+    }
+    function up(){cell.removeEventListener('pointermove',mv);cell.removeEventListener('pointerup',up);cell.removeEventListener('pointercancel',up);cell.classList.remove('drag');cell.style.transform='';}
+    cell.addEventListener('pointermove',mv);cell.addEventListener('pointerup',up);cell.addEventListener('pointercancel',up);
+  });
+}
+function enterReorder(){
+  if(!curFolder||reorderState)return;
+  reorderState={folder:curFolder,orig:folderItems(curFolder).map(function(i){return i.id;})};
+  folderGridEl.classList.add('reorder');
+  document.getElementById('folderDoneBtn').style.display='';
+  document.getElementById('folderCancelBtn').style.display='';
+  document.getElementById('folderMenuBtn').style.display='none';
+  renderFolder();
+  toast('موارد را بکش و جابه‌جا کن، بعد «تمام» را بزن');
+}
+function exitReorder(){
+  reorderState=null;folderGridEl.classList.remove('reorder');
+  document.getElementById('folderDoneBtn').style.display='none';
+  document.getElementById('folderCancelBtn').style.display='none';
+  document.getElementById('folderMenuBtn').style.display='';
+}
+document.getElementById('folderDoneBtn').addEventListener('click',function(){
+  if(!reorderState)return;
+  var ids=Array.from(folderGridEl.children).map(function(c){return c.dataset.id;}).filter(Boolean);
+  var fid=reorderState.folder;exitReorder();
+  showBusy('در حال ذخیره‌ی ترتیب…');
+  apiPost('/api/reorder',{folder:fid,ids:ids}).then(function(){
+    var set={};ids.forEach(function(id){set[id]=1;});
+    var ordered=ids.map(function(id){return photos.find(function(p){return p.id===id;});}).filter(Boolean);var k=0;
+    photos=photos.map(function(p){return set[p.id]?ordered[k++]:p;});
+    hideBusy();renderFolder();render();toast('ترتیب ذخیره شد');
+  }).catch(function(e){hideBusy();renderFolder();toast(e.message||'خطا در ذخیره‌ی ترتیب');});
+});
+document.getElementById('folderCancelBtn').addEventListener('click',function(){exitReorder();renderFolder();});
+/* رنگ اصلی (۹۶) */
+var ACCENTS=[['آبی','#0A84FF'],['بنفش','#BF5AF2'],['صورتی','#FF375F'],['قرمز','#FF453A'],['نارنجی','#FF9F0A'],['زرد','#FFD60A'],['سبز','#30D158'],['فیروزه‌ای','#64D2FF']];
+function currentAccent(){try{return (localStorage.getItem('hg-accent')||'#0A84FF').toLowerCase();}catch(e){return '#0a84ff';}}
+function applyAccent(hex){document.documentElement.style.setProperty('--blue',hex);try{localStorage.setItem('hg-accent',hex);}catch(e){}syncAccent();}
+function syncAccent(){
+  var cur=currentAccent();var row=document.getElementById('accentRow');if(!row)return;row.innerHTML='';
+  ACCENTS.forEach(function(a){
+    var b=document.createElement('button');b.className='sw'+(cur===a[1].toLowerCase()?' on':'');b.style.background=a[1];b.title=a[0];b.setAttribute('aria-label','رنگ '+a[0]);
+    b.innerHTML='<svg class="ckm" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
+    b.addEventListener('click',function(){applyAccent(a[1]);});
+    row.appendChild(b);
+  });
+  var ci=document.getElementById('accentCustom');if(ci&&ci.value.toLowerCase()!==cur)ci.value=cur;
+}
+document.getElementById('accentCustom').addEventListener('input',function(){applyAccent(this.value);});
+syncAccent();
+/* تغییر نما: گرید / تایم‌لاین (۱۰) */
+document.getElementById('miView').addEventListener('click',function(){
+  closeMenu();
+  viewMode=viewMode==='timeline'?'grid':'timeline';
+  try{localStorage.setItem('hg-view',viewMode);}catch(e){}
+  render();toast(viewMode==='timeline'?'نمای تایم‌لاین':'نمای گرید');
+});
+
 /* صف آپلود — آپلودها در پس‌زمینه و به‌ترتیب انجام می‌شوند؛ مورد کامل‌شده همان لحظه به گالری اضافه می‌شود */
 var queue=[],qRunning=false,qCtrl=null;
 var qList=document.getElementById('queueList'),qEmpty=document.getElementById('queueEmpty'),qClear=document.getElementById('qClear'),qBadge=document.getElementById('qBadge'),qPill=document.getElementById('qPill'),qPillText=document.getElementById('qPillText'),queueView=document.getElementById('queueView');
@@ -1156,7 +1588,8 @@ var Q_ICONS={
   wait:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>',
   up:'<span class="spin"></span>',
   done:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
-  err:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.6v.4"/></svg>'
+  err:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.6v.4"/></svg>',
+  dup:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="11" height="11" rx="2.5"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>'
 };
 function fmtElapsed(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
 function fmtSize(b){if(!b)return '';if(b<1024)return b+' بایت';if(b<1048576)return (b/1024).toFixed(0)+' کیلوبایت';return (b/1048576).toFixed(1)+' مگابایت';}
@@ -1203,6 +1636,7 @@ function qRender(){
     if(q.status==='wait')s.textContent='در صف';
     else if(q.status==='up'){ptUp=progText(q);if(ptUp)s.textContent=ptUp.txt;else{s.textContent='در حال آپلود… '+fmtElapsed(Date.now()-q.t0);s.dataset.qtime='1';}}
     else if(q.status==='done')s.textContent='اضافه شد'+(q.item&&q.item.size?' · '+fmtSize(q.item.size):'');
+    else if(q.status==='dup')s.textContent=q.error||'تکراری است — قبلاً اضافه شده';
     else s.textContent='خطا'+(q.error?': '+q.error:'');
     tx.appendChild(s);
     if(q.status==='up'){var bar=document.createElement('div');bar.className='qbar';var fill=document.createElement('div');fill.className='qfill';bar.appendChild(fill);if(ptUp&&ptUp.pct!==null){bar.classList.add('on');fill.style.width=ptUp.pct+'%';}tx.appendChild(bar);}
@@ -1222,8 +1656,14 @@ setInterval(function(){
 },1000);
 function qEnqueue(list){
   var tf=(folderViewEl&&folderViewEl.classList.contains('open')&&curFolder)?curFolder:null;
-  list.forEach(function(u){queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,ghaItem:null,prog:null,folder:tf});});
+  var added=0,dups=0;
+  list.forEach(function(u){
+    if(photos.some(function(p){return p.source===u;})){dups++;return;}
+    queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,ghaItem:null,prog:null,folder:tf});added++;
+  });
   qSave();qRender();qProcess();
+  if(dups&&!added)toast('تکراری است — قبلاً اضافه شده');
+  return added;
 }
 function qCancelActive(q){
   if(qCtrl)qCtrl.abort();
@@ -1290,7 +1730,7 @@ function qRunSteps(q,sig){
       setP(s.d);
       if(s.d.complete){
         return apiPost('/api/upload/finish',{job:q.job},sig).then(function(f){
-          if(!f.ok||!f.d.item)throw new Error((f.d&&f.d.error)||'ثبت نهایی ناموفق بود');
+          if(!f.ok||!f.d.item){if(f.d&&f.d.error==='duplicate'){var de2=new Error('تکراری است — قبلاً اضافه شده');de2.duplicate=true;throw de2;}throw new Error((f.d&&f.d.error)||'ثبت نهایی ناموفق بود');}
           return f.d.item;
         });
       }
@@ -1324,6 +1764,7 @@ function qProcess(){
   function fail(e){
     qRunning=false;qCtrl=null;
     if(e&&e.name==='AbortError'){queue=queue.filter(function(x){return x!==q;});toast('آپلود لغو شد');if(q.job)apiPost('/api/upload/abort',{job:q.job}).catch(function(){});}
+    else if(e&&e.duplicate){q.status='dup';q.error='تکراری است — قبلاً اضافه شده';}
     else{q.status='err';q.error=(e&&e.message)||'خطا در ارتباط';}
     qSave();qRender();qProcess();
   }
@@ -1331,7 +1772,7 @@ function qProcess(){
     var poll=setInterval(function(){fetch(API+'/api/progress/'+q.job).then(function(r){return r.json();}).then(function(p){if(p&&p.status==='run'){q.prog=p;paintProg(q);}}).catch(function(){});},1200);
     return apiPost('/api/add',{url:q.url,job:q.job},sig).then(function(x){
       clearInterval(poll);
-      if(!x.ok||!x.d.item)throw new Error((x.d&&x.d.error)||'آپلود ناموفق بود');
+      if(!x.ok||!x.d.item){if(x.d&&x.d.error==='duplicate'){var de=new Error('تکراری است — قبلاً اضافه شده');de.duplicate=true;throw de;}throw new Error((x.d&&x.d.error)||'آپلود ناموفق بود');}
       return x.d.item;
     }).catch(function(e){clearInterval(poll);throw e;});
   }
@@ -1359,8 +1800,8 @@ doAdd.addEventListener('click',function(){
   var parts=raw.split(/\s+/).filter(function(s){return /^https?:\/\//i.test(s);});
   if(!parts.length){toast('لینک معتبر نیست');return;}
   urlInput.value='';addOverlay.classList.remove('open');
-  qEnqueue(parts);
-  toast(parts.length>1?parts.length+' مورد به صف آپلود اضافه شد':'به صف آپلود اضافه شد');
+  var addedN=qEnqueue(parts);
+  if(addedN)toast(addedN>1?addedN+' مورد به صف آپلود اضافه شد':'به صف آپلود اضافه شد');
 });
 urlInput.addEventListener('keydown',function(e){if(e.key==='Enter')doAdd.click();});
 load().then(function(){qRestore();qRender();qProcess();});
