@@ -326,7 +326,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 17:11</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 17:19</span></p>
   </div>
 </section>
 
@@ -1672,6 +1672,7 @@ function progText(q){
   var p=q.prog;if(!p||p.status!=='run')return null;
   if(p.phase==='save')return{txt:'در حال ذخیره‌سازی…',pct:null};
   if(p.phase==='gha'&&p.state==='pending')return{txt:'در صف اجرای سرور…',pct:null};
+  if(p.phase==='gha'&&p.state==='retry')return{txt:'تلاش مجدد خودکار…',pct:null};
   var pct=p.total>0?Math.min(99,Math.floor(p.loaded/p.total*100)):null;
   var head=p.phase==='gha'?'در حال آپلود در سرور':(p.phase==='up'?'در حال آپلود به گیت‌هاب':'در حال دانلود از منبع');
   var txt=head+'… '+(pct!==null?pct+'٪ · ':'')+(p.total>0?fmtSize(p.loaded)+' از '+fmtSize(p.total):fmtSize(p.loaded));
@@ -1755,31 +1756,51 @@ function qRunGha(q,sig){
   function pollLoop(){
     return new Promise(function(resolve,reject){
       q._ghaReject=reject;
-      var netFails=0;
+      var netFails=0,sawRun=false,t0=Date.now();
       q._ghaIv=setInterval(function(){
         statusOnce().then(function(s){
           if(!s)return;
           if(!s.ok){netFails++;if(netFails>12){clearInterval(q._ghaIv);q._ghaIv=null;reject(new Error('خطا در ارتباط'));return;}}
           netFails=0;
           if(s.state==='done'&&s.item){clearInterval(q._ghaIv);q._ghaIv=null;resolve(s.item);return;}
-          if(s.state==='failed'){clearInterval(q._ghaIv);q._ghaIv=null;reject(new Error('اجرای آپلود در سرور ناموفق بود'));return;}
+          if(s.state==='run')sawRun=true;
+          if(s.state==='failed'){
+            if(!sawRun&&Date.now()-t0<90000){q.prog={status:'run',phase:'gha',state:'pending',loaded:s.loaded||0,total:s.total||0,partsDone:s.partsDone||0,partsTotal:s.partsTotal||0};paintProg(q);return;}
+            clearInterval(q._ghaIv);q._ghaIv=null;var fe=new Error('اجرای آپلود در سرور ناموفق بود');fe.ghaFailed=true;reject(fe);return;}
           if(s.state==='cancelled'){clearInterval(q._ghaIv);q._ghaIv=null;var er=new Error('cancelled');er.name='AbortError';reject(er);return;}
           q.prog={status:'run',phase:'gha',state:s.state,loaded:s.loaded||0,total:s.total||0,partsDone:s.partsDone||0,partsTotal:s.partsTotal||0};paintProg(q);
         });
       },3000);
     });
   }
-  return statusOnce().then(function(s0){
-    if(s0&&s0.ok&&s0.state==='done'&&s0.item)return s0.item;
-    if(s0&&s0.ok&&s0.state==='run'){q.prog={status:'run',phase:'gha',state:'run',loaded:s0.loaded||0,total:s0.total||0,partsDone:s0.partsDone||0,partsTotal:s0.partsTotal||0};paintProg(q);return pollLoop();}
-    return apiPost('/api/gha/start',{url:q.url,job:q.job,item:q.ghaItem||undefined},sig).then(function(st){
-      if(!st.ok)throw new Error((st.d&&st.d.error)||'شروع آپلود ناموفق بود');
-      if(st.d.fallback)return 'legacy';
-      q.ghaItem=st.d.item;qSave();
-      q.prog={status:'run',phase:'gha',state:'pending',loaded:0,total:st.d.total||0,partsDone:0,partsTotal:st.d.total?Math.ceil(st.d.total/8388608):0};paintProg(q);
-      return pollLoop();
+  function dispatchAndPoll(){
+    return statusOnce().then(function(s0){
+      if(s0&&s0.ok&&s0.state==='done'&&s0.item)return s0.item;
+      if(s0&&s0.ok&&s0.state==='run'){q.prog={status:'run',phase:'gha',state:'run',loaded:s0.loaded||0,total:s0.total||0,partsDone:s0.partsDone||0,partsTotal:s0.partsTotal||0};paintProg(q);return pollLoop();}
+      return apiPost('/api/gha/start',{url:q.url,job:q.job,item:q.ghaItem||undefined},sig).then(function(st){
+        if(!st.ok)throw new Error((st.d&&st.d.error)||'شروع آپلود ناموفق بود');
+        if(st.d.fallback)return 'legacy';
+        q.ghaItem=st.d.item;qSave();
+        q.prog={status:'run',phase:'gha',state:'pending',loaded:0,total:st.d.total||0,partsDone:0,partsTotal:st.d.total?Math.ceil(st.d.total/8388608):0};paintProg(q);
+        return pollLoop();
+      });
     });
-  });
+  }
+  // تلاش مجدد خودکار: اجرای ناموفق سرور تا ۲ بار با همان جاب/آیتم دوباره دیسپچ می‌شود؛
+  // پارت‌هایی که قبلاً پوش شده‌اند را ورک‌فلو رد می‌کند، پس آپلود از همان‌جا ادامه پیدا می‌کند.
+  var autoRetries=0;
+  function attempt(){
+    return dispatchAndPoll().catch(function(e){
+      if(!e||e.name==='AbortError'||!e.ghaFailed||autoRetries>=2)throw e;
+      autoRetries++;
+      q.prog={status:'run',phase:'gha',state:'retry',loaded:q.prog?q.prog.loaded||0:0,total:q.prog?q.prog.total||0:0,partsDone:q.prog?q.prog.partsDone||0:0,partsTotal:q.prog?q.prog.partsTotal||0:0};paintProg(q);qRender();
+      return new Promise(function(res){setTimeout(res,2500);}).then(function(){
+        if(sig&&sig.aborted){var er=new Error('cancelled');er.name='AbortError';throw er;}
+        return attempt();
+      });
+    });
+  }
+  return attempt();
 }
 function apiPost(path,body,signal){
   return fetch(API+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:signal}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});});
