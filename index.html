@@ -83,6 +83,7 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .scrim{position:fixed;inset:0;z-index:70;background:transparent;display:none}
 .scrim.open{display:block}
 .overlay{position:fixed;inset:0;z-index:90;display:none}
+#infoOverlay{z-index:120}
 .overlay.open{display:block}
 .overlay .sc{position:absolute;inset:0;background:rgba(0,0,0,.42)}
 .sheet{position:absolute;background:var(--sheet);animation:up .3s cubic-bezier(.32,.9,.35,1)}
@@ -193,12 +194,6 @@ body.selecting .qpill{display:none}
 .qrow .acts button{color:var(--blue);font-size:14px;padding:6px 5px}
 .qrow .acts button.x{color:var(--faint);font-size:18px;line-height:1}
 
-#tagBar{position:sticky;top:52px;z-index:49;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:.5px solid var(--hair);display:none;gap:8px;overflow-x:auto;padding:8px 12px;scrollbar-width:none}
-#tagBar::-webkit-scrollbar{display:none}
-#tagBar.show{display:flex}
-.tchip{flex:none;padding:7px 13px;border-radius:999px;background:var(--field);color:var(--text);font-size:13.5px;border:.5px solid var(--hair)}
-.tchip.on{background:var(--blue);color:#fff;border-color:var(--blue)}
-.tchip.clear{background:transparent;color:var(--blue);border-color:transparent}
 .grid.tl .tl-head{grid-column:1/-1;position:sticky;top:52px;z-index:6;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);padding:12px 14px 7px;font-size:19px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .grid.tl .tl-head .tl-sub{font-size:12.5px;color:var(--faint);font-weight:400;flex:none}
 .cell img.blurph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(14px);transform:scale(1.18);transition:opacity .45s ease;pointer-events:none}
@@ -209,13 +204,6 @@ body.selecting .qpill{display:none}
 .irow + .irow:before{content:"";position:absolute;top:0;right:16px;left:0;border-top:.5px solid var(--hair)}
 .irow .k{color:var(--faint);flex:none}
 .irow .v{font-weight:500;text-align:left;word-break:break-all}
-.chips{display:flex;flex-wrap:wrap;gap:7px}
-.chip{display:inline-flex;align-items:center;gap:6px;background:var(--field);border-radius:999px;padding:6px 6px 6px 11px;font-size:13.5px}
-.chip button{color:var(--faint);font-size:16px;line-height:1;width:20px;height:20px;display:grid;place-items:center}
-.chip.auto{background:transparent;border:.5px solid var(--hair);color:var(--sub);padding:6px 11px}
-.tagadd{display:flex;gap:8px;margin-top:10px}
-.tagadd input{flex:1;height:42px;background:var(--field);border:0;border-radius:11px;padding:0 13px;font-size:14px;color:var(--text)}
-.tagadd button{color:var(--blue);font-size:15.5px;font-weight:600;padding:0 8px}
 .sw{width:34px;height:34px;border-radius:50%;position:relative;flex:none;display:grid;place-items:center;color:#fff}
 .sw .ckm{display:none}
 .sw.on{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px var(--blue)}
@@ -239,7 +227,6 @@ body.selecting .qpill{display:none}
     </button>
   </div>
 </header>
-<div id="tagBar"></div>
 <div id="selBar"><div class="selbar-in">
   <div class="t" id="selTitle">موارد را انتخاب کنید</div>
   <button class="selcancel" id="selCancel">لغو</button>
@@ -252,10 +239,6 @@ body.selecting .qpill{display:none}
   <button class="toolbtn" id="selMove" disabled>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 9.5v5M9.9 12.4L12 14.5l2.1-2.1"/></svg>
     <span>انتقال</span>
-  </button>
-  <button class="toolbtn" id="selTag" disabled style="color:var(--blue)">
-    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12.5v-8a1 1 0 0 1 1-1h8L21 12l-8.5 8.5z"/><circle cx="8" cy="8" r="1.6" fill="currentColor" stroke="none"/></svg>
-    <span>برچسب</span>
   </button>
   <button class="toolbtn" id="selDelete" disabled>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2M6.5 7l1 12A1.5 1.5 0 0 0 9 20.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12M10 11v6M14 11v6"/></svg>
@@ -326,13 +309,13 @@ body.selecting .qpill{display:none}
       <div id="accentRow" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
       <div style="display:flex;align-items:center;gap:10px;margin-top:14px"><span style="font-size:14.5px">رنگ دلخواه</span><input type="color" id="accentCustom" value="#0a84ff" style="width:46px;height:32px;border:0;background:none;padding:0;cursor:pointer"></div>
     </div>
-    <p class="snote">رنگ دکمه‌ها، تیک انتخاب، برچسب فعال و نوار پیشرفت از این رنگ پیروی می‌کند.</p>
+    <p class="snote">رنگ دکمه‌ها، تیک انتخاب و نوار پیشرفت از این رنگ پیروی می‌کند.</p>
     <p class="slabel" style="margin-top:26px">حریم خصوصی</p>
     <div class="group">
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 16:48</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 16:57</span></p>
   </div>
 </section>
 
@@ -409,12 +392,6 @@ body.selecting .qpill{display:none}
     <h2>اطلاعات</h2>
     <p class="sub" id="infoSub"></p>
     <div class="group" id="infoRows" style="text-align:right"></div>
-    <p class="slabel" style="margin-top:20px">برچسب‌ها</p>
-    <div class="chips" id="infoTags"></div>
-    <div class="tagadd"><input id="tagInput" type="text" placeholder="برچسب تازه…" autocomplete="off" maxlength="40"><button id="tagAddBtn">افزودن</button></div>
-    <p class="slabel" style="margin-top:20px">برچسب‌های خودکار</p>
-    <div class="chips" id="infoAutoTags"></div>
-    <button class="cancel" id="autoTagBtn" style="text-align:center">ساخت برچسب خودکار</button>
     <div class="group" id="infoActions" style="margin-top:14px"></div>
     <button class="cancel" data-close-info="1">بستن</button>
   </div>
@@ -463,28 +440,6 @@ function saveBlur(item,img){
   try{var cv=document.createElement('canvas');cv.width=24;cv.height=Math.max(1,Math.round(24*img.naturalHeight/img.naturalWidth));cv.getContext('2d').drawImage(img,0,0,cv.width,cv.height);blurCache[item.id]=cv.toDataURL('image/jpeg',0.6);var ks=Object.keys(blurCache);if(ks.length>120)ks.slice(0,ks.length-120).forEach(function(k){delete blurCache[k];});localStorage.setItem('hg-blur',JSON.stringify(blurCache));}catch(e){}
 }
 var viewMode='grid';try{viewMode=localStorage.getItem('hg-view')==='timeline'?'timeline':'grid';}catch(e){}
-var activeTags={};
-function itemTags(item){var out=[];((item.tags||[]).concat(item.auto_tags||[])).forEach(function(t){if(out.indexOf(t)<0)out.push(t);});return out;}
-function activeTagList(){return Object.keys(activeTags);}
-function filteredRoots(roots){
-  var at=activeTagList();if(!at.length)return roots;
-  return roots.filter(function(item){var tg=itemTags(item);return at.every(function(t){return tg.indexOf(t)>=0;});});
-}
-function renderTagBar(){
-  var bar=document.getElementById('tagBar');if(!bar)return;
-  var counts={};photos.forEach(function(p){itemTags(p).forEach(function(t){counts[t]=(counts[t]||0)+1;});});
-  var names=Object.keys(counts).sort(function(a,b){return counts[b]-counts[a];});
-  var at=activeTagList();
-  if(!names.length&&!at.length){bar.className='';bar.innerHTML='';return;}
-  bar.className='show';bar.innerHTML='';
-  names.forEach(function(t){
-    var b=document.createElement('button');b.className='tchip'+(activeTags[t]?' on':'');b.textContent=t+' · '+counts[t];
-    b.addEventListener('click',function(){if(activeTags[t])delete activeTags[t];else activeTags[t]=1;render();});
-    bar.appendChild(b);
-  });
-  if(at.length){var c=document.createElement('button');c.className='tchip clear';c.textContent='حذف فیلتر';c.addEventListener('click',function(){activeTags={};render();});bar.appendChild(c);}
-}
-
 var streamFailed={};
 function streamUrlFor(item){
   try{
@@ -531,7 +486,7 @@ function buildCell(item,idx,list){
     el.addEventListener('load',function(){
       el.classList.add('ld');
       if(blurEl&&blurEl.parentNode){blurEl.classList.add('gone');setTimeout(function(){if(blurEl.parentNode)blurEl.remove();},480);}
-      saveBlur(item,el);cacheWebp(item,el);queueAutoTag(item,el);
+      saveBlur(item,el);cacheWebp(item,el);
     });
   }
   c.appendChild(el);
@@ -629,12 +584,11 @@ function jalaliKey(ts){try{var ps=new Intl.DateTimeFormat('fa-IR',{year:'numeric
 function jalaliLabel(ts){try{return new Intl.DateTimeFormat('fa-IR',{month:'long',year:'numeric'}).format(new Date(ts||0));}catch(e){return '';}}
 function jalaliDay(ts){try{return new Intl.DateTimeFormat('fa-IR',{day:'numeric',month:'long'}).format(new Date(ts||0));}catch(e){return '';}}
 function render(){
-  renderTagBar();
   grid.innerHTML='';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
   grid.appendChild(favFolderCell());
   folders.forEach(function(f){grid.appendChild(folderCell(f));});
-  var roots=filteredRoots(rootItems());
+  var roots=rootItems();
   if(viewMode==='timeline'){
     grid.classList.add('tl');
     var counts={};roots.forEach(function(it){var k=jalaliKey(it.created_at);counts[k]=(counts[k]||0)+1;});
@@ -749,7 +703,6 @@ function updateSelUI(){
   selTitle.textContent=n?n+' مورد انتخاب شد':'موارد را انتخاب کنید';
   selDelete.disabled=!n;
   var smBtn=document.getElementById('selMove');if(smBtn)smBtn.disabled=!n;
-  var stBtn=document.getElementById('selTag');if(stBtn)stBtn.disabled=!n;
   document.querySelectorAll('.cell').forEach(function(c){c.classList.toggle('sel',!!selected[c.dataset.id]);});
 }
 function enterSelect(id){selecting=true;selected={};if(id)selected[id]=true;document.body.classList.add('selecting');updateSelUI();}
@@ -1312,43 +1265,7 @@ document.addEventListener('visibilitychange',function(){
 syncLockOpt();maybeLock();
 
 
-/* ---------- برچسب‌ها (۳)، برچسب خودکار (۴)، اطلاعات و EXIF (۳۱)، کاور دستی (۱۸)، مرتب‌سازی دستی (۱۹)، رنگ اصلی (۹۶) ---------- */
-function analyzeImage(item,img){
-  try{
-    var cv=document.createElement('canvas');cv.width=32;cv.height=32;var cx=cv.getContext('2d');cx.drawImage(img,0,0,32,32);
-    var d=cx.getImageData(0,0,32,32).data;var r=0,g=0,b=0,n=0,satSum=0;
-    for(var i=0;i<d.length;i+=16){var R=d[i],G=d[i+1],B=d[i+2];r+=R;g+=G;b+=B;var mx=Math.max(R,G,B),mn=Math.min(R,G,B);satSum+=mx?(mx-mn)/mx:0;n++;}
-    r/=n;g/=n;b/=n;var sat=satSum/n;var lum=(0.2126*r+0.7152*g+0.0722*b)/255;
-    var tags=['عکس'];
-    var mx2=Math.max(r,g,b),mn2=Math.min(r,g,b),hue=0;
-    if(mx2!==mn2){var dd=mx2-mn2;if(mx2===r)hue=((g-b)/dd)%6;else if(mx2===g)hue=(b-r)/dd+2;else hue=(r-g)/dd+4;hue*=60;if(hue<0)hue+=360;}
-    var fam=(mx2-mn2<18)?(lum>0.82?'سفید':lum<0.16?'سیاه':'خاکستری'):(hue<14||hue>=345?'قرمز':hue<45?'نارنجی':hue<70?'زرد':hue<160?'سبز':hue<200?'فیروزه‌ای':hue<255?'آبی':hue<290?'بنفش':'صورتی');
-    if(fam)tags.push(fam);
-    tags.push(lum<0.32?'تیره':lum>0.72?'روشن':'نور متوسط');
-    tags.push(sat>0.32?'رنگ‌های زنده':sat<0.12?'کم‌رنگ':'رنگ متعادل');
-    var W=item.w||img.naturalWidth||0,H=item.h||img.naturalHeight||0;
-    if(W&&H)tags.push(W>H*1.05?'منظره':H>W*1.05?'پرتره':'مربع');
-    try{var u=new URL(item.source);var fn=(u.pathname.split('/').pop()||'').replace(/\.[a-z0-9]+$/i,'');fn.split(/[^A-Za-z]+/).filter(function(w){return w.length>=3&&!/^(jpg|jpeg|png|webp|image|img|photo|full|thumb|com|www)$/i.test(w);}).slice(0,3).forEach(function(w){tags.push(w.toLowerCase());});tags.push(u.hostname.replace(/^www\./,''));}catch(e){}
-    var out=[];tags.forEach(function(t){if(t&&out.indexOf(t)<0)out.push(t);});return out.slice(0,12);
-  }catch(e){return null;}
-}
-var autoTried={},autoPending={},autoFlushT=null;
-function scheduleAutoFlush(){if(autoFlushT)return;autoFlushT=setTimeout(function(){autoFlushT=null;var m=autoPending;autoPending={};if(!Object.keys(m).length)return;apiPost('/api/tags',{auto_map:m}).catch(function(){});},4000);}
-function queueAutoTag(item,img){
-  if(!item||isVideo(item)||item.manifest||(item.auto_tags&&item.auto_tags.length)||autoTried[item.id])return;
-  autoTried[item.id]=1;
-  var tags=analyzeImage(item,img);if(!tags||!tags.length)return;
-  item.auto_tags=tags;autoPending[item.id]=tags;scheduleAutoFlush();
-  if(infoItem&&infoItem.id===item.id)renderInfoTags();
-}
-function runAutoTag(item,manual){
-  function done(img){var tags=analyzeImage(item,img);if(!tags){if(manual)toast('تحلیل عکس ناموفق بود');return;}item.auto_tags=tags;autoPending[item.id]=tags;scheduleAutoFlush();if(infoItem&&infoItem.id===item.id)renderInfoTags();if(manual)toast('برچسب خودکار ساخته شد');}
-  if(viewerId===item.id&&vImg.naturalWidth){done(vImg);return;}
-  var im=new Image();im.crossOrigin='anonymous';
-  im.onload=function(){done(im);};
-  im.onerror=function(){if(item.path&&im.getAttribute('src')!==RAW_BASE+item.path)im.src=RAW_BASE+item.path;else if(manual)toast('تحلیل عکس ناموفق بود');};
-  im.src=thumbUrl(item,400)||(RAW_BASE+item.path);
-}
+/* ---------- اطلاعات و EXIF (۳۱)، کاور دستی (۱۸)، مرتب‌سازی دستی (۱۹)، رنگ اصلی (۹۶) ---------- */
 /* EXIF سمت کاربر (وقتی سرور ذخیره نکرده): پارس کوچک JPEG/TIFF */
 function clientImageDims(b){
   try{
@@ -1416,24 +1333,9 @@ function fillInfoRows(item){
     d.appendChild(k);d.appendChild(v);box.appendChild(d);
   });
 }
-function renderInfoTags(){
-  var it=infoItem;var box=document.getElementById('infoTags');var ab=document.getElementById('infoAutoTags');var act=document.getElementById('infoActions');
-  if(!it){box.innerHTML='';ab.innerHTML='';act.innerHTML='';return;}
-  box.innerHTML='';
-  if((it.tags||[]).length){
-    it.tags.forEach(function(t){
-      var ch=document.createElement('span');ch.className='chip';ch.appendChild(document.createTextNode(t));
-      var x=document.createElement('button');x.textContent='×';x.setAttribute('aria-label','حذف برچسب');
-      x.addEventListener('click',function(){
-        it.tags=(it.tags||[]).filter(function(z){return z!==t;});
-        apiPost('/api/tags',{ids:[it.id],tags:it.tags}).then(function(){renderInfoTags();renderTagBar();}).catch(function(e){toast(e.message||'خطا');});
-      });
-      ch.appendChild(x);box.appendChild(ch);
-    });
-  }else box.innerHTML='<span style="color:var(--faint);font-size:13.5px">هنوز برچسبی نیست</span>';
-  ab.innerHTML='';
-  if((it.auto_tags||[]).length){it.auto_tags.forEach(function(t){var ch=document.createElement('span');ch.className='chip auto';ch.textContent=t;ab.appendChild(ch);});}
-  else ab.innerHTML='<span style="color:var(--faint);font-size:13.5px">هنوز ساخته نشده است</span>';
+function renderInfoActions(){
+  var it=infoItem;var act=document.getElementById('infoActions');
+  if(!it){act.innerHTML='';act.style.display='none';return;}
   act.innerHTML='';
   if(it.folder){
     var f2=folderById(it.folder);
@@ -1444,11 +1346,12 @@ function renderInfoTags(){
       act.appendChild(b);
     }
   }
+  act.style.display=act.children.length?'':'none';
 }
 function openInfo(){
   var item=vItems()[vIdx];if(!item)return;infoItem=item;
   document.getElementById('infoSub').textContent=faDate(item.created_at||Date.now());
-  fillInfoRows(item);renderInfoTags();
+  fillInfoRows(item);renderInfoActions();
   document.getElementById('infoOverlay').classList.add('open');
   pushLayer('sheet',closeInfoVisual);
   ensureClientExif(item);
@@ -1457,29 +1360,6 @@ function closeInfoVisual(){document.getElementById('infoOverlay').classList.remo
 function closeInfo(){closeInfoVisual();releaseLayer('sheet');}
 document.getElementById('vInfo').addEventListener('click',function(ev){ev.stopPropagation();openInfo();});
 document.querySelectorAll('[data-close-info]').forEach(function(el){el.addEventListener('click',closeInfo);});
-function addTagFromInput(){
-  var inp=document.getElementById('tagInput');var v=inp.value.trim();if(!v||!infoItem)return;inp.value='';
-  var parts=v.split(/[,،]/).map(function(x){return x.trim();}).filter(Boolean);if(!parts.length)return;
-  var it=infoItem;
-  apiPost('/api/tags',{ids:[it.id],add:parts}).then(function(){
-    var cur=new Set(it.tags||[]);parts.forEach(function(t){cur.add(t);});it.tags=Array.from(cur);
-    renderInfoTags();renderTagBar();toast('برچسب اضافه شد');
-  }).catch(function(e){toast(e.message||'خطا');});
-}
-document.getElementById('tagAddBtn').addEventListener('click',addTagFromInput);
-document.getElementById('tagInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();addTagFromInput();}});
-document.getElementById('autoTagBtn').addEventListener('click',function(){if(infoItem)runAutoTag(infoItem,true);});
-document.getElementById('selTag').addEventListener('click',function(){
-  var ids=Object.keys(selected);if(!ids.length)return;
-  promptSheet('افزودن برچسب به '+ids.length+' مورد','','افزودن',function(v){
-    var parts=v.split(/[,،]/).map(function(x){return x.trim();}).filter(Boolean);if(!parts.length)return;
-    showBusy('در حال ذخیره‌ی برچسب…');
-    apiPost('/api/tags',{ids:ids,add:parts}).then(function(){
-      ids.forEach(function(id){var p=photos.find(function(x){return x.id===id;});if(p){var cur=new Set(p.tags||[]);parts.forEach(function(t){cur.add(t);});p.tags=Array.from(cur);}});
-      hideBusy();exitSelect();render();toast('برچسب اضافه شد');
-    }).catch(function(e){hideBusy();toast(e.message||'خطا');});
-  });
-});
 /* کاور دستی: انتخاب‌گر */
 var pickerFolder=null;
 function openCoverPicker(f){
@@ -1582,7 +1462,7 @@ document.getElementById('miView').addEventListener('click',function(){
 });
 
 /* صف آپلود — آپلودها در پس‌زمینه و به‌ترتیب انجام می‌شوند؛ مورد کامل‌شده همان لحظه به گالری اضافه می‌شود */
-var queue=[],qRunning=false,qCtrl=null;
+var queue=[];
 var qList=document.getElementById('queueList'),qEmpty=document.getElementById('queueEmpty'),qClear=document.getElementById('qClear'),qBadge=document.getElementById('qBadge'),qPill=document.getElementById('qPill'),qPillText=document.getElementById('qPillText'),queueView=document.getElementById('queueView');
 var Q_ICONS={
   wait:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>',
@@ -1651,8 +1531,11 @@ function qRender(){
 }
 qClear.addEventListener('click',function(){queue=queue.filter(function(q){return q.status!=='done';});qSave();qRender();});
 setInterval(function(){
-  var el=qList.querySelector('[data-qtime]');
-  if(el){var up=queue.find(function(q){return q.status==='up';});if(up)el.textContent='در حال آپلود… '+fmtElapsed(Date.now()-up.t0);}
+  qList.querySelectorAll('[data-qtime]').forEach(function(el){
+    var row=el.closest('.qrow');if(!row)return;
+    var q=queue.find(function(x){return x.qid==row.dataset.qid;});
+    if(q&&q.status==='up'&&!progText(q))el.textContent='در حال آپلود… '+fmtElapsed(Date.now()-q.t0);
+  });
 },1000);
 function qEnqueue(list){
   var tf=(folderViewEl&&folderViewEl.classList.contains('open')&&curFolder)?curFolder:null;
@@ -1666,7 +1549,7 @@ function qEnqueue(list){
   return added;
 }
 function qCancelActive(q){
-  if(qCtrl)qCtrl.abort();
+  if(q._ctrl)q._ctrl.abort();
   if(q._ghaIv){clearInterval(q._ghaIv);q._ghaIv=null;}
   if(q._ghaReject){var rj=q._ghaReject;q._ghaReject=null;var er=new Error('cancelled');er.name='AbortError';rj(er);}
   if(q.ghaItem)apiPost('/api/gha/cancel',{job:q.job,item:q.ghaItem}).catch(function(){});
@@ -1702,7 +1585,7 @@ function qRunGha(q,sig){
       if(!st.ok)throw new Error((st.d&&st.d.error)||'شروع آپلود ناموفق بود');
       if(st.d.fallback)return 'legacy';
       q.ghaItem=st.d.item;qSave();
-      q.prog={status:'run',phase:'gha',state:'pending',loaded:0,total:st.d.total||0,partsDone:0,partsTotal:st.d.total?Math.ceil(st.d.total/1048576):0};paintProg(q);
+      q.prog={status:'run',phase:'gha',state:'pending',loaded:0,total:st.d.total||0,partsDone:0,partsTotal:st.d.total?Math.ceil(st.d.total/8388608):0};paintProg(q);
       return pollLoop();
     });
   });
@@ -1711,7 +1594,7 @@ function apiPost(path,body,signal){
   return fetch(API+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:signal}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});});
 }
 function qRunSteps(q,sig){
-  // آپلود مرحله‌ای فیلم: هر گام ۸ پارت؛ با همان job ادامه پیدا می‌کند، حتی بعد از بستن و باز کردن اپ
+  // آپلود مرحله‌ای فیلم: هر گام ۳۲ مگابایت (پارت‌های ۸ مگی، دانلود رنج موازی سمت ورکر)؛ با همان job ادامه پیدا می‌کند، حتی بعد از بستن و باز کردن اپ
   var restarts=0;
   function setP(d){q.prog={status:'run',phase:'up',loaded:d.loaded||0,total:d.total||0,partsDone:d.partsDone||0,partsTotal:d.partsTotal||0};paintProg(q);}
   function stepLoop(){
@@ -1745,24 +1628,53 @@ function qRunSteps(q,sig){
     return stepLoop();
   });
 }
+/* اجرای صف با دو خط موازی: حداکثر ۳ آپلود GHA همزمان (هرکدام رانر جدا)، و مسیرهای
+   مرحله‌ای/قدیمی/عکس فقط یکی در یک زمان و هرگز همزمان با هم. لغو و کنترلر هر جاب مال خودش است. */
+var GHA_MAX=3;
+function qLaneCount(lane){return queue.filter(function(x){return x.status==='up'&&x._lane===lane;}).length;}
 function qProcess(){
-  if(qRunning)return;
-  var q=queue.find(function(x){return x.status==='wait';});
-  if(!q){qRender();return;}
-  qRunning=true;q.status='up';q.t0=Date.now();q.prog=null;
+  var started=true;
+  while(started){
+    started=false;
+    for(var i=0;i<queue.length;i++){
+      var q=queue[i];
+      if(q.status!=='wait')continue;
+      var lane=/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(q.url)?'gha':'local';
+      if(lane==='gha'&&qLaneCount('gha')>=GHA_MAX)continue;
+      if(lane==='local'&&qLaneCount('local')>=1)continue;
+      qStartJob(q,lane);
+      started=true;
+    }
+  }
+  qRender();
+}
+function qWaitLocal(q,sig){
+  // جاب GHA که به مسیر مرحله‌ای/قدیمی برمی‌گردد باید صبر کند تا خط محلی آزاد شود
+  return new Promise(function(resolve,reject){
+    q._lane='waitlocal';
+    (function chk(){
+      if(sig&&sig.aborted){var er=new Error('cancelled');er.name='AbortError';reject(er);return;}
+      if(qLaneCount('local')===0){q._lane='local';resolve();return;}
+      setTimeout(chk,350);
+    })();
+  });
+}
+function qStartJob(q,lane){
+  q.status='up';q.t0=Date.now();q.prog=null;q._lane=lane;
   if(!q.job)q.job='j'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);
   qSave();qRender();
-  qCtrl=('AbortController' in window)?new AbortController():null;
-  var sig=qCtrl?qCtrl.signal:undefined;
+  var ctrl=('AbortController' in window)?new AbortController():null;
+  q._ctrl=ctrl;
+  var sig=ctrl?ctrl.signal:undefined;
   function finish(item){
-    qRunning=false;qCtrl=null;q.status='done';q.item=item;
+    q._lane=null;q._ctrl=null;q.status='done';q.item=item;
     if(q.folder){item.folder=q.folder;apiPost('/api/move',{ids:[item.id],folder:q.folder}).catch(function(){});}
     if(!photos.some(function(p){return p.id===item.id;})){photos.unshift(item);render();if(curFolder)renderFolder();}
     toast(isVideo(item)?'فیلم اضافه شد':'عکس اضافه شد');
     qSave();qRender();qProcess();
   }
   function fail(e){
-    qRunning=false;qCtrl=null;
+    q._lane=null;q._ctrl=null;
     if(e&&e.name==='AbortError'){queue=queue.filter(function(x){return x!==q;});toast('آپلود لغو شد');if(q.job)apiPost('/api/upload/abort',{job:q.job}).catch(function(){});}
     else if(e&&e.duplicate){q.status='dup';q.error='تکراری است — قبلاً اضافه شده';}
     else{q.status='err';q.error=(e&&e.message)||'خطا در ارتباط';}
@@ -1780,10 +1692,13 @@ function qProcess(){
   var work;
   if(isVidUrl){
     work=qRunGha(q,sig).then(function(res){
-      if(res==='legacy')return qRunSteps(q,sig);
+      if(res==='legacy')return qWaitLocal(q,sig).then(function(){return qRunSteps(q,sig);});
       return res;
     }).then(function(res){
-      if(res==='legacy')return legacyAdd();
+      if(res==='legacy'){
+        if(q._lane!=='local')return qWaitLocal(q,sig).then(function(){return legacyAdd();});
+        return legacyAdd();
+      }
       return res;
     });
   }else{
