@@ -2,7 +2,7 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>گالری</title>
 <meta name="theme-color" content="#000000">
 <link rel="manifest" href="manifest.webmanifest">
@@ -23,6 +23,8 @@ html[data-theme="light"]{--bg:#fff;--bg2:#f2f2f7;--card:#fff;--text:#000;--sub:#
 html[data-theme="dark"]{--bg:#000;--bg2:#1c1c1e;--card:#1c1c1e;--text:#fff;--sub:#ebebf5;--faint:#8e8e93;--bar:rgba(22,22,23,.82);--sheet:#1c1c1e;--field:#2c2c2e;--menu:#2c2c2e;--pressed:rgba(120,120,128,.24);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:"Vazirmatn",-apple-system,BlinkMacSystemFont,system-ui,Tahoma,sans-serif !important;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
 input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+html,body{touch-action:manipulation}
+input,textarea{font-size:16px}
 html,body{margin:0;padding:0}
 html{overscroll-behavior:none}
 body{background:var(--bg);color:var(--text);font-size:16px;min-height:100vh;overscroll-behavior:none}
@@ -97,7 +99,7 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 @media(min-width:640px){.grab{display:none}}
 .sheet h2{margin:0 0 4px;font-size:19px;font-weight:700;text-align:center}
 .sheet .sub{margin:0 0 18px;font-size:13.5px;color:var(--faint);text-align:center;line-height:1.9}
-.sheet input{width:100%;height:46px;background:var(--field);border:0;border-radius:11px;padding:0 14px;font-size:14px;color:var(--text)}
+.sheet input{width:100%;height:46px;background:var(--field);border:0;border-radius:11px;padding:0 14px;font-size:16px;color:var(--text)}
 .sheet input:focus{outline:2px solid var(--blue);outline-offset:-1px}
 .primary{width:100%;height:48px;margin-top:14px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;border-radius:12px}
 .primary:disabled{opacity:.5}
@@ -173,6 +175,10 @@ body.selecting .busypill{bottom:calc(118px + env(safe-area-inset-bottom))}
 /* hg-v9: پلیر ویدیو Plyr */
 .plyr{--plyr-color-main:var(--blue);direction:ltr;max-width:100%;max-height:100%}
 .plyr__controls{z-index:5}
+#viewer.on-photo .plyr,#viewer.on-photo #vVid{display:none!important}
+#menuBtn{position:relative}
+.updot{position:absolute;top:5px;right:5px;width:9px;height:9px;border-radius:50%;background:#ff3b30;display:none;box-shadow:0 0 0 1.5px var(--bar)}
+.updot.show{display:block}
 .vprog{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(72vw,340px);display:none;z-index:2;text-align:center}
 .vp-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
 .vp-fill{height:100%;width:0;background:var(--blue);border-radius:3px;transition:width .2s}
@@ -203,6 +209,10 @@ body.selecting .qpill{display:none}
 .grid.tl .tl-head{grid-column:1/-1;position:sticky;top:52px;z-index:6;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);padding:12px 14px 7px;font-size:19px;font-weight:700;display:flex;justify-content:space-between;align-items:baseline;gap:10px}
 .grid.tl .tl-head .tl-sub{font-size:12.5px;color:var(--faint);font-weight:400;flex:none}
 #folderGrid.tl .tl-head{top:0}
+.grid.sg{grid-template-columns:1fr;gap:10px;padding:10px}
+.grid.sg .cell{aspect-ratio:auto;border-radius:14px}
+.grid.sg .cell img,.grid.sg .cell video{width:100%;height:auto;aspect-ratio:16/9}
+.grid.sg .cell.fcell{min-height:96px}
 .cell img.blurph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(14px);transform:scale(1.18);transition:opacity .45s ease;pointer-events:none}
 .cell img.blurph.gone{opacity:0}
 .cell img.mainimg{opacity:0;transition:opacity .35s ease}
@@ -236,6 +246,7 @@ body.selecting .qpill{display:none}
     <div class="htitle"><span id="appTitle">گالری</span><span class="spin tspin"></span></div>
     <button class="hbtn" id="menuBtn" aria-label="منو">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
+      <span class="updot" id="upDot"></span>
     </button>
   </div>
 </header>
@@ -269,6 +280,7 @@ body.selecting .qpill{display:none}
   <button id="miQueue"><span>صف آپلود</span><span class="qbadge" id="qBadge"></span></button>
   <button id="miNewFolder"><span>پوشه‌ی جدید</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.5v5M9.5 13h5"/></svg></button>
   <button id="miView"><span>نما</span><span id="miViewState" style="color:var(--faint);font-size:13.5px">گرید</span></button>
+  <button id="miUpdate" style="display:none"><span>به‌روزرسانی اپ</span><span id="miUpdateSub" style="color:var(--blue);font-size:13.5px"></span></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
 
@@ -343,7 +355,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 17:59</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 18:20</span></p>
   </div>
 </section>
 
@@ -441,6 +453,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
+var RUN_BUILD='2026-11-05 18:20';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -483,7 +496,52 @@ function genBlurFromImg(item,img){
     if(b64)postBlur(item,b64);
   }catch(e){}
 }
-var viewMode='grid';try{viewMode=localStorage.getItem('hg-view')==='timeline'?'timeline':'grid';}catch(e){}
+/* hg-v10: وضعیت «لودشده» — آیتمی که تصویر واقعی‌اش دست‌کم یک بار لود شده (ویوئر/فیلم‌استریپ/پخش)،
+   از آن به بعد همه‌جا (گرید، کاورها، استریپ) با تامنیل واقعی نمایش داده می‌شود، نه بلور؛
+   در localStorage (hg-loaded) می‌ماند تا بین اجراها هم حفظ شود. بلور فقط جای‌نگهدارِ لودنشده‌هاست. */
+var loadedIds={};try{loadedIds=JSON.parse(localStorage.getItem('hg-loaded')||'{}')||{};}catch(e){loadedIds={};}
+function isLoaded(it){return !!(it&&it.id&&loadedIds[it.id]);}
+function persistLoaded(){try{localStorage.setItem('hg-loaded',JSON.stringify(loadedIds));}catch(e){}}
+function realThumbFor(it,w){
+  if(!it)return null;
+  if(isVideo(it))return it.thumb?RAW_BASE+it.thumb:null;
+  return thumbUrl(it,w||(viewMode==='single'?1200:gridThumbW()));
+}
+function markLoaded(it){
+  if(!it||!it.id||loadedIds[it.id])return;
+  loadedIds[it.id]=1;persistLoaded();
+  upgradeCellsFor(it);
+}
+function pruneLoaded(){
+  var ids={};photos.forEach(function(p){ids[p.id]=1;});
+  var changed=false;Object.keys(loadedIds).forEach(function(k){if(!ids[k]){delete loadedIds[k];changed=true;}});
+  if(changed)persistLoaded();
+}
+function upgradeCellsFor(it){
+  var real=realThumbFor(it);if(!real)return;
+  document.querySelectorAll('.cell[data-id="'+it.id+'"]').forEach(function(c){
+    var el=c.querySelector('img:not(.blurph)');if(!el||el.getAttribute('src')===real)return;
+    var pre=new Image();
+    pre.onload=function(){if(el.isConnected&&el.getAttribute('src')!==real)el.src=real;};
+    pre.onerror=function(){
+      if(!isVideo(it)&&!weservBad[it.id]){weservBad[it.id]=1;var r2=realThumbFor(it);if(r2&&r2!==real&&el.isConnected)el.src=r2;}
+    };
+    pre.src=real;
+  });
+  document.querySelectorAll('.cell.fcell').forEach(function(c){
+    if(c._coverId!==it.id)return;
+    var el=c.querySelector('img:not(.blurph)');if(!el)return;
+    var rc=realThumbFor(it,400);if(!rc||el.getAttribute('src')===rc)return;
+    var pre2=new Image();
+    pre2.onload=function(){if(el.isConnected&&el.getAttribute('src')!==rc)el.src=rc;};
+    pre2.onerror=function(){if(!isVideo(it)&&!weservBad[it.id]){weservBad[it.id]=1;var r3=realThumbFor(it,400);if(r3&&r3!==rc&&el.isConnected)el.src=r3;}};
+    pre2.src=rc;
+  });
+  var st=document.querySelector('[data-strip="'+it.id+'"]');
+  if(st&&st.tagName==='IMG'){var rs=realThumbFor(it,200);if(rs&&st.getAttribute('src')!==rs)st.src=rs;}
+}
+var viewMode='grid';try{var _vm=localStorage.getItem('hg-view');if(_vm==='timeline'||_vm==='single')viewMode=_vm;}catch(e){}
+function viewLabel(){return viewMode==='timeline'?'تایم‌لاین':viewMode==='single'?'تک‌ستونه':'گرید';}
 var streamFailed={};
 function streamUrlFor(item){
   try{
@@ -501,7 +559,7 @@ function mediaUrl(item){
 function fmtDur(s){if(!isFinite(s))return '';s=Math.round(s);var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r;}
 function loadInto(item,el,w){
   var bu0=blurUri(item);
-  if(bu0&&el.tagName==='IMG'){el.src=bu0;var c0=el.closest('.cell');if(c0){var p0=c0.querySelector('.ph');if(p0)p0.style.display='none';}if(viewerId===item.id)showCurrentMedia();return;}
+  if(bu0&&!isLoaded(item)&&el.tagName==='IMG'){el.src=bu0;var c0=el.closest('.cell');if(c0){var p0=c0.querySelector('.ph');if(p0)p0.style.display='none';}if(viewerId===item.id)showCurrentMedia();return;}
   mediaUrl(item).then(function(u){
     if(!isVideo(item)&&!item.manifest){
       el.crossOrigin='anonymous';
@@ -524,39 +582,50 @@ function buildCell(item,idx,list){
   var ph=document.createElement('span');ph.className='ph';ph.innerHTML='<span class="spin"></span>';c.appendChild(ph);
   var useThumb=isVideo(item)&&!!item.thumb;
   var bu=blurUri(item);
-  var el=document.createElement((useThumb||bu||!isVideo(item))?'img':'video');
+  var loaded=isLoaded(item);
+  var el=document.createElement((!isVideo(item)||useThumb||(bu&&!loaded))?'img':'video');
   el.alt='';if(isVideo(item)){el.muted=true;el.playsInline=true;el.preload='metadata';}else{el.loading='lazy';}
+  if(viewMode==='single'&&item.w&&item.h)el.style.aspectRatio=item.w+'/'+item.h;
   var blurEl=null;
-  if(bu){
-    /* بخش G: سلول فقط بلور را نشان می‌دهد — بدون هیچ درخواست شبکه */
+  function fadeBlur(){if(blurEl&&blurEl.parentNode){blurEl.classList.add('gone');setTimeout(function(){if(blurEl.parentNode)blurEl.remove();},480);}}
+  if(bu&&!loaded){
+    /* hg-v10: آیتمِ هنوز لودنشده فقط بلور را نشان می‌دهد — بدون هیچ درخواست شبکه (رفتار بخش G) */
     el.src=bu;
     el.addEventListener('load',function(){ph.style.display='none';},{once:true});
     el.addEventListener('error',function(){ph.style.display='none';},{once:true});
   }
   else if(!isVideo(item)&&!item.manifest){
-    blurEl=document.createElement('img');blurEl.className='blurph';blurEl.alt='';blurEl.src=thumbUrl(item,20);blurEl.onerror=function(){if(blurEl.parentNode)blurEl.remove();};
+    /* عکسِ لودشده (یا بدون بلور): تامنیل واقعی روی زیرلایه‌ی بلور می‌نشیند و جایش را می‌گیرد */
+    blurEl=document.createElement('img');blurEl.className='blurph';blurEl.alt='';
+    if(bu)blurEl.src=bu;
+    else{blurEl.src=thumbUrl(item,20);blurEl.onerror=function(){if(blurEl.parentNode)blurEl.remove();};}
     c.appendChild(blurEl);
     el.className='mainimg';
     if(imgLoadedOnce[item.id])el.classList.add('ld');
     el.addEventListener('load',function(){
       imgLoadedOnce[item.id]=1;
       el.classList.add('ld');
-      if(blurEl&&blurEl.parentNode){blurEl.classList.add('gone');setTimeout(function(){if(blurEl.parentNode)blurEl.remove();},480);}
+      fadeBlur();
       genBlurFromImg(item,el);cacheWebp(item,el);
     });
+  }
+  else if(isVideo(item)&&useThumb&&bu){
+    /* فیلمِ لودشده: بلور فقط زیرلایه‌ی موقت زیر تامنیل واقعی است */
+    blurEl=document.createElement('img');blurEl.className='blurph';blurEl.alt='';blurEl.src=bu;
+    c.appendChild(blurEl);
   }
   c.appendChild(el);
   if(isVideo(item)){
     var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg><span></span>';c.appendChild(b);
-    if(useThumb||bu){var bsp0=b.querySelector('span');if(item.dur)bsp0.textContent=fmtDur(item.dur);else if(item.size)bsp0.textContent=fmtSize(item.size);}
+    if(useThumb||(bu&&!loaded)){var bsp0=b.querySelector('span');if(item.dur)bsp0.textContent=fmtDur(item.dur);else if(item.size)bsp0.textContent=fmtSize(item.size);}
     else el.addEventListener('loadedmetadata',function(){b.querySelector('span').textContent=fmtDur(el.duration);});
   }
   var mk=document.createElement('span');mk.className='selmark';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);
   bindCell(c,item,idx,el,list);
-  if(bu){
+  if(bu&&!loaded){
     var bspB=c.querySelector('.badge span');if(bspB&&isVideo(item))bspB.textContent=item.dur?fmtDur(item.dur):fmtSize(item.size);
   }else if(useThumb){
-    el.addEventListener('load',function(){ph.style.display='none';},{once:true});
+    el.addEventListener('load',function(){ph.style.display='none';fadeBlur();},{once:true});
     el.addEventListener('error',function(){ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';},{once:true});
     el.src=RAW_BASE+item.thumb;
     var bspT=c.querySelector('.badge span');if(bspT&&item.dur)bspT.textContent=fmtDur(item.dur);
@@ -565,7 +634,7 @@ function buildCell(item,idx,list){
     if(su0){el.src=su0;el.addEventListener('loadeddata',function(){ph.style.display='none';},{once:true});}
     else{ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';}
     var bsp=c.querySelector('.badge span');if(bsp)bsp.textContent=fmtSize(item.size);
-  }else{loadInto(item,el);}
+  }else{loadInto(item,el,viewMode==='single'?1200:undefined);}
   if(isVideo(item)&&!item.thumb)maybeThumb(item);
   return c;
 }
@@ -575,11 +644,11 @@ function folderCell(f){
   var items=folderItemsRec(f.id);
   var c=document.createElement('button');c.className='cell fcell';c.dataset.fid=f.id;c.setAttribute('aria-label','پوشه '+f.name);
   var firstC=items.length?((f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0]):null;
-  if(firstC&&!f.nopreview&&firstC.blur){
-    var bel=document.createElement('img');bel.alt='';bel.src=blurUri(firstC);c.appendChild(bel);
+  if(firstC&&!f.nopreview&&firstC.blur&&!isLoaded(firstC)){
+    var bel=document.createElement('img');bel.alt='';bel.src=blurUri(firstC);c.appendChild(bel);c._coverId=firstC.id;
   }
-  else if(items.length&&!f.nopreview&&coverWarmed[f.id]){
-    var first=(f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0];
+  else if(items.length&&!f.nopreview&&(coverWarmed[f.id]||isLoaded(firstC))){
+    var first=firstC;
     var el=document.createElement(isVideo(first)&&first.thumb?'img':(isVideo(first)?'video':'img'));el.alt='';
     if(isVideo(first)&&!first.thumb){el.muted=true;el.playsInline=true;el.preload='metadata';}
     c.appendChild(el);
@@ -615,10 +684,10 @@ function favNoPreview(){try{return localStorage.getItem('hg-favnoprev')==='1';}c
 function favFolderCell(){
   var favs=photos.filter(function(p){return p.fav;});
   var c=document.createElement('button');c.className='cell fcell favcell';c.dataset.fav='1';c.setAttribute('aria-label','پوشه پسندیده‌ها');
-  if(favs.length&&!favNoPreview()&&favs[0].blur){
-    var bel2=document.createElement('img');bel2.alt='';bel2.src=blurUri(favs[0]);c.appendChild(bel2);
+  if(favs.length&&!favNoPreview()&&favs[0].blur&&!isLoaded(favs[0])){
+    var bel2=document.createElement('img');bel2.alt='';bel2.src=blurUri(favs[0]);c.appendChild(bel2);c._coverId=favs[0].id;
   }
-  else if(favs.length&&!favNoPreview()&&favWarmed){
+  else if(favs.length&&!favNoPreview()&&(favWarmed||isLoaded(favs[0]))){
     var first=favs[0];
     var el=document.createElement(isVideo(first)&&first.thumb?'img':(isVideo(first)?'video':'img'));el.alt='';
     if(isVideo(first)&&!first.thumb){el.muted=true;el.playsInline=true;el.preload='metadata';}
@@ -667,7 +736,7 @@ function render(){
   childFolders(null).forEach(function(f){var fc=folderCell(f);grid.appendChild(fc);if(rootRO)bindReorder(fc,grid);});
   var roots=rootItems();
   if(viewMode==='timeline'){
-    grid.classList.add('tl');
+    grid.classList.add('tl');grid.classList.remove('sg');
     var counts={};roots.forEach(function(it){var k=jalaliKey(it.created_at);counts[k]=(counts[k]||0)+1;});
     var lastKey=null;
     roots.forEach(function(item,idx){
@@ -676,10 +745,10 @@ function render(){
       grid.appendChild(buildCell(item,idx,roots));
     });
   }else{
-    grid.classList.remove('tl');
+    grid.classList.remove('tl');grid.classList.toggle('sg',viewMode==='single');
     roots.forEach(function(item,idx){var bc=buildCell(item,idx,roots);grid.appendChild(bc);if(rootRO)bindReorder(bc,grid);});
   }
-  var mv=document.getElementById('miViewState');if(mv)mv.textContent=viewMode==='timeline'?'تایم‌لاین':'گرید';
+  var mv=document.getElementById('miViewState');if(mv)mv.textContent=viewLabel();
 }
 function bindCell(c,item,idx,el,list){
   var timer=null,sx=0,sy=0,longFired=false;
@@ -724,6 +793,7 @@ var roDrag={active:false,container:null};
 var pinchActive=false,lastPinchEnd=0,pinchState=null;
 var pinchPtrs=new Map();
 grid.addEventListener('pointerdown',function(e){
+  if(viewMode==='single')return;
   if(roDrag.active&&roDrag.container===grid)return;
   pinchPtrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(pinchPtrs.size===2){
@@ -794,9 +864,14 @@ function pinchReset(){
   gPtrs.clear();
 }
 window.addEventListener('blur',pinchReset);
+/* hg-v10 (بخش U): زوم صفحه در کل رابط کاربری خاموش است؛ زوم فقط موتور داخلی نمایش عکس است.
+   ژست‌های خود اپ (پینچ گرید، زوم ویوئر) pointer-event هستند و دست نخورده می‌مانند. */
+document.addEventListener('gesturestart',function(e){e.preventDefault();});
+document.addEventListener('gesturechange',function(e){e.preventDefault();});
+document.addEventListener('wheel',function(e){if(e.ctrlKey&&!(e.target&&e.target.closest&&e.target.closest('#vStage')))e.preventDefault();},{passive:false});
 document.addEventListener('visibilitychange',function(){if(document.hidden)pinchReset();});
 function load(){
-  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];folders=(d&&d.folders)||[];render();if(curFolder)renderFolder();}).catch(function(){toast('خطا در دریافت گالری');});
+  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];folders=(d&&d.folders)||[];pruneLoaded();render();if(curFolder)renderFolder();}).catch(function(){toast('خطا در دریافت گالری');});
 }
 var titleBox=document.querySelector('.htitle'),titleRefreshing=false;
 document.getElementById('appTitle').addEventListener('click',function(){
@@ -874,7 +949,14 @@ function faDate(ts){try{var d=new Date(ts);return d.toLocaleDateString('fa-IR',{
 var stripIO=null;
 function assignStripSrc(t,p){
   if(!t||t._srcDone||!p)return;t._srcDone=true;
-  if(p.blur){t.src=blurUri(p);return;}
+  if(isLoaded(p)){
+    if(t.tagName==='IMG'){
+      if(isVideo(p)&&p.thumb){t.src=RAW_BASE+p.thumb;return;}
+      if(!isVideo(p)){var tuS=thumbUrl(p,200);if(tuS){t.src=tuS;return;}}
+      if(p.blur){t.src=blurUri(p);return;}
+    }
+  }
+  else if(p.blur){t.src=blurUri(p);return;}
   if(isVideo(p)&&p.thumb){t.src=RAW_BASE+p.thumb;return;}
   if(urls[p.id]){t.src=isVideo(p)?urls[p.id]+'#t=0.1':(thumbUrl(p,200)||urls[p.id]);return;}
   if(p.manifest){var su2=streamUrlFor(p);if(su2){t.src=su2;return;}}
@@ -923,7 +1005,7 @@ function assembleVideo(item){
       urls[item.id]=u;delete assembling[item.id];
       var cell=document.querySelector('.cell[data-id="'+item.id+'"] video');if(cell&&!cell.src)cell.src=u+'#t=0.1';
       var th=document.querySelector('[data-strip="'+item.id+'"]');if(th&&!th.src)th.src=u+'#t=0.1';
-      if(viewerId===item.id){hideProg();showCurrentMedia();}
+      if(viewerId===item.id){hideProg();markLoaded(item);showCurrentMedia();}
     });
   }).catch(function(){delete assembling[item.id];if(viewerId===item.id){hideProg();toast('بارگذاری فیلم ناموفق بود');}});
 }
@@ -934,13 +1016,37 @@ function ensurePlyr(){
   if(plyr)return true;
   if(plyrFailed||!window.Plyr)return false;
   try{
-    plyr=new Plyr(vVid,{controls:['play-large','play','progress','current-time','duration','mute','volume','settings','pip','fullscreen'],settings:['speed'],speed:{selected:1,options:[0.5,0.75,1,1.25,1.5,2]},seekTime:10,i18n:PLYR_I18N,storage:{enabled:false},keyboard:{focused:false,global:false},airplay:false});
+    plyr=new Plyr(vVid,{controls:['play-large','play','progress','current-time','duration','fullscreen'],seekTime:10,i18n:PLYR_I18N,storage:{enabled:false},keyboard:{focused:false,global:false},airplay:false});
+    try{plyr.on('enterfullscreen',fsLockLandscape);plyr.on('exitfullscreen',fsUnlock);}catch(e){}
     syncVidWrap();
     return true;
   }catch(e){plyrFailed=true;plyr=null;try{vVid.controls=true;}catch(_){}}
   return false;
 }
 function syncVidWrap(){var w=vVid.closest?vVid.closest('.plyr'):null;if(w)w.style.display=vVid.style.display;}
+/* hg-v10 (بخش B2): مخفی‌سازی قطعی رابط ویدیو روی اسلایدهای عکس — علاوه بر کلاس وضعیت ویوئر و گارد CSS */
+function hideVidUI(){
+  try{if(plyr)plyr.pause();}catch(e){}
+  try{vVid.pause();}catch(e){}
+  vVid.style.display='none';syncVidWrap();
+  var w=vVid.closest?vVid.closest('.plyr'):null;if(w)w.style.display='none';
+}
+/* hg-v10 (بخش B2): فول‌اسکرین افقی بدون دست‌کاری قفل چرخش گوشی — فقط هنگام فول‌اسکرین و برای ویدیوهای افقی */
+function fsLockLandscape(){
+  try{
+    if(!screen.orientation||!screen.orientation.lock)return;
+    var it=vItems()[vIdx];
+    var vw=vVid.videoWidth||(it&&it.w)||0,vh=vVid.videoHeight||(it&&it.h)||0;
+    if(vw&&vh&&vw<vh)return;
+    var p=screen.orientation.lock('landscape');
+    if(p&&p.catch)p.catch(function(){});
+  }catch(e){}
+}
+function fsUnlock(){try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}}
+document.addEventListener('fullscreenchange',function(){
+  if(plyr)return;
+  if(document.fullscreenElement)fsLockLandscape();else fsUnlock();
+});
 function setVidSource(u){
   if(!u||u===lastVidSrc)return;
   lastVidSrc=u;lastSrcSetAt=Date.now();
@@ -1003,8 +1109,18 @@ var posTickT=0;
 vVid.addEventListener('timeupdate',function(){var now=Date.now();if(now-posTickT<2000)return;posTickT=now;if(viewerId)savePosFor(viewerId);});
 vVid.addEventListener('pause',function(){if(Date.now()-lastSrcSetAt<400)return;if(viewerId)savePosFor(viewerId);});
 vVid.addEventListener('ended',function(){if(viewerId)clearPos(viewerId);});
+vVid.addEventListener('loadeddata',function(){var it=vItems()[vIdx];if(it&&isVideo(it)&&viewerId===it.id)markLoaded(it);});
+vVid.addEventListener('playing',function(){var it=vItems()[vIdx];if(it&&isVideo(it)&&viewerId===it.id)markLoaded(it);});
+var vExpectSrc=null;
 vImg.addEventListener('load',function(){
-  if(vImg.naturalWidth>40){vImg.style.filter='';var it=vItems()[vIdx];if(it&&!isVideo(it))genBlurFromImg(it,vImg);}
+  if(vImg.naturalWidth>40){
+    vImg.style.filter='';
+    var it=vItems()[vIdx];
+    if(it&&!isVideo(it)){
+      genBlurFromImg(it,vImg);
+      if(vExpectSrc&&viewerId===it.id&&vImg.getAttribute('src')===vExpectSrc)markLoaded(it);
+    }
+  }
 });
 function showCurrentMedia(){
   var item=vItems()[vIdx];if(!item)return;
@@ -1021,15 +1137,20 @@ function showCurrentMedia(){
     var u=urls[item.id];if(!u)return;
     setVidSource(u);playVideoSmart(item);
   }
-  else{var u2=urls[item.id];if(!u2)return;vVid.pause();vVid.style.display='none';syncVidWrap();vImg.style.display='block';var vsrc=webpCache[item.id]||thumbUrl(item,1600)||u2;vImg.onerror=function(){vImg.onerror=null;if(vImg.getAttribute('src')!==u2)vImg.src=u2;};
+  else{var u2=urls[item.id];if(!u2)return;hideVidUI();vImg.style.display='block';var vsrc=webpCache[item.id]||thumbUrl(item,1600)||u2;vExpectSrc=vsrc;
+    vImg.onerror=function(){vImg.onerror=null;if(vImg.getAttribute('src')!==u2){vExpectSrc=u2;vImg.src=u2;}};
     var curSrc=vImg.getAttribute('src');
-    if(curSrc!==vsrc){
+    if(curSrc===vsrc){vImg.style.filter='';markLoaded(item);}
+    else{
       var preview=!webpCache[item.id]?(blurUri(item)||thumbUrl(item,gridThumbW())):null;
+      var startFull=function(){if(viewerId===item.id&&vImg.getAttribute('src')!==vsrc)vImg.src=vsrc;};
       if(preview&&preview!==vsrc&&curSrc!==preview){
-        if(preview.indexOf('data:')===0)vImg.style.filter='blur(8px)';vImg.src=preview;
-        var upFull=function(){vImg.removeEventListener('load',upFull);if(viewerId===item.id&&vImg.getAttribute('src')===preview)vImg.src=vsrc;};
+        if(preview.indexOf('data:')===0)vImg.style.filter='blur(8px)';
+        var upFull=function(){vImg.removeEventListener('load',upFull);startFull();};
         vImg.addEventListener('load',upFull);
-        setTimeout(function(){if(viewerId===item.id&&vImg.getAttribute('src')===preview)vImg.src=vsrc;},700);
+        vImg.src=preview;
+        if(vImg.complete&&vImg.naturalWidth>0){vImg.removeEventListener('load',upFull);startFull();}
+        setTimeout(startFull,700);
       }else vImg.src=vsrc;
     }
   }
@@ -1038,10 +1159,11 @@ function showPhoto(i,dir){
   var L=vItems();if(!L.length)return;
   if(viewerId&&viewerId!==L[i].id)savePosFor(viewerId);
   vIdx=i;viewerId=L[i].id;vGateId=viewerId;vGateDone=false;vImg.style.filter='';resetZoom();syncFavBtn();hideProg();vVid.removeAttribute('poster');
+  viewerEl.classList.toggle('on-photo',!isVideo(L[i]));viewerEl.classList.toggle('on-video',!!isVideo(L[i]));
   document.getElementById('vNum').textContent=(i+1)+' از '+L.length;
   document.getElementById('vDate').textContent=faDate(L[i].created_at||Date.now());
   if(urls[viewerId])showCurrentMedia();
-  else{vImg.style.display=isVideo(L[i])?'none':'block';vVid.style.display='none';syncVidWrap();mediaUrl(L[i]).then(function(){showCurrentMedia();}).catch(function(){});}
+  else{vImg.style.display=isVideo(L[i])?'none':'block';hideVidUI();mediaUrl(L[i]).then(function(){showCurrentMedia();}).catch(function(){});}
   if(dir&&!isVideo(L[i])){vImg.classList.remove('anim-next','anim-prev');void vImg.offsetWidth;vImg.classList.add(dir>0?'anim-next':'anim-prev');}
   vStrip.querySelectorAll('img,video').forEach(function(t,j){t.classList.toggle('on',j===i);});
   var cur=vStrip.children[i];if(cur)cur.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
@@ -1089,7 +1211,7 @@ window.addEventListener('popstate',function(){
   if(suppressPop){suppressPop=false;return;}
   var l=layers.pop();if(l&&l.closeFn)l.closeFn();
 });
-function vCloseVisual(){if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;vVid.pause();hideProg();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
+function vCloseVisual(){if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;vVid.pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
 function closeViewer(){vCloseVisual();releaseLayer('viewer');}
 function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
 document.getElementById('vClose').addEventListener('click',function(ev){ev.stopPropagation();closeViewer();});
@@ -1374,7 +1496,7 @@ function renderFolder(){
   kids.forEach(function(kf){var kc=folderCell(kf);folderGridEl.appendChild(kc);if(inRO)bindReorder(kc,folderGridEl);});
   if(viewMode==='timeline'&&!inRO){
     /* بخش H: تایم‌لاین داخل پوشه — همان گروه‌بندی ماه جلالی و هدر چسبان ریشه، فقط روی آیتم‌های مستقیم همین پوشه */
-    folderGridEl.classList.add('tl');
+    folderGridEl.classList.add('tl');folderGridEl.classList.remove('sg');
     var counts={};items.forEach(function(it){var k=jalaliKey(it.created_at);counts[k]=(counts[k]||0)+1;});
     var lastKey=null;
     items.forEach(function(item,i){
@@ -1383,7 +1505,7 @@ function renderFolder(){
       folderGridEl.appendChild(buildCell(item,i,items));
     });
   }else{
-    folderGridEl.classList.remove('tl');
+    folderGridEl.classList.remove('tl');folderGridEl.classList.toggle('sg',viewMode==='single'&&!inRO);
     items.forEach(function(item,i){var cell=buildCell(item,i,items);folderGridEl.appendChild(cell);if(inRO)bindReorder(cell,folderGridEl);});
   }
 }
@@ -1406,7 +1528,7 @@ function folderSheetRows(f,includeOpen){
   var rows=[];
   if(includeOpen)rows.push({label:'باز کردن',cb:function(){openFolder(f.id);}});
   rows.push({label:f.nopreview?'روشن کردن پیش‌نمایش':'خاموش کردن پیش‌نمایش',sub:'کاور پوشه، عکس یا فیلم داخلش را نشان می‌دهد',cb:function(){folderUpdate(f,{nopreview:!f.nopreview},'در حال ذخیره…',f.nopreview?'پیش‌نمایش روشن شد':'پیش‌نمایش خاموش شد');}});
-  rows.push({label:'نما',sub:viewMode==='timeline'?'تایم‌لاین':'گرید',cb:function(){toggleViewMode();}});
+  rows.push({label:'نما',sub:viewLabel(),cb:function(){toggleViewMode();}});
   rows.push({label:'تغییر کاور پوشه',sub:f.cover?'کاور دستی تنظیم شده است':'کاور فعلی، جدیدترین مورد پوشه است',cb:function(){openCoverPicker(f);}});
   if(f.cover)rows.push({label:'حذف کاور دستی',cb:function(){folderUpdate(f,{cover:null},'در حال ذخیره…','کاور دستی حذف شد');}});
   rows.push({label:'پوشه‌ی جدید',sub:'زیرپوشه‌ای داخل همین پوشه ساخته می‌شود',cb:function(){createFolder(null,f.id);}});
@@ -1725,7 +1847,7 @@ function anyPanelOpen(){
   return false;
 }
 function enterReorder(){
-  if(!curFolder||reorderState||selecting||viewMode==='timeline')return;
+  if(!curFolder||reorderState||selecting||viewMode!=='grid')return;
   if(viewerEl.classList.contains('open'))return;
   reorderState={folder:curFolder,orig:folderItems(curFolder).map(function(i){return i.id;}),origFolders:childFolders(curFolder).map(function(f){return f.id;})};
   folderGridEl.classList.add('reorder');
@@ -1758,7 +1880,7 @@ document.getElementById('folderDoneBtn').addEventListener('click',function(){
 document.getElementById('folderCancelBtn').addEventListener('click',function(){exitReorder();renderFolder();});
 /* مرتب‌سازی ریشه: پوشه‌های اصلی + موارد ریشه */
 function enterRootReorder(){
-  if(reorderState||selecting||viewMode==='timeline')return;
+  if(reorderState||selecting||viewMode!=='grid')return;
   if(anyPanelOpen())return;
   reorderState={root:true,origFolders:childFolders(null).map(function(f){return f.id;}),origRoot:rootItems().map(function(i){return i.id;})};
   grid.classList.add('reorder');
@@ -1817,6 +1939,7 @@ attachEmptyLongPress(document.getElementById('folderScroll'),function(){
 var fPinchPtrs=new Map(),fPinchState=null;
 var folderScrollEl=document.getElementById('folderScroll');
 folderGridEl.addEventListener('pointerdown',function(e){
+  if(viewMode==='single')return;
   if(!folderViewEl.classList.contains('open'))return;
   if(roDrag.active&&roDrag.container===folderGridEl)return;
   fPinchPtrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
@@ -1903,7 +2026,7 @@ function maybeThumb(item){
           if(!blob){fail();return;}
           fetch(API+'/api/thumb/'+encodeURIComponent(item.id)+'?dur='+Math.round(d),{method:'POST',headers:{'Content-Type':'image/jpeg'},body:blob}).then(function(r){return r.json();}).then(function(res){
             done=true;
-            if(res&&res.item&&res.item.thumb){item.thumb=res.item.thumb;if(res.item.dur)item.dur=res.item.dur;render();if(curFolder)renderFolder();if(favViewEl.classList.contains('open'))renderFavs();if(viewerEl.classList.contains('open'))buildStrip();}
+            if(res&&res.item&&res.item.thumb){item.thumb=res.item.thumb;if(res.item.dur)item.dur=res.item.dur;if(viewerId===item.id)markLoaded(item);render();if(curFolder)renderFolder();if(favViewEl.classList.contains('open'))renderFavs();if(viewerEl.classList.contains('open'))buildStrip();}
           }).catch(function(){done=true;});
         },'image/jpeg',0.82);
       }catch(e){fail();}
@@ -1938,10 +2061,10 @@ function toggleViewMode(){
     if(reorderState.root)exitRootReorder();
     else if(reorderState.folder)exitReorder();
   }
-  viewMode=viewMode==='timeline'?'grid':'timeline';
+  viewMode=viewMode==='grid'?'timeline':viewMode==='timeline'?'single':'grid';
   try{localStorage.setItem('hg-view',viewMode);}catch(e){}
   render();if(curFolder)renderFolder();
-  toast(viewMode==='timeline'?'نمای تایم‌لاین':'نمای گرید');
+  toast(viewMode==='timeline'?'نمای تایم‌لاین':viewMode==='single'?'نمای تک‌ستونه':'نمای گرید');
 }
 document.getElementById('miView').addEventListener('click',function(){
   closeMenu();
@@ -1961,7 +2084,7 @@ var Q_ICONS={
 function fmtElapsed(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
 function fmtSize(b){if(!b)return '';if(b<1024)return b+' بایت';if(b<1048576)return (b/1024).toFixed(0)+' کیلوبایت';return (b/1048576).toFixed(1)+' مگابایت';}
 function qActiveN(){return queue.filter(function(q){return q.status==='wait'||q.status==='up';}).length;}
-function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return {url:q.url,job:q.job||null,item:q.ghaItem||null,folder:q.folder||null,pk:q.pk||null};})));}catch(e){}}
+function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return !q.srv&&(q.status==='wait'||q.status==='up');}).map(function(q){return {url:q.url,job:q.job||null,item:q.ghaItem||null,folder:q.folder||null,pk:q.pk||null};})));}catch(e){}}
 var qSeq=0;
 function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(en){var u=typeof en==='string'?en:(en&&en.url);var jb=typeof en==='string'?null:(en&&en.job);var gi=typeof en==='string'?null:(en&&en.item);var fl=typeof en==='string'?null:(en&&en.folder);var pk=typeof en==='string'?null:(en&&en.pk);if(u&&!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:jb||null,ghaItem:gi||null,prog:null,folder:fl||null,pk:pk||null});});}catch(e){}}
 function progText(q){
@@ -1993,7 +2116,7 @@ qPill.addEventListener('click',function(){qRender();queueView.classList.add('ope
 function qRender(){
   qList.innerHTML='';
   qEmpty.style.display=queue.length?'none':'block';
-  qClear.style.display=queue.some(function(q){return q.status==='done';})?'block':'none';
+  qClear.style.display=queue.some(function(q){return q.status==='done'||(q.srv&&(q.status==='err'||q.status==='dup'));})?'block':'none';
   queue.forEach(function(q){
     var row=document.createElement('div');row.className='qrow';row.dataset.qid=q.qid;
     var ic=document.createElement('div');ic.className='ic';ic.innerHTML=Q_ICONS[q.status];row.appendChild(ic);
@@ -2010,14 +2133,18 @@ function qRender(){
     if(q.status==='up'){var bar=document.createElement('div');bar.className='qbar';var fill=document.createElement('div');fill.className='qfill';bar.appendChild(fill);if(ptUp&&ptUp.pct!==null){bar.classList.add('on');fill.style.width=ptUp.pct+'%';}tx.appendChild(bar);}
     row.appendChild(tx);
     var acts=document.createElement('div');acts.className='acts';
-    if(q.status==='up'){var cb=document.createElement('button');cb.textContent='لغو';cb.addEventListener('click',function(){qCancelActive(q);});acts.appendChild(cb);}
-    if(q.status==='err'){var rb=document.createElement('button');rb.textContent='تلاش دوباره';rb.addEventListener('click',function(){q.status='wait';q.error=null;qSave();qRender();qProcess();});acts.appendChild(rb);}
-    if(q.status!=='up'){var xb=document.createElement('button');xb.className='x';xb.textContent='×';xb.setAttribute('aria-label','حذف از صف');xb.addEventListener('click',function(){queue=queue.filter(function(x){return x!==q;});qSave();qRender();});acts.appendChild(xb);}
+    if(q.status==='up'){var cb=document.createElement('button');cb.textContent='لغو';cb.addEventListener('click',function(){if(q.srv){apiPost('/api/queue/cancel',{id:q.sid}).then(function(){qSyncQueue();}).catch(function(){qSyncQueue();});}else qCancelActive(q);});acts.appendChild(cb);}
+    if(q.status==='err'){var rb=document.createElement('button');rb.textContent='تلاش دوباره';rb.addEventListener('click',function(){if(q.srv){q.status='wait';q.error=null;qRender();apiPost('/api/queue/retry',{id:q.sid}).then(function(){qSyncQueue();}).catch(function(){qSyncQueue();});}else{q.status='wait';q.error=null;qSave();qRender();qProcess();}});acts.appendChild(rb);}
+    if(q.status!=='up'){var xb=document.createElement('button');xb.className='x';xb.textContent='×';xb.setAttribute('aria-label','حذف از صف');xb.addEventListener('click',function(){if(q.srv){if(q.status==='wait'){apiPost('/api/queue/cancel',{id:q.sid}).catch(function(){});}else{qDismissed[q.sid]=1;try{localStorage.setItem('hg-qdismiss',JSON.stringify(qDismissed));}catch(e){}}queue=queue.filter(function(x){return x!==q;});qRender();if(q.status==='wait')qSyncQueue();}else{queue=queue.filter(function(x){return x!==q;});qSave();qRender();}});acts.appendChild(xb);}
     row.appendChild(acts);qList.appendChild(row);
   });
   updatePill();
 }
-qClear.addEventListener('click',function(){queue=queue.filter(function(q){return q.status!=='done';});qSave();qRender();});
+qClear.addEventListener('click',function(){
+  queue=queue.filter(function(q){return q.status!=='done';});
+  qSave();qRender();
+  apiPost('/api/queue/clear',{}).then(function(){qDismissed={};try{localStorage.removeItem('hg-qdismiss');}catch(e){}qSyncQueue();}).catch(function(){});
+});
 setInterval(function(){
   qList.querySelectorAll('[data-qtime]').forEach(function(el){
     var row=el.closest('.qrow');if(!row)return;
@@ -2027,13 +2154,32 @@ setInterval(function(){
 },1000);
 function qEnqueue(list){
   var tf=(folderViewEl&&folderViewEl.classList.contains('open')&&curFolder)?curFolder:null;
-  var added=0,dups=0;
+  var dups=0;
+  var fresh=list.filter(function(u){
+    if(photos.some(function(p){return p.source===u;})){dups++;return false;}
+    if(queue.some(function(q){return q.url===u&&(q.status==='wait'||q.status==='up');}))return false;
+    return true;
+  });
+  if(!fresh.length){if(dups)toast('تکراری است — قبلاً اضافه شده');return 0;}
+  apiPost('/api/queue/add',{urls:fresh,folder:tf}).then(function(r){
+    if(!r.ok||!r.d||!r.d.ok)throw new Error('srv');
+    (r.d.added||[]).forEach(function(a){
+      queue.push({qid:a.id,srv:true,sid:a.id,url:a.url,status:'wait',error:null,item:null,t0:Date.now(),job:a.id,ghaItem:null,prog:null,folder:tf,pk:a.kind==='image'?'image':'video'});
+    });
+    if((r.d.dups||[]).length&&!(r.d.added||[]).length)toast('تکراری است — قبلاً اضافه شده');
+    qRender();qSyncQueue();
+  }).catch(function(){
+    /* سرور در دسترس نیست: مسیر قدیمی کلاینت */
+    qEnqueueLocal(fresh,tf);
+  });
+  return fresh.length;
+}
+function qEnqueueLocal(list,tf){
+  var added=0;
   list.forEach(function(u){
-    if(photos.some(function(p){return p.source===u;})){dups++;return;}
     queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,ghaItem:null,prog:null,folder:tf,pk:null});added++;
   });
   qSave();qRender();qProcess();
-  if(dups&&!added)toast('تکراری است — قبلاً اضافه شده');
   return added;
 }
 function qCancelActive(q){
@@ -2172,6 +2318,7 @@ function qProcess(){
     for(var i=0;i<queue.length;i++){
       var q=queue[i];
       if(q.status!=='wait')continue;
+      if(q.srv)continue;
       var qkind=q.pk||urlMediaKind(q.url);
       if(!qkind){qProbeStart(q);continue;}
       var lane=qkind==='video'?'gha':'local';
@@ -2241,6 +2388,113 @@ function qStartJob(q,lane){
   }
   work.then(finish).catch(fail);
 }
+/* hg-v10 (بخش Q): صف آپلود سمت سرور — مالکیت صف با ورکر است؛ اپ فقط آینه‌ی وضعیت را نشان می‌دهد.
+   بستن اپ هیچ آپلودی را متوقف نمی‌کند؛ وضعیت از GET /api/queue خوانده می‌شود. */
+var qDismissed={};try{qDismissed=JSON.parse(localStorage.getItem('hg-qdismiss')||'{}')||{};}catch(e){qDismissed={};}
+var qDoneSeen={};
+function qSrvEntry(j){
+  var st=j.status==='pending'?'wait':j.status==='running'?'up':j.status==='done'?'done':j.status==='cancelled'?'cancelled':'err';
+  var e={qid:j.id,srv:true,sid:j.id,url:j.url,status:st,error:j.error||null,item:null,t0:j.created_at||Date.now(),job:j.id,ghaItem:j.item_id||null,prog:null,folder:j.folder||null,pk:j.kind==='image'?'image':'video'};
+  if(j.prog)e.prog={status:'run',phase:j.kind==='image'?'up':'gha',state:j.prog.state||'',loaded:j.prog.loaded||0,total:j.prog.total||0,partsDone:j.prog.partsDone||0,partsTotal:j.prog.partsTotal||0};
+  if(st==='done'&&j.item_id){var it=photos.find(function(p){return p.id===j.item_id;});if(it)e.item=it;}
+  if(st==='err'&&j.error==='تکراری است — قبلاً اضافه شده'){e.status='dup';e.error=j.error;}
+  return e;
+}
+function qSyncQueue(){
+  fetch(API+'/api/queue').then(function(r){return r.json();}).then(function(d){
+    if(!d||!d.ok)return;
+    var jobs=d.jobs||[];
+    var seenSrv={},needLoad=false;
+    jobs.forEach(function(j){
+      if(j.status==='cancelled')return;
+      if(qDismissed[j.id]&&(j.status==='done'||j.status==='error'))return;
+      seenSrv[j.id]=1;
+      var e=qSrvEntry(j);
+      var ix=-1;for(var i=0;i<queue.length;i++)if(queue[i].srv&&queue[i].sid===j.id){ix=i;break;}
+      if(ix>=0){
+        var was=queue[ix].status;
+        queue[ix]=e;
+        if(e.status==='done'&&was!=='done'){needLoad=true;toast(e.pk==='video'?'فیلم اضافه شد':'عکس اضافه شد');}
+      }else{
+        queue.push(e);
+        if(e.status==='done')needLoad=true;
+      }
+      if(e.status==='done')qDoneSeen[j.id]=1;
+    });
+    queue=queue.filter(function(q){return !q.srv||seenSrv[q.sid]||q.status==='done'||q.status==='err'||q.status==='dup';});
+    if(needLoad)load();
+    qRender();
+  }).catch(function(){});
+}
+setInterval(function(){
+  if(document.hidden)return;
+  if(queueView.classList.contains('open')||queue.some(function(q){return q.srv&&(q.status==='wait'||q.status==='up');}))qSyncQueue();
+},3000);
+function qMigrate(doneCb){
+  var migrated=false;try{migrated=localStorage.getItem('hg-qmigrated')==='1';}catch(e){}
+  var raw=[];try{raw=JSON.parse(localStorage.getItem('hg-queue')||'[]');}catch(e){raw=[];}
+  if(migrated||!raw.length){qRestore();doneCb();return;}
+  var groups={};
+  raw.forEach(function(en){
+    var u=typeof en==='string'?en:(en&&en.url);if(!u)return;
+    var f=(typeof en==='object'&&en&&en.folder)||'';
+    if(!groups[f])groups[f]=[];
+    groups[f].push(u);
+  });
+  var keys=Object.keys(groups);
+  if(!keys.length){try{localStorage.setItem('hg-qmigrated','1');localStorage.removeItem('hg-queue');}catch(e){}doneCb();return;}
+  Promise.all(keys.map(function(f){return apiPost('/api/queue/add',{urls:groups[f],folder:f||null});})).then(function(rs){
+    var okAll=rs.every(function(r){return r.ok&&r.d&&r.d.ok;});
+    if(okAll){try{localStorage.setItem('hg-qmigrated','1');localStorage.removeItem('hg-queue');}catch(e){}}
+    else qRestore();
+    doneCb();
+  }).catch(function(){qRestore();doneCb();});
+}
+
+/* hg-v10 (بخش S): به‌روزرسانیِ دستی اپ — تشخیص خودکار است، ولی اعمال فقط با لمس کاربر:
+   نقطه‌ی قرمز روی منو + ردیف «به‌روزرسانی اپ»؛ پاک‌کردن همه‌ی کش‌ها و ریلود تمیز. */
+var updAvailable=false,updStamp='',updChecking=false;
+function updStampOf(html){var m=/نسخه‌ی اپ:\s*<span dir="ltr">([\d]{4}-[\d]{2}-[\d]{2} [\d:]+)</.exec(html||'');return m?m[1]:'';}
+function paintUpdate(){
+  var d=document.getElementById('upDot');if(d)d.classList.toggle('show',updAvailable);
+  var row=document.getElementById('miUpdate');if(row)row.style.display=updAvailable?'':'none';
+  var sub=document.getElementById('miUpdateSub');if(sub)sub.textContent=updAvailable?('نسخه‌ی '+updStamp):'';
+}
+function checkUpdate(){
+  if(updChecking)return;updChecking=true;
+  fetch('./index.html?hgupd='+Date.now(),{cache:'no-store'}).then(function(r){return r.text();}).then(function(t){
+    updChecking=false;
+    var st=updStampOf(t);
+    if(st&&RUN_BUILD&&st>RUN_BUILD){updAvailable=true;updStamp=st;}
+    else{updAvailable=false;updStamp='';}
+    paintUpdate();
+  }).catch(function(){updChecking=false;});
+}
+function applyUpdate(){
+  closeMenu();
+  showBusy('در حال به‌روزرسانی…');
+  var failed=false;
+  (async function(){
+    try{
+      if(window.caches&&caches.keys){var ks=await caches.keys();await Promise.all(ks.map(function(k){return caches.delete(k);}));}
+      if('serviceWorker' in navigator){
+        var reg=await navigator.serviceWorker.getRegistration();
+        if(reg){
+          try{await reg.update();}catch(e){}
+          if(reg.waiting){try{reg.waiting.postMessage({type:'SKIP_WAITING'});}catch(e){}}
+          else{try{await reg.unregister();}catch(e){}}
+        }
+      }
+    }catch(e){failed=true;}
+    hideBusy();
+    if(failed)toast('خطا در به‌روزرسانی');
+    setTimeout(function(){location.reload();},failed?700:60);
+  })();
+}
+document.getElementById('miUpdate').addEventListener('click',applyUpdate);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)checkUpdate();});
+window.addEventListener('focus',checkUpdate);
+
 /* add sheet */
 var addOverlay=document.getElementById('addOverlay'),urlInput=document.getElementById('urlInput'),doAdd=document.getElementById('doAdd');
 document.getElementById('addBtn').addEventListener('click',function(){addOverlay.classList.add('open');setTimeout(function(){urlInput.focus();},80);});
@@ -2254,8 +2508,8 @@ doAdd.addEventListener('click',function(){
   if(addedN)toast(addedN>1?addedN+' مورد به صف آپلود اضافه شد':'به صف آپلود اضافه شد');
 });
 urlInput.addEventListener('keydown',function(e){if(e.key==='Enter')doAdd.click();});
-load().then(function(){qRestore();qRender();qProcess();});
+load().then(function(){qMigrate(function(){qRender();qProcess();qSyncQueue();setTimeout(checkUpdate,1200);});});
 </script>
-<script>if('serviceWorker' in navigator){var hadCtrl=!!navigator.serviceWorker.controller,reloaded=false;navigator.serviceWorker.addEventListener('controllerchange',function(){if(hadCtrl&&!reloaded){reloaded=true;location.reload();}});window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){setInterval(function(){reg.update();},60000);}).catch(function(){});});}</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){setInterval(function(){reg.update();},60000);}).catch(function(){});});}</script>
 </body>
 </html>
