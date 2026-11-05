@@ -29,7 +29,12 @@ button{background:none;border:0;color:inherit;cursor:pointer;padding:0}
 svg{display:block}
 header{position:sticky;top:0;z-index:50;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:.5px solid var(--hair)}
 .hbar{position:relative;height:52px;max-width:1100px;margin:0 auto}
-.htitle{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;pointer-events:none}
+.htitle{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;pointer-events:none;gap:7px}
+.htitle #appTitle{pointer-events:auto;cursor:pointer;padding:6px 10px;border-radius:8px;-webkit-tap-highlight-color:transparent}
+.htitle #appTitle:active{background:var(--pressed)}
+.htitle .tspin{display:none;width:14px;height:14px;flex:none}
+.htitle.refreshing .tspin{display:inline-block}
+.htitle.refreshing #appTitle{opacity:.5}
 .hbtn{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;display:grid;place-items:center;color:var(--blue);border-radius:50%}
 .hbtn:active{background:var(--pressed)}
 #addBtn{left:6px}
@@ -196,7 +201,7 @@ body.selecting .qpill{display:none}
     <button class="hbtn" id="addBtn" aria-label="افزودن">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     </button>
-    <div class="htitle">گالری</div>
+    <div class="htitle"><span id="appTitle">گالری</span><span class="spin tspin"></span></div>
     <button class="hbtn" id="menuBtn" aria-label="منو">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
     </button>
@@ -290,7 +295,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 18:06</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 18:16</span></p>
   </div>
 </section>
 
@@ -543,6 +548,12 @@ window.addEventListener('pointercancel',pinchEnd);
 function load(){
   return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];folders=(d&&d.folders)||[];render();if(curFolder)renderFolder();}).catch(function(){toast('خطا در دریافت گالری');});
 }
+var titleBox=document.querySelector('.htitle'),titleRefreshing=false;
+document.getElementById('appTitle').addEventListener('click',function(){
+  if(titleRefreshing)return;
+  titleRefreshing=true;titleBox.classList.add('refreshing');
+  load().then(function(){titleRefreshing=false;titleBox.classList.remove('refreshing');});
+});
 /* selection */
 var selTitle=document.getElementById('selTitle'),selDelete=document.getElementById('selDelete');
 function selCount(){return Object.keys(selected).length;}
