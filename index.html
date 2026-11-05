@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>هات گالری</title>
+<title>گالری</title>
 <meta name="theme-color" content="#000000">
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="هات گالری">
+<meta name="apple-mobile-web-app-title" content="گالری">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
@@ -57,6 +57,7 @@ main{max-width:1100px;margin:0 auto;padding:0 0 calc(30px + env(safe-area-inset-
 .spin{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--hair);border-top-color:var(--faint);animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .badge{position:absolute;bottom:5px;inset-inline-end:7px;z-index:2;color:#fff;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:4px;text-shadow:0 1px 4px rgba(0,0,0,.65);pointer-events:none}
+.pinmark{position:absolute;top:5px;inset-inline-start:5px;z-index:2;width:20px;height:20px;border-radius:50%;background:rgba(28,28,30,.55);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);display:grid;place-items:center;color:#fff;pointer-events:none}
 .selmark{position:absolute;bottom:6px;inset-inline-end:6px;z-index:3;width:24px;height:24px;border-radius:50%;border:1.5px solid rgba(255,255,255,.95);background:rgba(0,0,0,.22);display:none;place-items:center;color:#fff;pointer-events:none;box-shadow:0 1px 5px rgba(0,0,0,.3)}
 body.selecting .selmark{display:grid}
 .cell.sel .selmark{background:var(--blue);border-color:var(--blue)}
@@ -195,7 +196,7 @@ body.selecting .qpill{display:none}
     <button class="hbtn" id="addBtn" aria-label="افزودن">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     </button>
-    <div class="htitle">هات گالری</div>
+    <div class="htitle">گالری</div>
     <button class="hbtn" id="menuBtn" aria-label="منو">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
     </button>
@@ -211,6 +212,10 @@ body.selecting .qpill{display:none}
 </main>
 <div id="selTools">
   <span style="min-width:56px"></span>
+  <button class="toolbtn" id="selPin" disabled>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-6.5-6-6.5-10.3A6.5 6.5 0 0 1 12 4a6.5 6.5 0 0 1 6.5 6.7C18.5 15 12 21 12 21z"/><circle cx="12" cy="10.5" r="2.3"/></svg>
+    <span>پین</span>
+  </button>
   <button class="toolbtn" id="selMove" disabled>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 9.5v5M9.9 12.4L12 14.5l2.1-2.1"/></svg>
     <span>انتقال</span>
@@ -285,7 +290,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 17:56</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 18:06</span></p>
   </div>
 </section>
 
@@ -349,7 +354,7 @@ body.selecting .qpill{display:none}
 
 <div class="lockview" id="lockView">
   <div class="lk-ic"><svg width="52" height="52" viewBox="0 0 52 52"><rect x="4" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="4" y="28" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="28" width="20" height="20" rx="5" fill="#ff2d55"/></svg></div>
-  <div class="lk-title">هات گالری</div>
+  <div class="lk-title">گالری</div>
   <p class="lk-sub">برای ورود، اثر انگشتت را تأیید کن</p>
   <button class="lk-btn" id="lockBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 10.2a2.1 2.1 0 0 1 2.1 2.1c0 1.9.35 3.4 1 5.2"/><path d="M9.9 12.3a2.1 2.1 0 0 1 2.1-2.1"/><path d="M12 7.2a5.1 5.1 0 0 1 5.1 5.1c0 1.6.18 2.9.55 4.3"/><path d="M6.9 12.3a5.1 5.1 0 0 1 1-2.9"/><path d="M12 4a8.2 8.2 0 0 1 8.2 8.3c0 1.9.28 3.6.85 5.2"/><path d="M3.8 12.3A8.2 8.2 0 0 1 6.6 6"/></svg><span>باز کردن با اثر انگشت</span></button>
   <p class="lk-err" id="lockErr"></p>
@@ -400,6 +405,7 @@ function buildCell(item,idx,list){
     el.addEventListener('loadedmetadata',function(){b.querySelector('span').textContent=fmtDur(el.duration);});
   }
   var mk=document.createElement('span');mk.className='selmark';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);
+  if(item.pin){var pm=document.createElement('span');pm.className='pinmark';pm.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a5.2 5.2 0 0 1 5.2 5.2c0 3.9-5.2 9.3-5.2 9.3S6.8 11.3 6.8 7.4A5.2 5.2 0 0 1 12 2.2zm0 7.4a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z"/></svg>';c.appendChild(pm);}
   bindCell(c,item,idx,el,list);
   if(item.manifest){
     var su0=streamUrlFor(item);
@@ -410,10 +416,11 @@ function buildCell(item,idx,list){
   return c;
 }
 var FOLDER_PATH='M3 5.5A1.5 1.5 0 0 1 4.5 4h5l2 2.5h7A1.5 1.5 0 0 1 20 8v9.5a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3 17.5z';
+var coverWarmed={};
 function folderCell(f){
   var items=folderItems(f.id);
   var c=document.createElement('button');c.className='cell fcell';c.dataset.fid=f.id;c.setAttribute('aria-label','پوشه '+f.name);
-  if(items.length){
+  if(items.length&&!f.nopreview&&coverWarmed[f.id]){
     var first=items[0];
     var el=document.createElement(isVideo(first)?'video':'img');el.alt='';
     if(isVideo(first)){el.muted=true;el.playsInline=true;el.preload='metadata';}
@@ -426,6 +433,7 @@ function folderCell(f){
   var bar=document.createElement('span');bar.className='fbar';
   bar.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="'+FOLDER_PATH+'"/></svg>';
   var nm=document.createElement('span');nm.className='fname';nm.textContent=f.name;bar.appendChild(nm);
+  if(f.pin){var fp=document.createElement('span');fp.style.cssText='display:grid;place-items:center;color:var(--faint);flex:none';fp.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.2a5.2 5.2 0 0 1 5.2 5.2c0 3.9-5.2 9.3-5.2 9.3S6.8 11.3 6.8 7.4A5.2 5.2 0 0 1 12 2.2zm0 7.4a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4z"/></svg>';bar.appendChild(fp);}
   var ct=document.createElement('span');ct.className='fcount';ct.textContent=items.length;bar.appendChild(ct);
   c.appendChild(bar);
   var timer=null,longFired=false,sx=0,sy=0;
@@ -447,7 +455,7 @@ function render(){
   var nv=photos.filter(isVideo).length;
   countEl.textContent=photos.length?((photos.length-nv)+' عکس · '+nv+' فیلم'):'';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
-  folders.forEach(function(f){grid.appendChild(folderCell(f));});
+  pinnedFirst(folders).forEach(function(f){grid.appendChild(folderCell(f));});
   var roots=rootItems();
   roots.forEach(function(item,idx){grid.appendChild(buildCell(item,idx,roots));});
 }
@@ -543,6 +551,7 @@ function updateSelUI(){
   selTitle.textContent=n?n+' مورد انتخاب شد':'موارد را انتخاب کنید';
   selDelete.disabled=!n;
   var smBtn=document.getElementById('selMove');if(smBtn)smBtn.disabled=!n;
+  var spBtn=document.getElementById('selPin');if(spBtn)spBtn.disabled=!n;
   document.querySelectorAll('.cell').forEach(function(c){c.classList.toggle('sel',!!selected[c.dataset.id]);});
 }
 function enterSelect(id){selecting=true;selected={};if(id)selected[id]=true;document.body.classList.add('selecting');updateSelUI();}
@@ -897,8 +906,9 @@ var folders=[];
 var curFolder=null;
 var folderViewEl=document.getElementById('folderView'),folderGridEl=document.getElementById('folderGrid'),folderTitleEl=document.getElementById('folderTitle'),folderCountEl=document.getElementById('folderCount'),folderEmptyEl=document.getElementById('folderEmpty');
 function folderById(id){for(var i=0;i<folders.length;i++)if(folders[i].id===id)return folders[i];return null;}
-function folderItems(id){return photos.filter(function(p){return p.folder===id;});}
-function rootItems(){return photos.filter(function(p){return !p.folder;});}
+function pinnedFirst(list){var a=list.filter(function(p){return p.pin;}),b=list.filter(function(p){return !p.pin;});return a.concat(b);}
+function folderItems(id){return pinnedFirst(photos.filter(function(p){return p.folder===id;}));}
+function rootItems(){return pinnedFirst(photos.filter(function(p){return !p.folder;}));}
 function apiPost(path,body){return fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
 function apiDel(path){return fetch(API+path,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
 
@@ -936,8 +946,9 @@ document.querySelectorAll('[data-close-prompt]').forEach(function(b){b.addEventL
 
 function openFolder(id){
   if(!folderById(id))return;
+  coverWarmed[id]=true;
   curFolder=id;renderFolder();folderViewEl.classList.add('open');
-  pushLayer('panel',function(){folderViewEl.classList.remove('open');curFolder=null;});
+  pushLayer('panel',function(){folderViewEl.classList.remove('open');curFolder=null;render();});
 }
 function renderFolder(){
   var f=folderById(curFolder);if(!f)return;
@@ -948,20 +959,30 @@ function renderFolder(){
   folderEmptyEl.style.display=items.length?'none':'block';
   items.forEach(function(item,i){folderGridEl.appendChild(buildCell(item,i,items));});
 }
-document.getElementById('folderBack').addEventListener('click',function(){folderViewEl.classList.remove('open');releaseLayer('panel');});
+document.getElementById('folderBack').addEventListener('click',function(){folderViewEl.classList.remove('open');releaseLayer('panel');render();});
+function folderUpdate(f,patch,busyMsg,doneMsg){
+  showBusy(busyMsg||'در حال ذخیره…');
+  apiPost('/api/folder/'+f.id,patch).then(function(){
+    Object.keys(patch).forEach(function(k){if(patch[k])f[k]=patch[k];else delete f[k];});
+    hideBusy();render();if(curFolder)renderFolder();
+    if(doneMsg)toast(doneMsg);
+  }).catch(function(e){hideBusy();toast(e.message||'خطا');});
+}
+function folderSheetRows(f,includeOpen){
+  var rows=[];
+  if(includeOpen)rows.push({label:'باز کردن',cb:function(){openFolder(f.id);}});
+  rows.push({label:f.pin?'برداشتن پین':'پین کردن',cb:function(){folderUpdate(f,{pin:!f.pin},'در حال ذخیره…',f.pin?'پین برداشته شد':'پوشه پین شد');}});
+  rows.push({label:f.nopreview?'روشن کردن پیش‌نمایش':'خاموش کردن پیش‌نمایش',sub:'کاور پوشه، عکس یا فیلم داخلش را نشان می‌دهد',cb:function(){folderUpdate(f,{nopreview:!f.nopreview},'در حال ذخیره…',f.nopreview?'پیش‌نمایش روشن شد':'پیش‌نمایش خاموش شد');}});
+  rows.push({label:'تغییر نام',cb:function(){renameFolder(f);}});
+  rows.push({label:'حذف پوشه',danger:true,cb:function(){deleteFolder(f);}});
+  return rows;
+}
 document.getElementById('folderMenuBtn').addEventListener('click',function(){
   var f=folderById(curFolder);if(!f)return;
-  showSheet(f.name,[
-    {label:'تغییر نام',cb:function(){renameFolder(f);}},
-    {label:'حذف پوشه',danger:true,cb:function(){deleteFolder(f);}}
-  ]);
+  showSheet(f.name,folderSheetRows(f,false));
 });
 function folderActions(f){
-  showSheet(f.name,[
-    {label:'باز کردن',cb:function(){openFolder(f.id);}},
-    {label:'تغییر نام',cb:function(){renameFolder(f);}},
-    {label:'حذف پوشه',danger:true,cb:function(){deleteFolder(f);}}
-  ]);
+  showSheet(f.name,folderSheetRows(f,true));
 }
 function renameFolder(f){
   promptSheet('تغییر نام پوشه',f.name,'ذخیره',function(name){
@@ -1003,6 +1024,17 @@ function doMove(ids,target){
     toast('منتقل شد');
   }).catch(function(e){hideBusy();toast(e.message||'خطا در انتقال');});
 }
+document.getElementById('selPin').addEventListener('click',function(){
+  var ids=Object.keys(selected);if(!ids.length)return;
+  var allPinned=ids.every(function(id){var p=null;photos.forEach(function(x){if(x.id===id)p=x;});return p&&p.pin;});
+  var target=!allPinned;
+  showBusy(target?'در حال پین کردن…':'در حال برداشتن پین…');
+  apiPost('/api/pin',{ids:ids,pin:target}).then(function(){
+    photos.forEach(function(p){if(ids.indexOf(p.id)>=0){if(target)p.pin=true;else delete p.pin;}});
+    hideBusy();exitSelect();render();if(curFolder)renderFolder();
+    toast(target?'پین شد':'پین برداشته شد');
+  }).catch(function(e){hideBusy();toast(e.message||'خطا');});
+});
 document.getElementById('selMove').addEventListener('click',function(){
   var ids=Object.keys(selected);if(!ids.length)return;
   var rows=[{label:'گالری اصلی',sub:'بدون پوشه',cb:function(){doMove(ids,null);}}];
@@ -1044,7 +1076,7 @@ function enableLock(){
   if(!waSupported()){toast('این دستگاه یا مرورگر، اثر انگشت وب را پشتیبانی نمی‌کند');return;}
   PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable().then(function(avail){
     if(!avail){toast('حسگر اثر انگشت روی این دستگاه در دسترس نیست');return;}
-    return navigator.credentials.create({publicKey:{challenge:rndB(32),rp:{name:'هات گالری',id:location.hostname},user:{id:rndB(16),name:'hot-gallery',displayName:'هات گالری'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},attestation:'none',timeout:60000}});
+    return navigator.credentials.create({publicKey:{challenge:rndB(32),rp:{name:'گالری',id:location.hostname},user:{id:rndB(16),name:'hot-gallery',displayName:'گالری'},pubKeyCredParams:[{type:'public-key',alg:-7},{type:'public-key',alg:-257}],authenticatorSelection:{authenticatorAttachment:'platform',userVerification:'required',residentKey:'discouraged'},attestation:'none',timeout:60000}});
   }).then(function(cred){
     if(!cred)return;
     try{localStorage.setItem('hg-lock-cred',b64u(cred.rawId));localStorage.setItem('hg-lock','1');}catch(e){}
