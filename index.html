@@ -45,6 +45,15 @@ main{max-width:1100px;margin:0 auto;padding:0 0 calc(30px + env(safe-area-inset-
 .cell{position:relative;aspect-ratio:1;background:var(--bg2);overflow:hidden;cursor:pointer;border:0;padding:0}
 .cell img,.cell video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
 .cell .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--faint);pointer-events:none}
+.fcell{background:var(--bg2)}
+.fcell .fempty{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.fcell .fempty svg{color:#e8a90c;opacity:.5}
+.fbar{position:absolute;left:0;right:0;bottom:0;display:flex;align-items:center;gap:5px;padding:5px 7px;background:var(--bar);backdrop-filter:blur(14px) saturate(1.5);-webkit-backdrop-filter:blur(14px) saturate(1.5);color:var(--text);font-size:12px;pointer-events:none}
+.fbar svg{color:#e8a90c;flex:none}
+.fbar .fname{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:start;font-weight:600}
+.fbar .fcount{color:var(--faint);font-size:11.5px;flex:none}
+.as-sub{display:block;font-size:13px;color:var(--faint);margin-top:2px}
+.as-title{padding:13px 15px 11px;text-align:center;font-size:13.5px;color:var(--faint)}
 .spin{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--hair);border-top-color:var(--faint);animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .badge{position:absolute;bottom:5px;inset-inline-end:7px;z-index:2;color:#fff;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:4px;text-shadow:0 1px 4px rgba(0,0,0,.65);pointer-events:none}
@@ -55,7 +64,7 @@ body.selecting .selmark{display:grid}
 .footcount{padding:20px 16px 6px;text-align:center;color:var(--faint);font-size:13px}
 body.selecting main{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
 #selTools{position:fixed;left:0;right:0;bottom:0;z-index:55;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-top:.5px solid var(--hair);display:none;padding:8px 18px calc(10px + env(safe-area-inset-bottom))}
-body.selecting #selTools{display:flex;align-items:center;justify-content:space-between}
+body.selecting #selTools{display:flex;align-items:center;justify-content:space-between;z-index:65}
 .toolbtn{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:11px;color:var(--red);min-width:56px}
 .toolbtn:disabled{color:var(--faint)}
 .empty{padding:110px 24px;text-align:center;color:var(--faint)}
@@ -202,6 +211,10 @@ body.selecting .qpill{display:none}
 </main>
 <div id="selTools">
   <span style="min-width:56px"></span>
+  <button class="toolbtn" id="selMove" disabled>
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 9.5v5M9.9 12.4L12 14.5l2.1-2.1"/></svg>
+    <span>انتقال</span>
+  </button>
   <button class="toolbtn" id="selDelete" disabled>
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2M6.5 7l1 12A1.5 1.5 0 0 0 9 20.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12M10 11v6M14 11v6"/></svg>
     <span>حذف</span>
@@ -214,6 +227,7 @@ body.selecting .qpill{display:none}
   <button id="miQueue"><span>صف آپلود</span><span class="qbadge" id="qBadge"></span></button>
   <button id="miFav"><span>مورد علاقه‌ها</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" style="color:var(--faint)"><path d="M12 20.7C6.4 17 3 13.6 3 9.6 3 7 5 5 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5 19 5 21 7 21 9.6c0 4-3.4 7.4-9 11.1z"/></svg></button>
   <button id="miSelect"><span>انتخاب</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+  <button id="miNewFolder"><span>پوشه‌ی جدید</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.5v5M9.5 13h5"/></svg></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
 
@@ -235,6 +249,24 @@ body.selecting .qpill{display:none}
   </div>
 </div>
 
+<div class="as-wrap" id="lsWrap"><div class="sc" id="lsScrim"></div>
+  <div class="as-box">
+    <div class="as-group"><div class="as-title" id="lsTitle"></div><div id="lsRows"></div></div>
+    <div class="as-group"><button class="as-cancel" id="lsCancel">لغو</button></div>
+  </div>
+</div>
+
+<div class="overlay" id="promptOverlay"><div class="sc" data-close-prompt="1"></div>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="grab"></div>
+    <h2 id="promptTitle">نام پوشه</h2>
+    <p class="sub"></p>
+    <input id="promptInput" type="text" maxlength="60" autocomplete="off">
+    <button class="primary" id="promptOk">تأیید</button>
+    <button class="cancel" data-close-prompt="1">لغو</button>
+  </div>
+</div>
+
 <section class="view-settings" id="settingsView" aria-label="تنظیمات">
   <div class="sbar">
     <button class="sback" id="backBtn"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>گالری</span></button>
@@ -253,7 +285,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 17:41</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 17:56</span></p>
   </div>
 </section>
 
@@ -283,6 +315,19 @@ body.selecting .qpill{display:none}
     <div class="grid" id="favGrid"></div>
     <div class="footcount" id="favCount"></div>
     <div class="empty" id="favEmpty" style="display:none;padding:80px 24px"><div class="big">هنوز مورد علاقه‌ای نداری</div><p>عکس یا فیلم را باز کن و روی قلب بزن تا اینجا نشان داده شود.</p></div>
+  </div>
+</section>
+
+<section class="view-settings" id="folderView" aria-label="پوشه">
+  <div class="sbar">
+    <button class="sback" id="folderBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>گالری</span></button>
+    <div class="stitle" id="folderTitle">پوشه</div>
+    <button class="sback" id="folderMenuBtn" style="right:auto;left:8px" aria-label="گزینه‌های پوشه"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="12" cy="19" r="1.9"/></svg></button>
+  </div>
+  <div style="flex:1;overflow:auto">
+    <div class="grid" id="folderGrid"></div>
+    <div class="footcount" id="folderCount"></div>
+    <div class="empty" id="folderEmpty" style="display:none;padding:80px 24px"><div class="big">این پوشه خالی است</div><p>از گالری اصلی موارد را انتخاب کن و با دکمه‌ی «انتقال» به اینجا بیاورشان.</p></div>
   </div>
 </section>
 
@@ -344,33 +389,69 @@ function loadInto(item,el){
     if(viewerId===item.id)showCurrentMedia();
   }).catch(function(){var cell=el.closest('.cell');if(cell){var ph=cell.querySelector('.ph');if(ph)ph.innerHTML='<span style="font-size:12px">خطا</span>';}});
 }
+function buildCell(item,idx,list){
+  var c=document.createElement('button');c.className='cell'+(selected[item.id]?' sel':'');c.dataset.id=item.id;c.setAttribute('aria-label','مورد '+(idx+1));
+  var ph=document.createElement('span');ph.className='ph';ph.innerHTML='<span class="spin"></span>';c.appendChild(ph);
+  var el=document.createElement(isVideo(item)?'video':'img');
+  el.alt='';if(isVideo(item)){el.muted=true;el.playsInline=true;el.preload='metadata';}else{el.loading='lazy';}
+  c.appendChild(el);
+  if(isVideo(item)){
+    var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg><span></span>';c.appendChild(b);
+    el.addEventListener('loadedmetadata',function(){b.querySelector('span').textContent=fmtDur(el.duration);});
+  }
+  var mk=document.createElement('span');mk.className='selmark';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);
+  bindCell(c,item,idx,el,list);
+  if(item.manifest){
+    var su0=streamUrlFor(item);
+    if(su0){el.src=su0;el.addEventListener('loadeddata',function(){ph.style.display='none';},{once:true});}
+    else{ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';}
+    var bsp=c.querySelector('.badge span');if(bsp)bsp.textContent=fmtSize(item.size);
+  }else{loadInto(item,el);}
+  return c;
+}
+var FOLDER_PATH='M3 5.5A1.5 1.5 0 0 1 4.5 4h5l2 2.5h7A1.5 1.5 0 0 1 20 8v9.5a1.5 1.5 0 0 1-1.5 1.5h-14A1.5 1.5 0 0 1 3 17.5z';
+function folderCell(f){
+  var items=folderItems(f.id);
+  var c=document.createElement('button');c.className='cell fcell';c.dataset.fid=f.id;c.setAttribute('aria-label','پوشه '+f.name);
+  if(items.length){
+    var first=items[0];
+    var el=document.createElement(isVideo(first)?'video':'img');el.alt='';
+    if(isVideo(first)){el.muted=true;el.playsInline=true;el.preload='metadata';}
+    c.appendChild(el);
+    if(first.manifest){var su=streamUrlFor(first);if(su)el.src=su;}
+    else loadInto(first,el);
+  }else{
+    var ph=document.createElement('span');ph.className='fempty';ph.innerHTML='<svg width="46" height="46" viewBox="0 0 24 24" fill="currentColor"><path d="'+FOLDER_PATH+'"/></svg>';c.appendChild(ph);
+  }
+  var bar=document.createElement('span');bar.className='fbar';
+  bar.innerHTML='<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="'+FOLDER_PATH+'"/></svg>';
+  var nm=document.createElement('span');nm.className='fname';nm.textContent=f.name;bar.appendChild(nm);
+  var ct=document.createElement('span');ct.className='fcount';ct.textContent=items.length;bar.appendChild(ct);
+  c.appendChild(bar);
+  var timer=null,longFired=false,sx=0,sy=0;
+  c.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive)return;longFired=true;folderActions(f);if(navigator.vibrate)navigator.vibrate(12);},480);});
+  function cancel(){if(timer){clearTimeout(timer);timer=null;}}
+  c.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancel();});
+  c.addEventListener('pointerup',cancel);c.addEventListener('pointercancel',cancel);c.addEventListener('pointerleave',cancel);
+  c.addEventListener('contextmenu',function(e){e.preventDefault();});
+  c.addEventListener('click',function(){
+    if(Date.now()-lastPinchEnd<400)return;
+    if(longFired){longFired=false;return;}
+    if(selecting)return;
+    openFolder(f.id);
+  });
+  return c;
+}
 function render(){
   grid.innerHTML='';
   var nv=photos.filter(isVideo).length;
   countEl.textContent=photos.length?((photos.length-nv)+' عکس · '+nv+' فیلم'):'';
-  emptyEl.style.display=photos.length?'none':'block';
-  photos.forEach(function(item,idx){
-    var c=document.createElement('button');c.className='cell'+(selected[item.id]?' sel':'');c.dataset.id=item.id;c.setAttribute('aria-label','مورد '+(idx+1));
-    var ph=document.createElement('span');ph.className='ph';ph.innerHTML='<span class="spin"></span>';c.appendChild(ph);
-    var el=document.createElement(isVideo(item)?'video':'img');
-    el.alt='';if(isVideo(item)){el.muted=true;el.playsInline=true;el.preload='metadata';}else{el.loading='lazy';}
-    c.appendChild(el);
-    if(isVideo(item)){
-      var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg><span></span>';c.appendChild(b);
-      el.addEventListener('loadedmetadata',function(){b.querySelector('span').textContent=fmtDur(el.duration);});
-    }
-    var mk=document.createElement('span');mk.className='selmark';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);
-    bindCell(c,item,idx,el);
-    grid.appendChild(c);
-    if(item.manifest){
-      var su0=streamUrlFor(item);
-      if(su0){el.src=su0;el.addEventListener('loadeddata',function(){ph.style.display='none';},{once:true});}
-      else{ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';}
-      var bsp=c.querySelector('.badge span');if(bsp)bsp.textContent=fmtSize(item.size);
-    }else{loadInto(item,el);}
-  });
+  emptyEl.style.display=(photos.length||folders.length)?'none':'block';
+  folders.forEach(function(f){grid.appendChild(folderCell(f));});
+  var roots=rootItems();
+  roots.forEach(function(item,idx){grid.appendChild(buildCell(item,idx,roots));});
 }
-function bindCell(c,item,idx,el){
+function bindCell(c,item,idx,el,list){
   var timer=null,sx=0,sy=0,longFired=false;
   c.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive)return;longFired=true;if(!selecting)enterSelect(item.id);else toggleSelect(item.id);if(navigator.vibrate)navigator.vibrate(12);},480);});
   function cancel(){if(timer){clearTimeout(timer);timer=null;}}
@@ -381,7 +462,7 @@ function bindCell(c,item,idx,el){
     if(Date.now()-lastPinchEnd<400)return;
     if(longFired){longFired=false;return;}
     if(selecting){toggleSelect(item.id);return;}
-    var cur=photos.indexOf(item);openViewer(cur<0?idx:cur,el);
+    var L=list||photos;var cur=L.indexOf(item);openViewer(cur<0?idx:cur,el,L);
   });
 }
 /* پینچ روی گرید اصلی: تغییر تعداد ستون‌ها مثل گالری سامسونگ — حین حرکت، گرید با انگشت‌ها
@@ -452,7 +533,7 @@ function pinchEnd(e){
 window.addEventListener('pointerup',pinchEnd);
 window.addEventListener('pointercancel',pinchEnd);
 function load(){
-  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];render();}).catch(function(){toast('خطا در دریافت گالری');});
+  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];folders=(d&&d.folders)||[];render();if(curFolder)renderFolder();}).catch(function(){toast('خطا در دریافت گالری');});
 }
 /* selection */
 var selTitle=document.getElementById('selTitle'),selDelete=document.getElementById('selDelete');
@@ -461,6 +542,7 @@ function updateSelUI(){
   var n=selCount();
   selTitle.textContent=n?n+' مورد انتخاب شد':'موارد را انتخاب کنید';
   selDelete.disabled=!n;
+  var smBtn=document.getElementById('selMove');if(smBtn)smBtn.disabled=!n;
   document.querySelectorAll('.cell').forEach(function(c){c.classList.toggle('sel',!!selected[c.dataset.id]);});
 }
 function enterSelect(id){selecting=true;selected={};if(id)selected[id]=true;document.body.classList.add('selecting');updateSelUI();}
@@ -495,6 +577,7 @@ function deleteIds(ids){
   return chain.then(function(){
     hideBusy();
     render();
+    if(curFolder)renderFolder();
     if(viewerEl.classList.contains('open')){
       vList=vItems().filter(function(p){return photos.indexOf(p)>=0;});
       if(!vList.length)closeViewer();
@@ -808,6 +891,125 @@ menuBtn.addEventListener('click',function(){
 scrim.addEventListener('click',closeMenu);
 document.getElementById('miFav').addEventListener('click',function(){closeMenu();renderFavs();favViewEl.classList.add('open');pushLayer('panel',function(){favViewEl.classList.remove('open');});});
 document.getElementById('favBack').addEventListener('click',function(){favViewEl.classList.remove('open');releaseLayer('panel');});
+
+/* ---------- پوشه‌ها: ساخت/تغییرنام/حذف، نمای پوشه، انتقال موارد ---------- */
+var folders=[];
+var curFolder=null;
+var folderViewEl=document.getElementById('folderView'),folderGridEl=document.getElementById('folderGrid'),folderTitleEl=document.getElementById('folderTitle'),folderCountEl=document.getElementById('folderCount'),folderEmptyEl=document.getElementById('folderEmpty');
+function folderById(id){for(var i=0;i<folders.length;i++)if(folders[i].id===id)return folders[i];return null;}
+function folderItems(id){return photos.filter(function(p){return p.folder===id;});}
+function rootItems(){return photos.filter(function(p){return !p.folder;});}
+function apiPost(path,body){return fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
+function apiDel(path){return fetch(API+path,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
+
+var lsWrap=document.getElementById('lsWrap'),lsRows=document.getElementById('lsRows'),lsTitle=document.getElementById('lsTitle');
+function showSheet(title,rows){
+  lsTitle.textContent=title||'';lsTitle.style.display=title?'block':'none';
+  lsRows.innerHTML='';
+  rows.forEach(function(r){
+    var b=document.createElement('button');if(r.danger)b.className='as-destr';
+    b.appendChild(document.createTextNode(r.label));
+    if(r.sub){var s=document.createElement('span');s.className='as-sub';s.textContent=r.sub;b.appendChild(s);}
+    b.addEventListener('click',function(){closeSheet();if(r.cb)r.cb();});
+    lsRows.appendChild(b);
+  });
+  lsWrap.classList.add('open');
+}
+function closeSheet(){lsWrap.classList.remove('open');}
+document.getElementById('lsScrim').addEventListener('click',closeSheet);
+document.getElementById('lsCancel').addEventListener('click',closeSheet);
+
+var promptOverlay=document.getElementById('promptOverlay'),promptInput=document.getElementById('promptInput'),promptTitleEl=document.getElementById('promptTitle'),promptOkBtn=document.getElementById('promptOk'),promptCb=null;
+function promptSheet(title,initial,okLabel,cb){
+  promptTitleEl.textContent=title;promptInput.value=initial||'';promptOkBtn.textContent=okLabel||'تأیید';promptCb=cb;
+  promptOverlay.classList.add('open');
+  setTimeout(function(){try{promptInput.focus();promptInput.select();}catch(e){}},90);
+}
+function closePrompt(){promptOverlay.classList.remove('open');promptCb=null;}
+promptOkBtn.addEventListener('click',function(){
+  var v=promptInput.value.trim();
+  if(!v){toast('نام را وارد کن');return;}
+  var cb=promptCb;closePrompt();if(cb)cb(v);
+});
+promptInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();promptOkBtn.click();}});
+document.querySelectorAll('[data-close-prompt]').forEach(function(b){b.addEventListener('click',closePrompt);});
+
+function openFolder(id){
+  if(!folderById(id))return;
+  curFolder=id;renderFolder();folderViewEl.classList.add('open');
+  pushLayer('panel',function(){folderViewEl.classList.remove('open');curFolder=null;});
+}
+function renderFolder(){
+  var f=folderById(curFolder);if(!f)return;
+  folderTitleEl.textContent=f.name;
+  var items=folderItems(curFolder);
+  folderGridEl.innerHTML='';
+  folderCountEl.textContent=items.length?(items.length+' مورد'):'';
+  folderEmptyEl.style.display=items.length?'none':'block';
+  items.forEach(function(item,i){folderGridEl.appendChild(buildCell(item,i,items));});
+}
+document.getElementById('folderBack').addEventListener('click',function(){folderViewEl.classList.remove('open');releaseLayer('panel');});
+document.getElementById('folderMenuBtn').addEventListener('click',function(){
+  var f=folderById(curFolder);if(!f)return;
+  showSheet(f.name,[
+    {label:'تغییر نام',cb:function(){renameFolder(f);}},
+    {label:'حذف پوشه',danger:true,cb:function(){deleteFolder(f);}}
+  ]);
+});
+function folderActions(f){
+  showSheet(f.name,[
+    {label:'باز کردن',cb:function(){openFolder(f.id);}},
+    {label:'تغییر نام',cb:function(){renameFolder(f);}},
+    {label:'حذف پوشه',danger:true,cb:function(){deleteFolder(f);}}
+  ]);
+}
+function renameFolder(f){
+  promptSheet('تغییر نام پوشه',f.name,'ذخیره',function(name){
+    if(name===f.name)return;
+    showBusy('در حال ذخیره…');
+    apiPost('/api/folder/'+f.id,{name:name}).then(function(){
+      f.name=name;hideBusy();render();if(curFolder)renderFolder();toast('نام پوشه عوض شد');
+    }).catch(function(e){hideBusy();toast(e.message||'خطا');});
+  });
+}
+function deleteFolder(f){
+  confirmSheet('پوشه «'+f.name+'» حذف شود؟ فایل‌های داخلش پاک نمی‌شوند و به گالری اصلی برمی‌گردند',function(){
+    showBusy('در حال حذف پوشه…');
+    apiDel('/api/folder/'+f.id).then(function(){
+      folders=folders.filter(function(x){return x.id!==f.id;});
+      photos.forEach(function(p){if(p.folder===f.id)delete p.folder;});
+      hideBusy();
+      if(curFolder===f.id){folderViewEl.classList.remove('open');releaseLayer('panel');}
+      render();toast('پوشه حذف شد');
+    }).catch(function(e){hideBusy();toast(e.message||'خطا');});
+  });
+}
+function createFolder(cb){
+  promptSheet('پوشه‌ی جدید','','ایجاد',function(name){
+    showBusy('در حال ساخت پوشه…');
+    apiPost('/api/folder',{name:name}).then(function(d){
+      hideBusy();folders.push(d.folder);render();toast('پوشه ساخته شد');
+      if(cb)cb(d.folder);
+    }).catch(function(e){hideBusy();toast(e.message||'خطا');});
+  });
+}
+document.getElementById('miNewFolder').addEventListener('click',function(){closeMenu();createFolder();});
+
+function doMove(ids,target){
+  showBusy('در حال انتقال…');
+  apiPost('/api/move',{ids:ids,folder:target}).then(function(){
+    photos.forEach(function(p){if(ids.indexOf(p.id)>=0){if(target)p.folder=target;else delete p.folder;}});
+    hideBusy();exitSelect();render();if(curFolder)renderFolder();
+    toast('منتقل شد');
+  }).catch(function(e){hideBusy();toast(e.message||'خطا در انتقال');});
+}
+document.getElementById('selMove').addEventListener('click',function(){
+  var ids=Object.keys(selected);if(!ids.length)return;
+  var rows=[{label:'گالری اصلی',sub:'بدون پوشه',cb:function(){doMove(ids,null);}}];
+  folders.forEach(function(f){rows.push({label:f.name,sub:folderItems(f.id).length+' مورد',cb:function(){doMove(ids,f.id);}});});
+  rows.push({label:'پوشه‌ی جدید',cb:function(){createFolder(function(nf){doMove(ids,nf.id);});}});
+  showSheet('انتقال '+ids.length+' مورد به',rows);
+});
 document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
 document.getElementById('miSelect').addEventListener('click',function(){closeMenu();if(photos.length)enterSelect(null);else toast('چیزی برای انتخاب نیست');});
@@ -892,9 +1094,9 @@ var Q_ICONS={
 function fmtElapsed(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
 function fmtSize(b){if(!b)return '';if(b<1024)return b+' بایت';if(b<1048576)return (b/1024).toFixed(0)+' کیلوبایت';return (b/1048576).toFixed(1)+' مگابایت';}
 function qActiveN(){return queue.filter(function(q){return q.status==='wait'||q.status==='up';}).length;}
-function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return {url:q.url,job:q.job||null,item:q.ghaItem||null};})));}catch(e){}}
+function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return {url:q.url,job:q.job||null,item:q.ghaItem||null,folder:q.folder||null};})));}catch(e){}}
 var qSeq=0;
-function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(en){var u=typeof en==='string'?en:(en&&en.url);var jb=typeof en==='string'?null:(en&&en.job);var gi=typeof en==='string'?null:(en&&en.item);if(u&&!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:jb||null,ghaItem:gi||null,prog:null});});}catch(e){}}
+function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(en){var u=typeof en==='string'?en:(en&&en.url);var jb=typeof en==='string'?null:(en&&en.job);var gi=typeof en==='string'?null:(en&&en.item);var fl=typeof en==='string'?null:(en&&en.folder);if(u&&!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:jb||null,ghaItem:gi||null,prog:null,folder:fl||null});});}catch(e){}}
 function progText(q){
   var p=q.prog;if(!p||p.status!=='run')return null;
   if(p.phase==='save')return{txt:'در حال ذخیره‌سازی…',pct:null};
@@ -952,7 +1154,8 @@ setInterval(function(){
   if(el){var up=queue.find(function(q){return q.status==='up';});if(up)el.textContent='در حال آپلود… '+fmtElapsed(Date.now()-up.t0);}
 },1000);
 function qEnqueue(list){
-  list.forEach(function(u){queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,ghaItem:null,prog:null});});
+  var tf=(folderViewEl&&folderViewEl.classList.contains('open')&&curFolder)?curFolder:null;
+  list.forEach(function(u){queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,ghaItem:null,prog:null,folder:tf});});
   qSave();qRender();qProcess();
 }
 function qCancelActive(q){
@@ -1046,7 +1249,8 @@ function qProcess(){
   var sig=qCtrl?qCtrl.signal:undefined;
   function finish(item){
     qRunning=false;qCtrl=null;q.status='done';q.item=item;
-    if(!photos.some(function(p){return p.id===item.id;})){photos.unshift(item);render();}
+    if(q.folder){item.folder=q.folder;apiPost('/api/move',{ids:[item.id],folder:q.folder}).catch(function(){});}
+    if(!photos.some(function(p){return p.id===item.id;})){photos.unshift(item);render();if(curFolder)renderFolder();}
     toast(isVideo(item)?'فیلم اضافه شد':'عکس اضافه شد');
     qSave();qRender();qProcess();
   }
