@@ -149,6 +149,10 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .lk-btn{display:flex;align-items:center;gap:9px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;padding:13px 24px;border-radius:999px}
 .lk-btn:active{filter:brightness(.88)}
 .lk-err{color:var(--red);font-size:13.5px;min-height:20px;margin:8px 0 0}
+.busyview{position:fixed;inset:0;z-index:150;background:rgba(0,0,0,.45);display:none;place-items:center}
+.busyview.open{display:grid}
+.busybox{background:var(--sheet);border-radius:16px;padding:22px 30px;display:flex;flex-direction:column;align-items:center;gap:12px;font-size:15px;box-shadow:0 14px 40px rgba(0,0,0,.35)}
+.busybox .spin{width:26px;height:26px}
 .vprog{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(72vw,340px);display:none;z-index:2;text-align:center}
 .vp-bar{height:5px;border-radius:3px;background:rgba(255,255,255,.25);overflow:hidden}
 .vp-fill{height:100%;width:0;background:var(--blue);border-radius:3px;transition:width .2s}
@@ -293,6 +297,8 @@ body.selecting .qpill{display:none}
 
 <div class="qpill" id="qPill"><span class="spin"></span><span id="qPillText"></span></div>
 
+<div class="busyview" id="busyView"><div class="busybox"><span class="spin"></span><span id="busyTxt">در حال حذف…</span></div></div>
+
 <div class="lockview" id="lockView">
   <div class="lk-ic"><svg width="52" height="52" viewBox="0 0 52 52"><rect x="4" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="4" y="28" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="28" width="20" height="20" rx="5" fill="#ff2d55"/></svg></div>
   <div class="lk-title">هات گالری</div>
@@ -389,7 +395,11 @@ function confirmSheet(text,cb){asConfirm.textContent=text;asCb=cb;asWrap.classLi
 document.getElementById('asCancel').addEventListener('click',function(){asWrap.classList.remove('open');asCb=null;});
 document.getElementById('asScrim').addEventListener('click',function(){asWrap.classList.remove('open');asCb=null;});
 asConfirm.addEventListener('click',function(){asWrap.classList.remove('open');if(asCb){var cb=asCb;asCb=null;cb();}});
+var busyView=document.getElementById('busyView'),busyTxt=document.getElementById('busyTxt');
+function showBusy(t){busyTxt.textContent=t;busyView.classList.add('open');}
+function hideBusy(){busyView.classList.remove('open');}
 function deleteIds(ids){
+  showBusy(ids.length>1?'در حال حذف '+ids.length+' مورد…':'در حال حذف…');
   var chain=Promise.resolve(),failed=0;
   ids.forEach(function(id){
     chain=chain.then(function(){
@@ -401,11 +411,12 @@ function deleteIds(ids){
     });
   });
   return chain.then(function(){
+    hideBusy();
     render();
     if(viewerEl.classList.contains('open')){
       vList=vItems().filter(function(p){return photos.indexOf(p)>=0;});
       if(!vList.length)closeViewer();
-      else{if(viewerId&&ids.indexOf(viewerId)>=0)showPhoto(Math.min(vIdx,vList.length-1),0);else buildStrip();}
+      else{var wasDel=viewerId&&ids.indexOf(viewerId)>=0;if(wasDel)vIdx=Math.min(vIdx,vList.length-1);buildStrip();if(wasDel)showPhoto(vIdx,0);}
     }
     toast(failed?'بعضی موارد حذف نشد':'حذف شد');
   });
