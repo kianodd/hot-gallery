@@ -376,7 +376,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:43</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:50</span></p>
   </div>
 </section>
 
@@ -474,7 +474,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 20:43';
+var RUN_BUILD='2026-11-05 20:50';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1086,6 +1086,8 @@ function assembleVideo(item){
 }
 /* hg-v9: پلیر حرفه‌ای Plyr روی همان #vVid — اگر CDN لود نشود، کنترل‌های بومی مرورگر جایگزین‌اند */
 var plyr=null,plyrFailed=false,lastVidSrc='',lastSrcSetAt=0;
+var vSnapPoster=null;
+function posterFor(item){return item?(item.thumb?(RAW_BASE+item.thumb):(item.blur?blurUri(item):null)):null;}
 /* hg-v11: ریشه‌ی خرابی سیک و ادامه‌ی تماشا در hg-v10 پیدا شد — Plyr هنگام ست‌شدن سورس، المنت
    <video> اصلی را با المنت تازه‌ای جایگزین می‌کند و ارجاع vVid به المنت جداشده‌ای می‌رسد که
    سورسش blank.mp4 یک‌ثانیه‌ای Plyr است؛ پس currentTime/duration و همه‌ی رویدادها روی ویدیوی
@@ -1166,8 +1168,9 @@ document.addEventListener('fullscreenchange',function(){
 function setVidSource(u){
   if(!u||u===lastVidSrc){bindMediaEvents();return;}
   lastVidSrc=u;lastSrcSetAt=Date.now();
-  if(ensurePlyr()&&plyr){try{plyr.source={type:'video',sources:[{src:u}]};bindMediaEvents();addSeekButtons();return;}catch(e){plyrFailed=true;plyr=null;}}
-  var m=liveVid();if(m.src!==u)m.src=u;
+  var post=vSnapPoster||posterFor(vItems()[vIdx]);
+  if(ensurePlyr()&&plyr){try{var so={type:'video',sources:[{src:u}]};if(post)so.poster=post;plyr.source=so;if(post){try{plyr.poster=post;}catch(e){}liveVid().poster=post;}bindMediaEvents();addSeekButtons();return;}catch(e){plyrFailed=true;plyr=null;}}
+  var m=liveVid();if(post)m.poster=post;if(m.src!==u)m.src=u;
   bindMediaEvents();
 }
 function vidPlay(){var p;if(plyr){try{p=plyr.play();}catch(e){}}else{p=liveVid().play();}if(p&&p.catch)p.catch(function(){});}
@@ -1266,7 +1269,7 @@ function showCurrentMedia(){
   if(isVideo(item)&&!item.thumb)maybeThumb(item);
   if(isVideo(item)){
     vImg.style.display='none';liveVid().style.display='block';syncVidWrap();addSeekButtons();
-    var postSrc=item.thumb?(RAW_BASE+item.thumb):(item.blur?blurUri(item):null);
+    var postSrc=vSnapPoster||posterFor(item);
     if(postSrc){liveVid().poster=postSrc;if(plyr){try{plyr.poster=postSrc;}catch(e){}}}
     if(item.thumb){var tp=new Image();tp.onload=function(){if(viewerId===item.id)markLoaded(item);};tp.src=RAW_BASE+item.thumb;}
     if(item.manifest){
@@ -1284,23 +1287,28 @@ function showCurrentMedia(){
     var curSrc=vImg.getAttribute('src');
     if(curSrc===vsrc){vImg.style.filter='';markLoaded(item);}
     else{
-      var preview=!webpCache[item.id]?(blurUri(item)||thumbUrl(item,gridThumbW())):null;
-      var startFull=function(){if(viewerId===item.id&&vImg.getAttribute('src')!==vsrc)vImg.src=vsrc;};
-      if(preview&&preview!==vsrc&&curSrc!==preview){
-        if(preview.indexOf('data:')===0)vImg.style.filter='blur(8px)';
-        var upFull=function(){vImg.removeEventListener('load',upFull);startFull();};
-        vImg.addEventListener('load',upFull);
-        vImg.src=preview;
-        if(vImg.complete&&vImg.naturalWidth>0){vImg.removeEventListener('load',upFull);startFull();}
-        setTimeout(startFull,700);
-      }else vImg.src=vsrc;
+      var preview=!webpCache[item.id]?(blurUri(item)||thumbUrl(item,gridThumbW())):(blurUri(item)||null);
+      if(!preview){vImg.src=vsrc;}
+      else{
+        if(preview!==vsrc&&curSrc!==preview){
+          if(preview.indexOf('data:')===0)vImg.style.filter='blur(8px)';
+          vImg.src=preview;
+        }
+        if(curSrc!==vsrc){
+          var preImg=new Image();
+          var swapFull=function(){if(viewerId===item.id&&vImg.getAttribute('src')!==vsrc){vImg.src=vsrc;if(vImg.complete&&vImg.naturalWidth>40)vImg.style.filter='';}};
+          preImg.onload=function(){if(preImg.decode)preImg.decode().then(swapFull).catch(swapFull);else swapFull();};
+          preImg.onerror=function(){swapFull();};
+          preImg.src=vsrc;
+        }
+      }
     }
   }
 }
 function showPhoto(i,dir){
   var L=vItems();if(!L.length)return;
   if(viewerId&&viewerId!==L[i].id)savePosFor(viewerId);
-  vIdx=i;viewerId=L[i].id;vGateId=viewerId;vGateDone=false;vImg.style.filter='';resetZoom();syncFavBtn();hideProg();liveVid().removeAttribute('poster');
+  vIdx=i;viewerId=L[i].id;vGateId=viewerId;vGateDone=false;vImg.style.filter='';resetZoom();syncFavBtn();hideProg();liveVid().removeAttribute('poster');vSnapPoster=null;
   viewerEl.classList.toggle('on-photo',!isVideo(L[i]));viewerEl.classList.toggle('on-video',!!isVideo(L[i]));
   document.getElementById('vNum').textContent=(i+1)+' از '+L.length;
   document.getElementById('vDate').textContent=faDate(L[i].created_at||Date.now());
@@ -1320,7 +1328,7 @@ function openViewer(i,thumbEl,list){
   pushLayer('viewer',vCloseVisual);
   requestAnimationFrame(function(){viewerEl.classList.remove('pre');});
   if(thumbEl&&isVideo(item)&&thumbEl.tagName==='VIDEO'&&thumbEl.readyState>=2&&thumbEl.videoWidth){
-    try{var cv=document.createElement('canvas');cv.width=thumbEl.videoWidth;cv.height=thumbEl.videoHeight;cv.getContext('2d').drawImage(thumbEl,0,0);liveVid().poster=cv.toDataURL('image/jpeg',0.85);}catch(e){}
+    try{var cv=document.createElement('canvas');cv.width=thumbEl.videoWidth;cv.height=thumbEl.videoHeight;cv.getContext('2d').drawImage(thumbEl,0,0);vSnapPoster=cv.toDataURL('image/jpeg',0.85);liveVid().poster=vSnapPoster;if(plyr){try{plyr.poster=vSnapPoster;}catch(e){}}}catch(e){}
   }
   if(thumbEl&&!isVideo(item)&&thumbEl.src&&thumbEl.complete&&thumbEl.naturalWidth){
     var r=thumbEl.getBoundingClientRect();
@@ -1335,8 +1343,12 @@ function openViewer(i,thumbEl,list){
       cl.style.transition='all .32s cubic-bezier(.32,.85,.35,1)';
       cl.style.left=tl+'px';cl.style.top=tp+'px';cl.style.width=tw+'px';cl.style.height=th+'px';
       setTimeout(function(){
-        if(vImg.complete&&vImg.naturalWidth)reveal();
-        else{vImg.addEventListener('load',reveal);if(vImg.decode)vImg.decode().then(reveal).catch(function(){});setTimeout(reveal,1100);}
+        var ready=function(){return vImg.complete&&vImg.naturalWidth>0;};
+        if(ready()){reveal();return;}
+        var onL=function(){vImg.removeEventListener('load',onL);reveal();};
+        vImg.addEventListener('load',onL);
+        if(vImg.decode)vImg.decode().then(function(){vImg.removeEventListener('load',onL);reveal();}).catch(function(){});
+        setTimeout(function(){if(ready()){vImg.removeEventListener('load',onL);reveal();}},1450);
       },345);
     });
   }
