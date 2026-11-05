@@ -130,8 +130,16 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .opt.on .ck{visibility:visible}
 .snote{font-size:13px;color:var(--faint);margin:9px 6px 0;line-height:1.9}
 .viewer{position:fixed;inset:0;z-index:95;background:#000;display:none;transition:background-color .32s ease}
-#vTapLayer{position:absolute;left:0;right:0;top:60px;bottom:96px;z-index:5;display:none;touch-action:none}
-#viewer.on-video #vTapLayer{display:block}
+/* hg-v11 (بازبینی): کنترل‌های ویدیو در نمای عادی پایین استیج داک می‌شوند (بالای نوار پایینی ویوئر)
+   و همیشه دیده می‌شوند؛ در فول‌اسکرین (کلاس hg-fs روی ویوئر) چیدمان پیش‌فرض Plyr برمی‌گردد. */
+#viewer.on-video .vstage{bottom:118px}
+#viewer.on-video.hg-fs .vstage{bottom:0}
+#viewer.on-video:not(.hg-fs) .plyr{display:flex;flex-direction:column;height:100%}
+#viewer.on-video:not(.hg-fs) .plyr__video-wrapper{flex:1 1 auto;min-height:0}
+#viewer.on-video:not(.hg-fs) .plyr__controls{position:static;flex:0 0 auto}
+#viewer.on-video:not(.hg-fs) .plyr.plyr--hide-controls .plyr__controls{opacity:1!important;pointer-events:auto!important;transform:none!important}
+.hg-seek-btn{position:relative;flex:0 0 auto}
+.hg-seek-btn .hg-seek-n{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:8.5px;font-weight:700;line-height:1;pointer-events:none;padding-top:1px}
 .seekfb{position:absolute;top:0;bottom:0;width:50%;z-index:6;display:flex;align-items:center;justify-content:center;pointer-events:none;opacity:0;color:#fff}
 .seekfb.l{left:0}.seekfb.r{right:0}
 .seekfb .seekfb-in{display:flex;flex-direction:column;align-items:center;gap:6px}
@@ -367,13 +375,12 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:18</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:35</span></p>
   </div>
 </section>
 
 <div class="viewer" id="viewer">
   <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div>
-  <div id="vTapLayer"></div>
   <div class="vtop"><div class="vtop-in">
     <button id="vClose" aria-label="بازگشت"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="vmeta"><div class="d" id="vDate"></div><div class="n" id="vNum"></div></div>
@@ -466,7 +473,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 20:18';
+var RUN_BUILD='2026-11-05 20:35';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1069,13 +1076,46 @@ function ensurePlyr(){
   if(plyrFailed||!window.Plyr)return false;
   try{
     plyr=new Plyr(vVid,{controls:['play-large','play','progress','current-time','duration','fullscreen'],seekTime:10,i18n:PLYR_I18N,storage:{enabled:false},keyboard:{focused:false,global:false},airplay:false});
-    try{plyr.on('enterfullscreen',fsLockLandscape);plyr.on('exitfullscreen',fsUnlock);}catch(e){}
+    try{plyr.on('enterfullscreen',function(){viewerEl.classList.add('hg-fs');fsLockLandscape();});plyr.on('exitfullscreen',function(){viewerEl.classList.remove('hg-fs');fsUnlock();});}catch(e){}
+    addSeekButtons();
     syncVidWrap();
     return true;
   }catch(e){plyrFailed=true;plyr=null;try{vVid.controls=true;}catch(_){}}
   return false;
 }
 function syncVidWrap(){var w=plyrWrapEl();if(w)w.style.display=(liveVid().style.display==='none')?'none':'block';}
+/* hg-v11 (بازبینی): دکمه‌های سیک ±۱۰ ثانیه دو طرف نوار پیشرفت داخل .plyr__controls —
+   هر لمس دقیقاً ∓۱۰ ثانیه (بدون انباشت)، با همان فیدبک دایره‌ای؛ روی پخش/مکث اثری ندارند. */
+function seekStep(sec){
+  var d=vidDur()||Infinity;
+  var nt=(liveVid().currentTime||0)+sec;
+  if(nt<0)nt=0;if(nt>d)nt=d;
+  try{liveVid().currentTime=nt;}catch(e){}
+  showSeekFb(sec<0?-1:1,10);
+}
+function seekBtnSVG(flip){
+  return '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"'+(flip?' style="transform:scaleX(-1)"':'')+'><path d="M4.6 8.8A8.5 8.5 0 1 1 3.4 13.2"/><path d="M3.3 4.4v4.6h4.6"/></svg><span class="hg-seek-n">10</span>';
+}
+function addSeekButtons(){
+  if(!plyr)return;
+  var wrap=plyrWrapEl();if(!wrap)return;
+  var ctl=wrap.querySelector('.plyr__controls'),prog=wrap.querySelector('.plyr__progress');
+  if(!ctl||!prog)return;
+  if(!ctl.querySelector('.hg-seek-btn[data-seek="-10"]')){
+    var br=document.createElement('button');
+    br.type='button';br.className='plyr__control hg-seek-btn';br.setAttribute('data-seek','-10');br.setAttribute('aria-label','۱۰ ثانیه عقب');
+    br.innerHTML=seekBtnSVG(false);
+    br.addEventListener('click',function(ev){ev.stopPropagation();seekStep(-10);});
+    prog.parentNode.insertBefore(br,prog);
+  }
+  if(!ctl.querySelector('.hg-seek-btn[data-seek="10"]')){
+    var bf=document.createElement('button');
+    bf.type='button';bf.className='plyr__control hg-seek-btn';bf.setAttribute('data-seek','10');bf.setAttribute('aria-label','۱۰ ثانیه جلو');
+    bf.innerHTML=seekBtnSVG(true);
+    bf.addEventListener('click',function(ev){ev.stopPropagation();seekStep(10);});
+    if(prog.nextSibling)prog.parentNode.insertBefore(bf,prog.nextSibling);else prog.parentNode.appendChild(bf);
+  }
+}
 /* hg-v10 (بخش B2): مخفی‌سازی قطعی رابط ویدیو روی اسلایدهای عکس — علاوه بر کلاس وضعیت ویوئر و گارد CSS */
 function hideVidUI(){
   try{if(plyr)plyr.pause();}catch(e){}
@@ -1096,6 +1136,7 @@ function fsLockLandscape(){
 }
 function fsUnlock(){try{if(screen.orientation&&screen.orientation.unlock)screen.orientation.unlock();}catch(e){}}
 document.addEventListener('fullscreenchange',function(){
+  if(document.fullscreenElement)viewerEl.classList.add('hg-fs');else viewerEl.classList.remove('hg-fs');
   if(plyr)return;
   if(document.fullscreenElement)fsLockLandscape();else fsUnlock();
 });
@@ -1201,7 +1242,7 @@ function showCurrentMedia(){
   var item=vItems()[vIdx];if(!item)return;
   if(isVideo(item)&&!item.thumb)maybeThumb(item);
   if(isVideo(item)){
-    vImg.style.display='none';liveVid().style.display='block';syncVidWrap();
+    vImg.style.display='none';liveVid().style.display='block';syncVidWrap();addSeekButtons();
     var postSrc=item.thumb?(RAW_BASE+item.thumb):(item.blur?blurUri(item):null);
     if(postSrc){liveVid().poster=postSrc;if(plyr){try{plyr.poster=postSrc;}catch(e){}}}
     if(item.thumb){var tp=new Image();tp.onload=function(){if(viewerId===item.id)markLoaded(item);};tp.src=RAW_BASE+item.thumb;}
@@ -1289,7 +1330,7 @@ window.addEventListener('popstate',function(){
   if(suppressPop){suppressPop=false;return;}
   var l=layers.pop();if(l&&l.closeFn)l.closeFn();
 });
-function vCloseVisual(){if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
+function vCloseVisual(){if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');viewerEl.classList.remove('hg-fs');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
 function closeViewer(){vCloseVisual();releaseLayer('viewer');}
 function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
 document.getElementById('vClose').addEventListener('click',function(ev){ev.stopPropagation();closeViewer();});
@@ -1440,14 +1481,17 @@ function vPtrUp(e){
     return;
   }
   if(Date.now()-pan.t0>400){flushTap();return;}
+  if(curItemIsVideo()){
+    if(vTapTimer){clearTimeout(vTapTimer);vTapTimer=null;}
+    vTapInfo=null;
+    viewerEl.classList.toggle('nochrome');
+    return;
+  }
   var now=Date.now();
   if(vTapInfo&&now-vTapInfo.t<360&&Math.hypot(e.clientX-vTapInfo.x,e.clientY-vTapInfo.y)<36){
     vTapInfo=null;lastDblZoom=now;
     vzTrans(true);
-    if(curItemIsVideo()){
-      var r0=vzStage();seekBy(e.clientX<r0.left+r0.width/2?-10:10);
-    }
-    else if(vz.s>1.02){vz={s:1,x:0,y:0};applyVz();}
+    if(vz.s>1.02){vz={s:1,x:0,y:0};applyVz();}
     else{zoomAt(e.clientX,e.clientY,2.5);viewerEl.classList.add('nochrome');}
   }else{
     vTapInfo={t:now,x:e.clientX,y:e.clientY};
@@ -1482,36 +1526,15 @@ function seekBy(sec){
   try{liveVid().currentTime=nt;}catch(e){}
   showSeekFb(side,seekAcc.total);
 }
-/* hg-v11: لایه‌ی تپ اختصاصی روی ویدیو — تنها مسیر تپ روی سطح ویدیو.
-   دبل‌تپ: سیک ±۱۰ ثانیه با انباشت (seekBy) و فیدبک دایره‌ای؛ تک‌تپ (بعد از ۳۲۰ms بی‌تپ دوم):
-   تغییر کروم + پخش/مکث. هک قدیمی نگه‌داشتن/بازپخش کلیک و شاخه‌های onVid حذف شدند تا با Plyr نجنگند. */
-var tapLayer=document.getElementById('vTapLayer');
-var tapSingleTimer=null,tapLastT=0,tapLastSide=0;
-function vidTogglePlay(){
-  var m=liveVid();if(!m)return;
-  if(m.paused)vidPlay();
-  else{try{if(plyr)plyr.pause();else m.pause();}catch(e){try{m.pause();}catch(_){}}}
-}
-tapLayer.addEventListener('pointerup',function(e){
-  if(!viewerEl.classList.contains('open')||!curItemIsVideo())return;
-  if(resumeWrap.classList.contains('open'))return;
-  var r=vzStage();
-  var side=e.clientX<r.left+r.width/2?-10:10;
-  var now=Date.now();
-  if(now-tapLastT<350&&side===tapLastSide){
-    if(tapSingleTimer){clearTimeout(tapSingleTimer);tapSingleTimer=null;}
-    tapLastT=now;
-    seekBy(side);
-    return;
-  }
-  tapLastT=now;tapLastSide=side;
-  if(tapSingleTimer)clearTimeout(tapSingleTimer);
-  tapSingleTimer=setTimeout(function(){
-    tapSingleTimer=null;tapLastT=0;
-    viewerEl.classList.toggle('nochrome');
-    vidTogglePlay();
-  },320);
-});
+/* hg-v11 (بازبینی): دبل‌تپ سیک به خواست کاربر کاملاً حذف شد — هیچ لایه‌ی تپی روی ویدیو نیست؛
+   تک‌تپ رفتار plain پلیر است (پخش/مکث با Plyr + تغییر کروم از هندلر استیج) و سیک فقط با
+   دکمه‌های ±۱۰ کنار نوار پیشرفت و کلیدهای جهت‌دار انجام می‌شود. دبل‌کلیک روی سطح ویدیو هم
+   خنثی می‌شود تا فول‌اسکرین اتفاقی نیاید؛ دکمه‌ی فول‌اسکرین خودش کار می‌کند. */
+vStage.addEventListener('dblclick',function(e){
+  if(!curItemIsVideo())return;
+  if(e.target&&e.target.closest&&e.target.closest('.plyr__controls'))return;
+  e.stopPropagation();e.preventDefault();
+},true);
 vStage.addEventListener('dblclick',function(e){
   if(e.target!==vImg)return;
   if(Date.now()-lastDblZoom<600)return;
