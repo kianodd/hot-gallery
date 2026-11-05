@@ -134,6 +134,25 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .flip{position:fixed;z-index:96;object-fit:cover;pointer-events:none;margin:0}
 .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translate(-50%,14px);background:rgba(38,38,40,.96);color:#fff;font-size:14px;padding:11px 18px;border-radius:12px;z-index:130;opacity:0;pointer-events:none;transition:.25s;max-width:92vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
+.vtools button.favon{color:#ff2d55}
+.vtools button.favon svg{fill:#ff2d55}
+.qpill{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(18px + env(safe-area-inset-bottom));z-index:65;background:rgba(38,38,40,.96);color:#fff;display:none;align-items:center;gap:9px;padding:10px 16px;border-radius:999px;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,.3);cursor:pointer;max-width:92vw;white-space:nowrap}
+.qpill.show{display:flex}
+body.selecting .qpill{display:none}
+.qpill .spin{width:16px;height:16px;border-width:2px;border-color:rgba(255,255,255,.3);border-top-color:#fff}
+.qbadge{background:var(--red);color:#fff;font-size:12px;font-weight:700;min-width:21px;height:21px;border-radius:11px;display:none;place-items:center;padding:0 6px}
+.qbadge.show{display:grid}
+.qrow{display:flex;align-items:center;gap:11px;background:var(--card);border-radius:12px;padding:12px 14px;margin-bottom:9px}
+.qrow .ic{flex:0 0 auto;width:28px;height:28px;display:grid;place-items:center;color:var(--faint)}
+.qrow .ic .spin{width:19px;height:19px;border-width:2.2px}
+.qrow .tx{flex:1;min-width:0}
+.qrow .u{font-size:12.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qrow .s{font-size:13.5px;margin-top:2px;color:var(--sub)}
+.qrow .s.err{color:var(--red)}
+.qrow .s.done{color:#30d158}
+.qrow .acts{flex:0 0 auto;display:flex;align-items:center;gap:2px}
+.qrow .acts button{color:var(--blue);font-size:14px;padding:6px 5px}
+.qrow .acts button.x{color:var(--faint);font-size:18px;line-height:1}
 </style>
 </head>
 <body>
@@ -167,6 +186,8 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 
 <div class="scrim" id="scrim"></div>
 <div class="menu" id="menu" role="menu">
+  <button id="miQueue"><span>صف آپلود</span><span class="qbadge" id="qBadge"></span></button>
+  <button id="miFav"><span>مورد علاقه‌ها</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" style="color:var(--faint)"><path d="M12 20.7C6.4 17 3 13.6 3 9.6 3 7 5 5 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5 19 5 21 7 21 9.6c0 4-3.4 7.4-9 11.1z"/></svg></button>
   <button id="miSelect"><span>انتخاب</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
@@ -175,9 +196,9 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
   <div class="sheet" role="dialog" aria-modal="true">
     <div class="grab"></div>
     <h2>افزودن عکس یا فیلم</h2>
-    <p class="sub">لینک مستقیم عکس یا فیلم را بده. دانلود و در گالری ذخیره می‌شود. (عکس تا ۷۰ مگابایت، فیلم تا ۵۰۰ مگابایت)</p>
+    <p class="sub">لینک مستقیم عکس یا فیلم را بده؛ می‌توانی چند لینک را با فاصله یا در خط‌های جدا یکجا بچسبانی. آپلودها در پس‌زمینه و به‌ترتیب در صف انجام می‌شوند. (حداکثر ۱۰۰ مگابایت برای هر فایل)</p>
     <input id="urlInput" type="url" dir="ltr" inputmode="url" placeholder="https://example.com/media.mp4" autocomplete="off">
-    <button class="primary" id="doAdd">افزودن</button>
+    <button class="primary" id="doAdd">افزودن به صف</button>
     <button class="cancel" data-close-add="1">لغو</button>
   </div>
 </div>
@@ -215,11 +236,38 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
   <div class="vbot">
     <div class="strip" id="vStrip"></div>
     <div class="vtools">
+      <button id="vFav" aria-label="مورد علاقه"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M12 20.7C6.4 17 3 13.6 3 9.6 3 7 5 5 7.5 5c1.7 0 3.4 1 4.5 2.6C13.1 6 14.8 5 16.5 5 19 5 21 7 21 9.6c0 4-3.4 7.4-9 11.1z"/></svg></button>
       <button id="vShare" aria-label="اشتراک‌گذاری"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M8 5.5L12 2l4 3.5M6 11H5a1.5 1.5 0 0 0-1.5 1.5v7A1.5 1.5 0 0 0 5 21h14a1.5 1.5 0 0 0 1.5-1.5v-7A1.5 1.5 0 0 0 19 11h-1"/></svg></button>
       <button id="vDelete" aria-label="حذف"><svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M9 7V5a1.5 1.5 0 0 1 1.5-1.5h3A1.5 1.5 0 0 1 15 5v2M6.5 7l1 12A1.5 1.5 0 0 0 9 20.5h6a1.5 1.5 0 0 0 1.5-1.5l1-12M10 11v6M14 11v6"/></svg></button>
     </div>
   </div>
 </div>
+
+<section class="view-settings" id="favView" aria-label="مورد علاقه‌ها">
+  <div class="sbar">
+    <button class="sback" id="favBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>گالری</span></button>
+    <div class="stitle">مورد علاقه‌ها</div>
+  </div>
+  <div style="flex:1;overflow:auto">
+    <div class="grid" id="favGrid"></div>
+    <div class="footcount" id="favCount"></div>
+    <div class="empty" id="favEmpty" style="display:none;padding:80px 24px"><div class="big">هنوز مورد علاقه‌ای نداری</div><p>عکس یا فیلم را باز کن و روی قلب بزن تا اینجا نشان داده شود.</p></div>
+  </div>
+</section>
+
+<section class="view-settings" id="queueView" aria-label="صف آپلود">
+  <div class="sbar">
+    <button class="sback" id="qBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>گالری</span></button>
+    <div class="stitle">صف آپلود</div>
+  </div>
+  <div class="sbody">
+    <div id="queueList"></div>
+    <div class="empty" id="queueEmpty" style="padding:56px 24px"><div class="big">صف خالی است</div><p>آپلودی در جریان نیست. آپلودها اینجا به‌ترتیب انجام می‌شوند و لازم نیست منتظر بمانی.</p></div>
+    <button class="cancel" id="qClear" style="display:none">پاک کردن انجام‌شده‌ها</button>
+  </div>
+</section>
+
+<div class="qpill" id="qPill"><span class="spin"></span><span id="qPillText"></span></div>
 
 <div class="toast" id="toast"></div>
 
@@ -230,17 +278,15 @@ var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
 var photos=[],urls={},selecting=false,selected={};
 function isVideo(it){return it.kind==='video'||(it.mime&&it.mime.indexOf('video/')===0);}
+var RAW_BASE='https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
 function mediaUrl(item){
-  if(item.raw){if(!urls[item.id])urls[item.id]=API+'/api/stream/'+encodeURIComponent(item.id);return Promise.resolve(urls[item.id]);}
-  if(urls[item.id])return Promise.resolve(urls[item.id]);
-  return fetch(API+'/api/file/'+encodeURIComponent(item.id)).then(function(r){if(!r.ok)throw new Error(r.status);return r.text();}).then(function(t){
-    return fetch('data:'+(item.mime||'application/octet-stream')+';base64,'+t.replace(/\s/g,'')).then(function(r){return r.blob();});
-  }).then(function(b){var u=URL.createObjectURL(b);urls[item.id]=u;return u;});
+  if(!urls[item.id])urls[item.id]=RAW_BASE+item.path;
+  return Promise.resolve(urls[item.id]);
 }
 function fmtDur(s){if(!isFinite(s))return '';s=Math.round(s);var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r;}
 function loadInto(item,el){
   mediaUrl(item).then(function(u){
-    var disp=(item.raw&&isVideo(item))?u+'#t=0.1':u;
+    var disp=isVideo(item)?u+'#t=0.1':u;
     el.src=disp;
     var cell=el.closest('.cell');if(cell){var ph=cell.querySelector('.ph');if(ph)ph.style.display='none';}
     var th=document.querySelector('[data-strip="'+item.id+'"]');if(th&&!th.src)th.src=disp;
@@ -281,7 +327,7 @@ function bindCell(c,item,idx,el){
   });
 }
 function load(){
-  fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];render();}).catch(function(){toast('خطا در دریافت گالری');});
+  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];render();}).catch(function(){toast('خطا در دریافت گالری');});
 }
 /* selection */
 var selTitle=document.getElementById('selTitle'),selDelete=document.getElementById('selDelete');
@@ -312,7 +358,7 @@ function deleteIds(ids){
     chain=chain.then(function(){
       return fetch(API+'/api/item/'+encodeURIComponent(id),{method:'DELETE'}).then(function(r){if(!r.ok)throw new Error(r.status);
         photos=photos.filter(function(p){return p.id!==id;});
-        if(urls[id]){URL.revokeObjectURL(urls[id]);delete urls[id];}
+        if(urls[id]){delete urls[id];}
         delete selected[id];
       }).catch(function(){failed++;});
     });
@@ -320,46 +366,50 @@ function deleteIds(ids){
   return chain.then(function(){
     render();
     if(viewerEl.classList.contains('open')){
-      if(!photos.length)closeViewer();
-      else{if(viewerId&&ids.indexOf(viewerId)>=0)showPhoto(Math.min(vIdx,photos.length-1),0);else buildStrip();}
+      vList=vItems().filter(function(p){return photos.indexOf(p)>=0;});
+      if(!vList.length)closeViewer();
+      else{if(viewerId&&ids.indexOf(viewerId)>=0)showPhoto(Math.min(vIdx,vList.length-1),0);else buildStrip();}
     }
     toast(failed?'بعضی موارد حذف نشد':'حذف شد');
   });
 }
 /* viewer */
-var viewerId=null,vIdx=0,viewerEl=document.getElementById('viewer'),vImg=document.getElementById('vImg'),vVid=document.getElementById('vVid'),vStage=document.getElementById('vStage'),vStrip=document.getElementById('vStrip'),zoomed=false;
+var viewerId=null,vIdx=0,vList=null,viewerEl=document.getElementById('viewer'),vImg=document.getElementById('vImg'),vVid=document.getElementById('vVid'),vStage=document.getElementById('vStage'),vStrip=document.getElementById('vStrip'),vFavBtn=document.getElementById('vFav'),zoomed=false;
+function vItems(){return vList||photos;}
+function syncFavBtn(){var it=vItems()[vIdx];vFavBtn.classList.toggle('favon',!!(it&&it.fav));}
 function faDate(ts){try{var d=new Date(ts);return d.toLocaleDateString('fa-IR',{day:'numeric',month:'long',year:'numeric'})+' · '+d.toLocaleTimeString('fa-IR',{hour:'2-digit',minute:'2-digit'});}catch(e){return '';}}
 function buildStrip(){
   vStrip.innerHTML='';
-  photos.forEach(function(p,i){
-    var t=document.createElement(isVideo(p)?'video':'img');t.setAttribute('data-strip',p.id);t.alt='';if(isVideo(p)){t.muted=true;t.playsInline=true;t.preload='metadata';}if(urls[p.id])t.src=(p.raw&&isVideo(p))?urls[p.id]+'#t=0.1':urls[p.id];
+  vItems().forEach(function(p,i){
+    var t=document.createElement(isVideo(p)?'video':'img');t.setAttribute('data-strip',p.id);t.alt='';if(isVideo(p)){t.muted=true;t.playsInline=true;t.preload='metadata';}if(urls[p.id])t.src=isVideo(p)?urls[p.id]+'#t=0.1':urls[p.id];
     if(i===vIdx)t.className='on';
     t.addEventListener('click',function(ev){ev.stopPropagation();showPhoto(i,i>vIdx?1:-1);});
     vStrip.appendChild(t);
-    if(!urls[p.id])mediaUrl(p).then(function(u){t.src=(p.raw&&isVideo(p))?u+'#t=0.1':u;}).catch(function(){});
+    if(!urls[p.id])mediaUrl(p).then(function(u){t.src=isVideo(p)?u+'#t=0.1':u;}).catch(function(){});
   });
 }
 function showCurrentMedia(){
-  var item=photos[vIdx];if(!item)return;var u=urls[item.id];if(!u)return;
+  var item=vItems()[vIdx];if(!item)return;var u=urls[item.id];if(!u)return;
   if(isVideo(item)){vImg.style.display='none';vVid.style.display='block';if(vVid.src!==u){vVid.src=u;}var pr=vVid.play();if(pr)pr.catch(function(){});}
   else{vVid.pause();vVid.style.display='none';vImg.style.display='block';vImg.src=u;}
 }
 function showPhoto(i,dir){
-  if(!photos.length)return;
-  vIdx=i;viewerId=photos[i].id;zoomed=false;vImg.style.transform='';
-  document.getElementById('vNum').textContent=(i+1)+' از '+photos.length;
-  document.getElementById('vDate').textContent=faDate(photos[i].created_at||Date.now());
+  var L=vItems();if(!L.length)return;
+  vIdx=i;viewerId=L[i].id;zoomed=false;vImg.style.transform='';syncFavBtn();
+  document.getElementById('vNum').textContent=(i+1)+' از '+L.length;
+  document.getElementById('vDate').textContent=faDate(L[i].created_at||Date.now());
   if(urls[viewerId])showCurrentMedia();
-  else{vImg.style.display=isVideo(photos[i])?'none':'block';vVid.style.display='none';mediaUrl(photos[i]).then(function(){showCurrentMedia();}).catch(function(){});}
-  if(dir&&!isVideo(photos[i])){vImg.classList.remove('anim-next','anim-prev');void vImg.offsetWidth;vImg.classList.add(dir>0?'anim-next':'anim-prev');}
+  else{vImg.style.display=isVideo(L[i])?'none':'block';vVid.style.display='none';mediaUrl(L[i]).then(function(){showCurrentMedia();}).catch(function(){});}
+  if(dir&&!isVideo(L[i])){vImg.classList.remove('anim-next','anim-prev');void vImg.offsetWidth;vImg.classList.add(dir>0?'anim-next':'anim-prev');}
   vStrip.querySelectorAll('img,video').forEach(function(t,j){t.classList.toggle('on',j===i);});
   var cur=vStrip.children[i];if(cur)cur.scrollIntoView({inline:'center',block:'nearest',behavior:'smooth'});
 }
-function openViewer(i,thumbEl){
-  if(!photos.length)return;
+function openViewer(i,thumbEl,list){
+  vList=list||photos;
+  if(!vList.length)return;
   viewerEl.classList.remove('nochrome');viewerEl.classList.add('open');document.body.style.overflow='hidden';
   buildStrip();showPhoto(i,0);
-  var item=photos[i];
+  var item=vList[i];
   if(thumbEl&&!isVideo(item)&&thumbEl.src&&thumbEl.complete&&thumbEl.naturalWidth){
     var r=thumbEl.getBoundingClientRect();
     var nw=thumbEl.naturalWidth,nh=thumbEl.naturalHeight,vw=window.innerWidth,vh=window.innerHeight;
@@ -374,22 +424,47 @@ function openViewer(i,thumbEl){
     });
   }
 }
-function closeViewer(){vVid.pause();viewerEl.classList.remove('open');viewerId=null;zoomed=false;vImg.style.transform='';document.body.style.overflow='';}
-function stepViewer(d){if(!photos.length)return;showPhoto((vIdx+d+photos.length)%photos.length,d);}
+function closeViewer(){vVid.pause();viewerEl.classList.remove('open');viewerId=null;vList=null;zoomed=false;vImg.style.transform='';document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();}
+function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
 document.getElementById('vClose').addEventListener('click',function(ev){ev.stopPropagation();closeViewer();});
 document.getElementById('vDelete').addEventListener('click',function(ev){
-  ev.stopPropagation();if(!viewerId)return;var item=photos[vIdx];
+  ev.stopPropagation();if(!viewerId)return;var item=vItems()[vIdx];
   confirmSheet(isVideo(item)?'حذف این فیلم':'حذف این عکس',function(){var id=viewerId;deleteIds([id]);});
 });
 document.getElementById('vShare').addEventListener('click',function(ev){
-  ev.stopPropagation();var item=photos[vIdx];if(!item)return;var u=urls[item.id];if(!u){toast('هنوز بارگذاری نشده');return;}
+  ev.stopPropagation();var item=vItems()[vIdx];if(!item)return;var u=urls[item.id];if(!u){toast('هنوز بارگذاری نشده');return;}
   fetch(u).then(function(r){return r.blob();}).then(function(b){
-    var f=new File([b],'hot-gallery-'+item.id+(isVideo(item)?'.mp4':'.jpg'),{type:item.mime||b.type});
+    var ext=(item.path||'').split('.').pop();if(!ext||ext.length>5)ext=isVideo(item)?'mp4':'jpg';
+    var f=new File([b],'hot-gallery-'+item.id+'.'+ext,{type:item.mime||b.type});
     if(navigator.canShare&&navigator.canShare({files:[f]})){navigator.share({files:[f]}).catch(function(){});}
     else if(navigator.share){navigator.share({url:u}).catch(function(){});}
     else{var a=document.createElement('a');a.href=u;a.download=f.name;a.click();}
   }).catch(function(){toast('اشتراک‌گذاری ناموفق بود');});
 });
+/* favorites */
+var favViewEl=document.getElementById('favView'),favGrid=document.getElementById('favGrid'),favCount=document.getElementById('favCount'),favEmpty=document.getElementById('favEmpty');
+vFavBtn.addEventListener('click',function(ev){
+  ev.stopPropagation();var item=vItems()[vIdx];if(!item)return;
+  var nf=!item.fav;item.fav=nf;syncFavBtn();
+  if(navigator.vibrate)navigator.vibrate(8);
+  fetch(API+'/api/fav/'+encodeURIComponent(item.id),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fav:nf})}).then(function(r){if(!r.ok)throw new Error(r.status);}).catch(function(){item.fav=!nf;syncFavBtn();toast('ثبت مورد علاقه ناموفق بود');});
+});
+function renderFavs(){
+  var favs=photos.filter(function(p){return p.fav;});
+  favGrid.innerHTML='';
+  favCount.textContent=favs.length?(favs.length+' مورد'):'';
+  favEmpty.style.display=favs.length?'none':'block';
+  favs.forEach(function(item,i){
+    var c=document.createElement('button');c.className='cell';c.dataset.id=item.id;c.setAttribute('aria-label','مورد علاقه '+(i+1));
+    var ph=document.createElement('span');ph.className='ph';ph.innerHTML='<span class="spin"></span>';c.appendChild(ph);
+    var el=document.createElement(isVideo(item)?'video':'img');
+    el.alt='';if(isVideo(item)){el.muted=true;el.playsInline=true;el.preload='metadata';}else{el.loading='lazy';}
+    c.appendChild(el);
+    if(isVideo(item)){var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg>';c.appendChild(b);}
+    c.addEventListener('click',function(){openViewer(i,el,photos.filter(function(p){return p.fav;}));});
+    favGrid.appendChild(c);loadInto(item,el);
+  });
+}
 document.addEventListener('keydown',function(e){if(!viewerEl.classList.contains('open'))return;if(e.key==='Escape')closeViewer();if(e.key==='ArrowLeft')stepViewer(1);if(e.key==='ArrowRight')stepViewer(-1);});
 var tsX=0,tsY=0,moved=false;
 vStage.addEventListener('touchstart',function(e){var t=e.touches[0];tsX=t.clientX;tsY=t.clientY;moved=false;},{passive:true});
@@ -422,6 +497,10 @@ menuBtn.addEventListener('click',function(){
   menu.classList.add('open');scrim.classList.add('open');
 });
 scrim.addEventListener('click',closeMenu);
+document.getElementById('miFav').addEventListener('click',function(){closeMenu();renderFavs();favViewEl.classList.add('open');});
+document.getElementById('favBack').addEventListener('click',function(){favViewEl.classList.remove('open');});
+document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();});
+document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();});
 document.getElementById('miSelect').addEventListener('click',function(){closeMenu();if(photos.length)enterSelect(null);else toast('چیزی برای انتخاب نیست');});
 document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();document.getElementById('settingsView').classList.add('open');});
 document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');});
@@ -438,24 +517,92 @@ function syncThemeOpts(){
 }
 document.querySelectorAll('[data-theme-opt]').forEach(function(b){b.addEventListener('click',function(){applyTheme(b.getAttribute('data-theme-opt'));syncThemeOpts();});});
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if((document.documentElement.dataset.themePref||'auto')==='auto')applyTheme('auto');});
-/* add — بعد از افزودن، مورد تازه همان لحظه به لیست اضافه می‌شود، بدون رفرش */
+/* صف آپلود — آپلودها در پس‌زمینه و به‌ترتیب انجام می‌شوند؛ مورد کامل‌شده همان لحظه به گالری اضافه می‌شود */
+var queue=[],qRunning=false,qCtrl=null;
+var qList=document.getElementById('queueList'),qEmpty=document.getElementById('queueEmpty'),qClear=document.getElementById('qClear'),qBadge=document.getElementById('qBadge'),qPill=document.getElementById('qPill'),qPillText=document.getElementById('qPillText'),queueView=document.getElementById('queueView');
+var Q_ICONS={
+  wait:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3.2 2"/></svg>',
+  up:'<span class="spin"></span>',
+  done:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="#30d158" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>',
+  err:'<svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16.6v.4"/></svg>'
+};
+function fmtElapsed(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
+function fmtSize(b){if(!b)return '';if(b<1024)return b+' بایت';if(b<1048576)return (b/1024).toFixed(0)+' کیلوبایت';return (b/1048576).toFixed(1)+' مگابایت';}
+function qActiveN(){return queue.filter(function(q){return q.status==='wait'||q.status==='up';}).length;}
+function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return q.url;})));}catch(e){}}
+function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(u){if(!photos.some(function(p){return p.source===u;}))queue.push({url:u,status:'wait',error:null,item:null,t0:0});});}catch(e){}}
+function updatePill(){
+  var n=qActiveN();
+  qBadge.textContent=n;qBadge.classList.toggle('show',n>0);
+  var show=n>0&&!queueView.classList.contains('open')&&!favViewEl.classList.contains('open');
+  qPill.classList.toggle('show',show);
+  if(show){var up=queue.some(function(q){return q.status==='up';});qPillText.textContent=up?('در حال آپلود… '+n+' مورد در صف'):('در صف آپلود: '+n+' مورد');}
+}
+qPill.addEventListener('click',function(){qRender();queueView.classList.add('open');updatePill();});
+function qRender(){
+  qList.innerHTML='';
+  qEmpty.style.display=queue.length?'none':'block';
+  qClear.style.display=queue.some(function(q){return q.status==='done';})?'block':'none';
+  queue.forEach(function(q){
+    var row=document.createElement('div');row.className='qrow';
+    var ic=document.createElement('div');ic.className='ic';ic.innerHTML=Q_ICONS[q.status];row.appendChild(ic);
+    var tx=document.createElement('div');tx.className='tx';
+    var u=document.createElement('div');u.className='u';u.dir='ltr';u.textContent=q.url;tx.appendChild(u);
+    var s=document.createElement('div');s.className='s'+(q.status==='err'?' err':q.status==='done'?' done':'');
+    if(q.status==='wait')s.textContent='در صف';
+    else if(q.status==='up'){s.textContent='در حال آپلود… '+fmtElapsed(Date.now()-q.t0);s.dataset.qtime='1';}
+    else if(q.status==='done')s.textContent='اضافه شد'+(q.item&&q.item.size?' · '+fmtSize(q.item.size):'');
+    else s.textContent='خطا'+(q.error?': '+q.error:'');
+    tx.appendChild(s);row.appendChild(tx);
+    var acts=document.createElement('div');acts.className='acts';
+    if(q.status==='up'){var cb=document.createElement('button');cb.textContent='لغو';cb.addEventListener('click',function(){if(qCtrl)qCtrl.abort();});acts.appendChild(cb);}
+    if(q.status==='err'){var rb=document.createElement('button');rb.textContent='تلاش دوباره';rb.addEventListener('click',function(){q.status='wait';q.error=null;qSave();qRender();qProcess();});acts.appendChild(rb);}
+    if(q.status!=='up'){var xb=document.createElement('button');xb.className='x';xb.textContent='×';xb.setAttribute('aria-label','حذف از صف');xb.addEventListener('click',function(){queue=queue.filter(function(x){return x!==q;});qSave();qRender();});acts.appendChild(xb);}
+    row.appendChild(acts);qList.appendChild(row);
+  });
+  updatePill();
+}
+qClear.addEventListener('click',function(){queue=queue.filter(function(q){return q.status!=='done';});qSave();qRender();});
+setInterval(function(){
+  var el=qList.querySelector('[data-qtime]');
+  if(el){var up=queue.find(function(q){return q.status==='up';});if(up)el.textContent='در حال آپلود… '+fmtElapsed(Date.now()-up.t0);}
+},1000);
+function qEnqueue(list){
+  list.forEach(function(u){queue.push({url:u,status:'wait',error:null,item:null,t0:0});});
+  qSave();qRender();qProcess();
+}
+function qProcess(){
+  if(qRunning)return;
+  var q=queue.find(function(x){return x.status==='wait';});
+  if(!q){qRender();return;}
+  qRunning=true;q.status='up';q.t0=Date.now();qRender();
+  qCtrl=('AbortController' in window)?new AbortController():null;
+  fetch(API+'/api/add',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:q.url}),signal:qCtrl?qCtrl.signal:undefined}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(x){
+    qRunning=false;qCtrl=null;
+    if(!x.ok||!x.d.item){q.status='err';q.error=(x.d&&x.d.error)||'آپلود ناموفق بود';}
+    else{q.status='done';q.item=x.d.item;if(!photos.some(function(p){return p.id===x.d.item.id;})){photos.unshift(x.d.item);render();}toast(isVideo(x.d.item)?'فیلم اضافه شد':'عکس اضافه شد');}
+    qSave();qRender();qProcess();
+  }).catch(function(e){
+    qRunning=false;qCtrl=null;
+    if(e&&e.name==='AbortError'){queue=queue.filter(function(x){return x!==q;});toast('آپلود لغو شد');}
+    else{q.status='err';q.error='خطا در ارتباط';}
+    qSave();qRender();qProcess();
+  });
+}
+/* add sheet */
 var addOverlay=document.getElementById('addOverlay'),urlInput=document.getElementById('urlInput'),doAdd=document.getElementById('doAdd');
 document.getElementById('addBtn').addEventListener('click',function(){addOverlay.classList.add('open');setTimeout(function(){urlInput.focus();},80);});
 document.querySelectorAll('[data-close-add]').forEach(function(el){el.addEventListener('click',function(){addOverlay.classList.remove('open');});});
 doAdd.addEventListener('click',function(){
-  var u=urlInput.value.trim();if(!u){toast('لینک را وارد کن');return;}
-  doAdd.disabled=true;doAdd.textContent='در حال افزودن…';
-  fetch(API+'/api/add',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:u})}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(x){
-    doAdd.disabled=false;doAdd.textContent='افزودن';
-    if(!x.ok||!x.d.item){toast(x.d&&x.d.error?x.d.error:'افزودن ناموفق بود');return;}
-    urlInput.value='';addOverlay.classList.remove('open');
-    photos.unshift(x.d.item);render();
-    window.scrollTo({top:0,behavior:'smooth'});
-    toast(isVideo(x.d.item)?'فیلم اضافه شد':'عکس اضافه شد');
-  }).catch(function(){doAdd.disabled=false;doAdd.textContent='افزودن';toast('خطا در افزودن');});
+  var raw=urlInput.value.trim();if(!raw){toast('لینک را وارد کن');return;}
+  var parts=raw.split(/\s+/).filter(function(s){return /^https?:\/\//i.test(s);});
+  if(!parts.length){toast('لینک معتبر نیست');return;}
+  urlInput.value='';addOverlay.classList.remove('open');
+  qEnqueue(parts);
+  toast(parts.length>1?parts.length+' مورد به صف آپلود اضافه شد':'به صف آپلود اضافه شد');
 });
 urlInput.addEventListener('keydown',function(e){if(e.key==='Enter')doAdd.click();});
-load();
+load().then(function(){qRestore();qRender();qProcess();});
 </script>
 </body>
 </html>
