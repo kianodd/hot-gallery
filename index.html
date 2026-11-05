@@ -363,7 +363,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 18:46</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 19:13</span></p>
   </div>
 </section>
 
@@ -461,7 +461,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 18:46';
+var RUN_BUILD='2026-11-05 19:13';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2088,8 +2088,14 @@ function maybeThumb(item){
     if(done)return;
     var d=v.duration;
     if(!isFinite(d)||d<=0||!v.videoWidth){fail();return;}
-    var onSeek=function(){
-      v.removeEventListener('seeked',onSeek);
+    var cand=[0.10,0.25,0.40,0.55,0.70,0.85],ci=0,bestT=-1,bestL=-1;
+    var pcv=document.createElement('canvas');pcv.width=16;pcv.height=16;
+    function frameLuma(){
+      try{var cx=pcv.getContext('2d');cx.drawImage(v,0,0,16,16);var px=cx.getImageData(0,0,16,16).data,s=0,mx=0,n=0;
+      for(var i=0;i<px.length;i+=4){var y=px[i]*0.299+px[i+1]*0.587+px[i+2]*0.114;s+=y;if(y>mx)mx=y;n++;}
+      return {mean:n?s/n:0,max:mx};}catch(e){return {mean:999,max:999};}
+    }
+    function finishCapture(){
       if(done)return;
       try{
         var w=Math.min(640,v.videoWidth);var h=Math.max(2,Math.round(w*v.videoHeight/v.videoWidth));
@@ -2105,8 +2111,22 @@ function maybeThumb(item){
         },'image/jpeg',0.82);
       }catch(e){fail();}
     };
+    var onSeek=function(){
+      if(done)return;
+      var L=frameLuma();
+      if(L.mean>=20&&L.max>40){v.removeEventListener('seeked',onSeek);finishCapture();return;}
+      if(L.mean>bestL){bestL=L.mean;bestT=v.currentTime;}
+      ci++;
+      if(ci<cand.length){try{v.currentTime=d*cand[ci];}catch(e){fail();}return;}
+      v.removeEventListener('seeked',onSeek);
+      if(bestT>=0&&Math.abs(v.currentTime-bestT)>0.5){
+        var h=function(){v.removeEventListener('seeked',h);if(!done)finishCapture();};
+        v.addEventListener('seeked',h);
+        try{v.currentTime=bestT;}catch(e){finishCapture();}
+      }else finishCapture();
+    };
     v.addEventListener('seeked',onSeek);
-    try{v.currentTime=d*(0.1+Math.random()*0.8);}catch(e){fail();}
+    try{v.currentTime=d*cand[0];}catch(e){fail();}
   });
   v.addEventListener('error',function(){if(!done)fail();});
   setTimeout(function(){if(!done)fail();},30000);
