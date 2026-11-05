@@ -320,7 +320,7 @@ body.selecting .qpill{display:none}
   <div class="sheet" role="dialog" aria-modal="true">
     <div class="grab"></div>
     <h2>افزودن عکس یا فیلم</h2>
-    <p class="sub">لینک مستقیم عکس یا فیلم را بده؛ می‌توانی چند لینک را با فاصله یا در خط‌های جدا یکجا بچسبانی. آپلودها در پس‌زمینه و به‌ترتیب در صف انجام می‌شوند. (عکس تا ۱۰۰ مگابایت؛ فیلم تا ۵۰۰ مگابایت — فیلم‌ها تکه‌تکه ذخیره می‌شوند و موقع پخش، خود اپ تکه‌ها را کنار هم می‌چیند)</p>
+    <p class="sub">لینک مستقیم عکس یا فیلم — یا لینک ویدیوی یوتیوب — را بده؛ ویدیوهای یوتیوب با کیفیت ۳۶۰p دانلود و خودکار در پوشه‌ی YouTube ذخیره می‌شوند؛ می‌توانی چند لینک را با فاصله یا در خط‌های جدا یکجا بچسبانی. آپلودها در پس‌زمینه و به‌ترتیب در صف انجام می‌شوند. (عکس تا ۱۰۰ مگابایت؛ فیلم تا ۵۰۰ مگابایت — فیلم‌ها تکه‌تکه ذخیره می‌شوند و موقع پخش، خود اپ تکه‌ها را کنار هم می‌چیند)</p>
     <input id="urlInput" type="url" dir="ltr" inputmode="url" placeholder="https://example.com/media.mp4" autocomplete="off">
     <button class="primary" id="doAdd">افزودن به صف</button>
     <button class="cancel" data-close-add="1">لغو</button>
@@ -387,7 +387,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 21:46</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 01:44</span></p>
   </div>
 </section>
 
@@ -485,7 +485,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 21:46';
+var RUN_BUILD='2026-11-06 01:44';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2088,6 +2088,8 @@ var infoItem=null;
 function fillInfoRows(item){
   var rows=[];
   rows.push(['نوع',isVideo(item)?'فیلم':'عکس']);
+  if(item.title)rows.push(['عنوان',item.title]);
+  if(item.channel)rows.push(['کانال',item.channel]);
   if(item.w&&item.h)rows.push(['ابعاد',item.w+' × '+item.h]);
   else if(!isVideo(item)&&viewerId===item.id&&vImg.naturalWidth)rows.push(['ابعاد',vImg.naturalWidth+' × '+vImg.naturalHeight]);
   if(item.mime)rows.push(['فرمت',item.mime]);
@@ -2679,6 +2681,10 @@ function qRunSteps(q,sig){
 function urlMediaKind(u){
   try{
     var url=new URL(u);
+    var host=(url.hostname||'').toLowerCase();
+    if(host==='youtu.be'||host==='www.youtu.be'||/(^|\.)youtube\.com$/.test(host)||host==='youtube-nocookie.com'||host==='www.youtube-nocookie.com'){
+      if(host.indexOf('youtu.be')>=0||url.pathname==='/watch'||/^\/(shorts|embed|live|v)\//.test(url.pathname))return 'video';
+    }
     var VID={mp4:1,webm:1,mov:1,m4v:1,m3u8:1},IMG={jpg:1,jpeg:1,png:1,gif:1,webp:1,avif:1};
     var extOf=function(s){var m=String(s==null?'':s).split(/[?#]/)[0].toLowerCase().match(/\.([a-z0-9]{2,5})$/);return m?m[1]:'';};
     var e=extOf(url.pathname);
