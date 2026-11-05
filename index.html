@@ -175,7 +175,7 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
   <div class="sheet" role="dialog" aria-modal="true">
     <div class="grab"></div>
     <h2>افزودن عکس یا فیلم</h2>
-    <p class="sub">لینک مستقیم عکس یا فیلم را بده. دانلود و در گالری ذخیره می‌شود. (حداکثر ۷۰ مگابایت)</p>
+    <p class="sub">لینک مستقیم عکس یا فیلم را بده. دانلود و در گالری ذخیره می‌شود. (عکس تا ۷۰ مگابایت، فیلم تا ۵۰۰ مگابایت)</p>
     <input id="urlInput" type="url" dir="ltr" inputmode="url" placeholder="https://example.com/media.mp4" autocomplete="off">
     <button class="primary" id="doAdd">افزودن</button>
     <button class="cancel" data-close-add="1">لغو</button>
@@ -231,6 +231,7 @@ function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeo
 var photos=[],urls={},selecting=false,selected={};
 function isVideo(it){return it.kind==='video'||(it.mime&&it.mime.indexOf('video/')===0);}
 function mediaUrl(item){
+  if(item.raw){if(!urls[item.id])urls[item.id]=API+'/api/stream/'+encodeURIComponent(item.id);return Promise.resolve(urls[item.id]);}
   if(urls[item.id])return Promise.resolve(urls[item.id]);
   return fetch(API+'/api/file/'+encodeURIComponent(item.id)).then(function(r){if(!r.ok)throw new Error(r.status);return r.text();}).then(function(t){
     return fetch('data:'+(item.mime||'application/octet-stream')+';base64,'+t.replace(/\s/g,'')).then(function(r){return r.blob();});
@@ -239,9 +240,10 @@ function mediaUrl(item){
 function fmtDur(s){if(!isFinite(s))return '';s=Math.round(s);var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r;}
 function loadInto(item,el){
   mediaUrl(item).then(function(u){
-    el.src=u;
+    var disp=(item.raw&&isVideo(item))?u+'#t=0.1':u;
+    el.src=disp;
     var cell=el.closest('.cell');if(cell){var ph=cell.querySelector('.ph');if(ph)ph.style.display='none';}
-    var th=document.querySelector('[data-strip="'+item.id+'"]');if(th&&!th.src)th.src=u;
+    var th=document.querySelector('[data-strip="'+item.id+'"]');if(th&&!th.src)th.src=disp;
     if(viewerId===item.id)showCurrentMedia();
   }).catch(function(){var cell=el.closest('.cell');if(cell){var ph=cell.querySelector('.ph');if(ph)ph.innerHTML='<span style="font-size:12px">خطا</span>';}});
 }
@@ -330,11 +332,11 @@ function faDate(ts){try{var d=new Date(ts);return d.toLocaleDateString('fa-IR',{
 function buildStrip(){
   vStrip.innerHTML='';
   photos.forEach(function(p,i){
-    var t=document.createElement(isVideo(p)?'video':'img');t.setAttribute('data-strip',p.id);t.alt='';if(isVideo(p)){t.muted=true;t.playsInline=true;t.preload='metadata';}if(urls[p.id])t.src=urls[p.id];
+    var t=document.createElement(isVideo(p)?'video':'img');t.setAttribute('data-strip',p.id);t.alt='';if(isVideo(p)){t.muted=true;t.playsInline=true;t.preload='metadata';}if(urls[p.id])t.src=(p.raw&&isVideo(p))?urls[p.id]+'#t=0.1':urls[p.id];
     if(i===vIdx)t.className='on';
     t.addEventListener('click',function(ev){ev.stopPropagation();showPhoto(i,i>vIdx?1:-1);});
     vStrip.appendChild(t);
-    if(!urls[p.id])mediaUrl(p).then(function(u){t.src=u;}).catch(function(){});
+    if(!urls[p.id])mediaUrl(p).then(function(u){t.src=(p.raw&&isVideo(p))?u+'#t=0.1':u;}).catch(function(){});
   });
 }
 function showCurrentMedia(){
