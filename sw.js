@@ -1,5 +1,5 @@
 // هات گالری — سرویس‌ورکر: پوسته‌ی اپ برای نصب و اجرای آفلاین؛ لیست گالری آخرین نسخه‌ی کش‌شده را آفلاین نشان می‌دهد
-const CACHE = 'hg-v1';
+const CACHE = 'hg-v3';
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
@@ -43,7 +43,9 @@ self.addEventListener('fetch', (e) => {
         (hit) =>
           hit ||
           fetch(req).then((r) => {
-            if (r.ok) {
+            // فقط فایل‌های کوچک (عکس‌ها و مانیفست) کش می‌شوند؛ پارت‌های فیلم کش نمی‌شوند تا حافظه‌ی دستگاه پر نشود
+            const ln = +(r.headers.get('content-length') || 0);
+            if (r.ok && (!ln || ln <= 8 * 1024 * 1024)) {
               const cl = r.clone();
               caches.open(CACHE).then((c) => c.put(req, cl));
             }
@@ -54,8 +56,8 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // ناوبری و فایل‌های خود اپ: شبکه‌اول، آفلاین از کش
-  if (req.mode === 'navigate' || url.origin === self.location.origin) {
+  // ناوبری: شبکه‌اول؛ پاسخ به‌عنوان index کش می‌شود تا آفلاین هم اپ باز شود
+  if (req.mode === 'navigate') {
     e.respondWith(
       fetch(req)
         .then((r) => {
@@ -64,6 +66,24 @@ self.addEventListener('fetch', (e) => {
           return r;
         })
         .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+
+  // فایل‌های ثابت خود اپ (مانیفست، آیکون‌ها): کش‌اول با کلید خودشان
+  if (url.origin === self.location.origin) {
+    e.respondWith(
+      caches.match(req).then(
+        (hit) =>
+          hit ||
+          fetch(req).then((r) => {
+            if (r.ok) {
+              const cl = r.clone();
+              caches.open(CACHE).then((c) => c.put(req, cl));
+            }
+            return r;
+          })
+      )
     );
   }
 });
