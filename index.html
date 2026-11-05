@@ -376,7 +376,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:50</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:52</span></p>
   </div>
 </section>
 
@@ -474,7 +474,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 20:50';
+var RUN_BUILD='2026-11-05 20:52';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -609,26 +609,30 @@ function loadInto(item,el,w){
 /* hg-v11: پیش‌نمایش متحرک فیلم (GIF اسلایدشو) — فقط با هاور موس یا فوکوس کیبورد لود می‌شود؛
    روی لمسی هیچ درخواستی صادر نمی‌شود. موقع خروج، دقیقاً همان سورس قبلی سلول (تامنیل یا بلور) برمی‌گردد. */
 var hoverCapable=false;try{hoverCapable=window.matchMedia('(hover: hover) and (pointer: fine)').matches;}catch(e){}
+var pvActive=null;
+function pvStop(){
+  if(!pvActive)return;var a=pvActive;pvActive=null;
+  if(a.img&&a.img.isConnected&&a.prev!=null&&a.img.getAttribute('src')!==a.prev)a.img.src=a.prev;
+}
 function cellPreviewOn(cell,item){
+  if(!item||!item.preview)return;
+  if(pvActive&&pvActive.cell===cell)return;
+  pvStop();
   var t=cell.querySelector('img:not(.blurph)');if(!t)return;
-  if(cell._pvPrev===undefined)cell._pvPrev=t.getAttribute('src');
-  if(t.getAttribute('src')!==RAW_BASE+item.preview)t.src=RAW_BASE+item.preview;
+  if(t.getAttribute('src')===RAW_BASE+item.preview)return;
+  pvActive={cell:cell,item:item,img:t,prev:t.getAttribute('src')};
+  t.src=RAW_BASE+item.preview;
 }
-function cellPreviewOff(cell,item){
-  var t=cell.querySelector('img:not(.blurph)');if(!t||cell._pvPrev===undefined)return;
-  t.src=cell._pvPrev;delete cell._pvPrev;
-}
+function cellPreviewOff(cell){if(pvActive&&(!cell||pvActive.cell===cell))pvStop();}
+document.addEventListener('scroll',function(){if(pvActive)pvStop();},{capture:true,passive:true});
 function attachPreviewHover(cell,item){
   if(!item||!item.preview)return;
   function on(){
     if(!hoverCapable||selecting||(typeof reorderState!=='undefined'&&reorderState))return;
     cellPreviewOn(cell,item);
   }
-  function off(){cellPreviewOff(cell,item);}
   cell.addEventListener('mouseenter',on);
-  cell.addEventListener('mouseleave',off);
   cell.addEventListener('focus',on);
-  cell.addEventListener('blur',off);
 }
 function buildCell(item,idx,list){
   var c=document.createElement('button');c.className='cell'+(selected[item.id]?' sel':'');c.dataset.id=item.id;c.setAttribute('aria-label','مورد '+(idx+1));
@@ -783,6 +787,7 @@ function jalaliKey(ts){try{var ps=new Intl.DateTimeFormat('fa-IR',{year:'numeric
 function jalaliLabel(ts){try{return new Intl.DateTimeFormat('fa-IR',{month:'long',year:'numeric'}).format(new Date(ts||0));}catch(e){return '';}}
 function jalaliDay(ts){try{return new Intl.DateTimeFormat('fa-IR',{day:'numeric',month:'long'}).format(new Date(ts||0));}catch(e){return '';}}
 function render(){
+  pvStop();
   renderViewMode=viewMode;
   grid.innerHTML='';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
@@ -814,7 +819,7 @@ function bindCell(c,item,idx,el,list){
   function cancelHold(){if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}lpUnregister(cancelHold);}
   function endHold(){
     cancelHold();
-    if(holding){holding=false;cellPreviewOff(c,item);suppressClickUntil=Date.now()+700;}
+    if(holding){holding=false;suppressClickUntil=Date.now()+700;}
   }
   c.addEventListener('pointerdown',function(e){
     if(gPtrs.size>1)return;
@@ -965,6 +970,7 @@ function updateSelUI(){
   document.querySelectorAll('.cell').forEach(function(c){c.classList.toggle('sel',!!selected[c.dataset.id]);});
 }
 function enterSelect(id){
+  pvStop();
   if(selecting){toggleSelect(id);return;}
   selecting=true;selected={};if(id)selected[id]=true;document.body.classList.add('selecting');updateSelUI();busyLift();
   pushLayer('select',exitSelectVisual);
@@ -1320,6 +1326,7 @@ function showPhoto(i,dir){
   stripPrime();
 }
 function openViewer(i,thumbEl,list){
+  pvStop();
   vList=list||photos;
   if(!vList.length)return;
   var item=vList[i];
@@ -1392,6 +1399,7 @@ vFavBtn.addEventListener('click',function(ev){
   fetch(API+'/api/fav/'+encodeURIComponent(item.id),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fav:nf})}).then(function(r){if(!r.ok)throw new Error(r.status);}).catch(function(){item.fav=!nf;syncFavBtn();toast('ثبت مورد علاقه ناموفق بود');});
 });
 function renderFavs(){
+  pvStop();
   var favs=photos.filter(function(p){return p.fav;});
   favGrid.innerHTML='';
   favEmpty.style.display=favs.length?'none':'block';
@@ -1604,6 +1612,7 @@ menuBtn.addEventListener('click',function(){
 });
 scrim.addEventListener('click',closeMenu);
 function openFavs(){
+  pvStop();
   favWarmed=true;renderFavs();favViewEl.classList.add('open');
   pushLayer('panel',function(){favViewEl.classList.remove('open');render();});
 }
@@ -1659,6 +1668,7 @@ promptInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.prevent
 document.querySelectorAll('[data-close-prompt]').forEach(function(b){b.addEventListener('click',closePrompt);});
 
 function openFolder(id){
+  pvStop();
   if(!folderById(id))return;
   coverWarmed[id]=true;
   curFolder=id;renderFolder();folderViewEl.classList.add('open');
@@ -1669,6 +1679,7 @@ function openFolder(id){
   });
 }
 function renderFolder(){
+  pvStop();
   var f=folderById(curFolder);if(!f)return;
   var fv=effViewFor(f);renderViewMode=fv;
   folderTitleEl.textContent=f.name;
