@@ -40,9 +40,7 @@ body.selecting #selBar{display:block}
 .selbar-in .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15.5px;font-weight:700;pointer-events:none}
 .selcancel{position:absolute;top:50%;transform:translateY(-50%);right:10px;color:var(--blue);font-size:16px;height:38px;padding:0 6px}
 main{max-width:1100px;margin:0 auto;padding:0 0 calc(30px + env(safe-area-inset-bottom))}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
-@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
-@media(min-width:1000px){.grid{grid-template-columns:repeat(5,1fr)}}
+.grid{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:2px;touch-action:pan-y}
 .cell{position:relative;aspect-ratio:1;background:var(--bg2);overflow:hidden;cursor:pointer;border:0;padding:0}
 .cell img,.cell video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
 .cell .ph{position:absolute;inset:0;display:grid;place-items:center;color:var(--faint);pointer-events:none}
@@ -372,17 +370,85 @@ function render(){
 }
 function bindCell(c,item,idx,el){
   var timer=null,sx=0,sy=0,longFired=false;
-  c.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){longFired=true;if(!selecting)enterSelect(item.id);else toggleSelect(item.id);if(navigator.vibrate)navigator.vibrate(12);},480);});
+  c.addEventListener('pointerdown',function(e){sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive)return;longFired=true;if(!selecting)enterSelect(item.id);else toggleSelect(item.id);if(navigator.vibrate)navigator.vibrate(12);},480);});
   function cancel(){if(timer){clearTimeout(timer);timer=null;}}
   c.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancel();});
   c.addEventListener('pointerup',cancel);c.addEventListener('pointercancel',cancel);c.addEventListener('pointerleave',cancel);
   c.addEventListener('contextmenu',function(e){e.preventDefault();});
   c.addEventListener('click',function(){
+    if(Date.now()-lastPinchEnd<400)return;
     if(longFired){longFired=false;return;}
     if(selecting){toggleSelect(item.id);return;}
     var cur=photos.indexOf(item);openViewer(cur<0?idx:cur,el);
   });
 }
+/* پینچ روی گرید اصلی: تغییر تعداد ستون‌ها مثل گالری سامسونگ — حین حرکت، گرید با انگشت‌ها
+   اسکیل می‌شود و موقع رها کردن، با انیمیشن نرم روی نزدیک‌ترین اندازه می‌نشیند */
+var COL_LEVELS=[2,3,4,5];
+var gridCols=parseInt(localStorage.getItem('hg-cols')||'',10);
+if(COL_LEVELS.indexOf(gridCols)<0)gridCols=window.innerWidth>=1000?5:window.innerWidth>=700?4:3;
+function applyCols(){grid.style.setProperty('--cols',gridCols);}
+applyCols();
+var pinchActive=false,lastPinchEnd=0,pinchState=null;
+var pinchPtrs=new Map();
+grid.addEventListener('pointerdown',function(e){
+  pinchPtrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinchPtrs.size===2){
+    pinchActive=true;
+    var a=Array.from(pinchPtrs.values());
+    var mid={x:(a[0].x+a[1].x)/2,y:(a[0].y+a[1].y)/2};
+    var d0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y)||1;
+    var anchorIdx=0,best=1e18;
+    for(var i=0;i<grid.children.length;i++){var r=grid.children[i].getBoundingClientRect();var cx=r.left+r.width/2,cy=r.top+r.height/2;var dd=(cx-mid.x)*(cx-mid.x)+(cy-mid.y)*(cy-mid.y);if(dd<best){best=dd;anchorIdx=i;}}
+    var gr=grid.getBoundingClientRect();
+    pinchState={d0:d0,mid:mid,ratio:1,anchorIdx:anchorIdx};
+    grid.style.transition='none';
+    grid.style.transformOrigin=mid.x+'px '+(mid.y-gr.top)+'px';
+    grid.style.willChange='transform';
+  }
+});
+window.addEventListener('pointermove',function(e){
+  if(!pinchPtrs.has(e.pointerId))return;
+  pinchPtrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pinchState&&pinchPtrs.size===2){
+    var a=Array.from(pinchPtrs.values());
+    var d=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y);
+    pinchState.ratio=Math.min(1.9,Math.max(0.5,d/pinchState.d0));
+    grid.style.transform='scale('+pinchState.ratio+')';
+  }
+},{passive:true});
+function pinchEnd(e){
+  if(e&&e.pointerId!==undefined)pinchPtrs.delete(e.pointerId);
+  if(!pinchState||pinchPtrs.size>=2)return;
+  var st=pinchState;pinchState=null;lastPinchEnd=Date.now();
+  setTimeout(function(){pinchActive=false;},60);
+  var li=COL_LEVELS.indexOf(gridCols),target=gridCols;
+  if(st.ratio>1.22&&li>0)target=COL_LEVELS[li-1];
+  else if(st.ratio<0.82&&li<COL_LEVELS.length-1)target=COL_LEVELS[li+1];
+  if(target===gridCols){
+    grid.style.transition='transform .28s cubic-bezier(.3,.8,.3,1)';
+    grid.style.transform='scale(1)';
+    setTimeout(function(){grid.style.transition='';grid.style.transform='';grid.style.willChange='';},300);
+    return;
+  }
+  var oldCols=gridCols;gridCols=target;
+  try{localStorage.setItem('hg-cols',String(target));}catch(err){}
+  grid.style.transition='none';grid.style.transform='';
+  applyCols();
+  var cell=grid.children[st.anchorIdx];
+  if(cell){var r=cell.getBoundingClientRect();window.scrollBy(0,(r.top+r.height/2)-st.mid.y);}
+  var s0=(target/oldCols)*st.ratio;
+  var gr2=grid.getBoundingClientRect();
+  grid.style.transformOrigin=st.mid.x+'px '+(st.mid.y-gr2.top)+'px';
+  grid.style.transform='scale('+s0+')';
+  requestAnimationFrame(function(){requestAnimationFrame(function(){
+    grid.style.transition='transform .32s cubic-bezier(.3,.8,.3,1)';
+    grid.style.transform='scale(1)';
+    setTimeout(function(){grid.style.transition='';grid.style.transform='';grid.style.willChange='';},340);
+  });});
+}
+window.addEventListener('pointerup',pinchEnd);
+window.addEventListener('pointercancel',pinchEnd);
 function load(){
   return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];render();}).catch(function(){toast('خطا در دریافت گالری');});
 }
@@ -704,14 +770,16 @@ var Q_ICONS={
 function fmtElapsed(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;return m+':'+(s<10?'0':'')+s;}
 function fmtSize(b){if(!b)return '';if(b<1024)return b+' بایت';if(b<1048576)return (b/1024).toFixed(0)+' کیلوبایت';return (b/1048576).toFixed(1)+' مگابایت';}
 function qActiveN(){return queue.filter(function(q){return q.status==='wait'||q.status==='up';}).length;}
-function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return {url:q.url,job:q.job||null};})));}catch(e){}}
+function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return {url:q.url,job:q.job||null,item:q.ghaItem||null};})));}catch(e){}}
 var qSeq=0;
-function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(en){var u=typeof en==='string'?en:(en&&en.url);var jb=typeof en==='string'?null:(en&&en.job);if(u&&!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:jb||null,prog:null});});}catch(e){}}
+function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(en){var u=typeof en==='string'?en:(en&&en.url);var jb=typeof en==='string'?null:(en&&en.job);var gi=typeof en==='string'?null:(en&&en.item);if(u&&!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:jb||null,ghaItem:gi||null,prog:null});});}catch(e){}}
 function progText(q){
   var p=q.prog;if(!p||p.status!=='run')return null;
   if(p.phase==='save')return{txt:'در حال ذخیره‌سازی…',pct:null};
+  if(p.phase==='gha'&&p.state==='pending')return{txt:'در صف اجرای سرور…',pct:null};
   var pct=p.total>0?Math.min(99,Math.floor(p.loaded/p.total*100)):null;
-  var txt=(p.phase==='up'?'در حال آپلود به گیت‌هاب':'در حال دانلود از منبع')+'… '+(pct!==null?pct+'٪ · ':'')+(p.total>0?fmtSize(p.loaded)+' از '+fmtSize(p.total):fmtSize(p.loaded));
+  var head=p.phase==='gha'?'در حال آپلود در سرور':(p.phase==='up'?'در حال آپلود به گیت‌هاب':'در حال دانلود از منبع');
+  var txt=head+'… '+(pct!==null?pct+'٪ · ':'')+(p.total>0?fmtSize(p.loaded)+' از '+fmtSize(p.total):fmtSize(p.loaded));
   if(p.partsTotal>1)txt+=' · پارت '+Math.min(p.partsDone+1,p.partsTotal)+' از '+p.partsTotal;
   return{txt:txt,pct:pct};
 }
@@ -749,7 +817,7 @@ function qRender(){
     if(q.status==='up'){var bar=document.createElement('div');bar.className='qbar';var fill=document.createElement('div');fill.className='qfill';bar.appendChild(fill);if(ptUp&&ptUp.pct!==null){bar.classList.add('on');fill.style.width=ptUp.pct+'%';}tx.appendChild(bar);}
     row.appendChild(tx);
     var acts=document.createElement('div');acts.className='acts';
-    if(q.status==='up'){var cb=document.createElement('button');cb.textContent='لغو';cb.addEventListener('click',function(){if(qCtrl)qCtrl.abort();});acts.appendChild(cb);}
+    if(q.status==='up'){var cb=document.createElement('button');cb.textContent='لغو';cb.addEventListener('click',function(){qCancelActive(q);});acts.appendChild(cb);}
     if(q.status==='err'){var rb=document.createElement('button');rb.textContent='تلاش دوباره';rb.addEventListener('click',function(){q.status='wait';q.error=null;qSave();qRender();qProcess();});acts.appendChild(rb);}
     if(q.status!=='up'){var xb=document.createElement('button');xb.className='x';xb.textContent='×';xb.setAttribute('aria-label','حذف از صف');xb.addEventListener('click',function(){queue=queue.filter(function(x){return x!==q;});qSave();qRender();});acts.appendChild(xb);}
     row.appendChild(acts);qList.appendChild(row);
@@ -762,8 +830,50 @@ setInterval(function(){
   if(el){var up=queue.find(function(q){return q.status==='up';});if(up)el.textContent='در حال آپلود… '+fmtElapsed(Date.now()-up.t0);}
 },1000);
 function qEnqueue(list){
-  list.forEach(function(u){queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,prog:null});});
+  list.forEach(function(u){queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,ghaItem:null,prog:null});});
   qSave();qRender();qProcess();
+}
+function qCancelActive(q){
+  if(qCtrl)qCtrl.abort();
+  if(q._ghaIv){clearInterval(q._ghaIv);q._ghaIv=null;}
+  if(q._ghaReject){var rj=q._ghaReject;q._ghaReject=null;var er=new Error('cancelled');er.name='AbortError';rj(er);}
+  if(q.ghaItem)apiPost('/api/gha/cancel',{job:q.job,item:q.ghaItem}).catch(function(){});
+}
+function qRunGha(q,sig){
+  // آپلود فیلم روی GitHub Actions: ورکر دیسپچ می‌کند، رانر با سرعت دیتاسنتر دانلود و پارت‌بندی و پوش می‌کند؛
+  // اپ فقط وضعیت را پول می‌کند. اپ بسته هم بشود، ران ادامه دارد و دفعه‌ی بعد وضعیت از سرور خوانده می‌شود.
+  function statusOnce(){
+    if(!q.ghaItem)return Promise.resolve(null);
+    return fetch(API+'/api/gha/status?job='+encodeURIComponent(q.job)+'&item='+encodeURIComponent(q.ghaItem)).then(function(r){return r.json();}).catch(function(){return null;});
+  }
+  function pollLoop(){
+    return new Promise(function(resolve,reject){
+      q._ghaReject=reject;
+      var netFails=0;
+      q._ghaIv=setInterval(function(){
+        statusOnce().then(function(s){
+          if(!s)return;
+          if(!s.ok){netFails++;if(netFails>12){clearInterval(q._ghaIv);q._ghaIv=null;reject(new Error('خطا در ارتباط'));return;}}
+          netFails=0;
+          if(s.state==='done'&&s.item){clearInterval(q._ghaIv);q._ghaIv=null;resolve(s.item);return;}
+          if(s.state==='failed'){clearInterval(q._ghaIv);q._ghaIv=null;reject(new Error('اجرای آپلود در سرور ناموفق بود'));return;}
+          if(s.state==='cancelled'){clearInterval(q._ghaIv);q._ghaIv=null;var er=new Error('cancelled');er.name='AbortError';reject(er);return;}
+          q.prog={status:'run',phase:'gha',state:s.state,loaded:s.loaded||0,total:s.total||0,partsDone:s.partsDone||0,partsTotal:s.partsTotal||0};paintProg(q);
+        });
+      },3000);
+    });
+  }
+  return statusOnce().then(function(s0){
+    if(s0&&s0.ok&&s0.state==='done'&&s0.item)return s0.item;
+    if(s0&&s0.ok&&s0.state==='run'){q.prog={status:'run',phase:'gha',state:'run',loaded:s0.loaded||0,total:s0.total||0,partsDone:s0.partsDone||0,partsTotal:s0.partsTotal||0};paintProg(q);return pollLoop();}
+    return apiPost('/api/gha/start',{url:q.url,job:q.job,item:q.ghaItem||undefined},sig).then(function(st){
+      if(!st.ok)throw new Error((st.d&&st.d.error)||'شروع آپلود ناموفق بود');
+      if(st.d.fallback)return 'legacy';
+      q.ghaItem=st.d.item;qSave();
+      q.prog={status:'run',phase:'gha',state:'pending',loaded:0,total:st.d.total||0,partsDone:0,partsTotal:st.d.total?Math.ceil(st.d.total/1048576):0};paintProg(q);
+      return pollLoop();
+    });
+  });
 }
 function apiPost(path,body,signal){
   return fetch(API+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:signal}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});});
@@ -824,19 +934,28 @@ function qProcess(){
     else{q.status='err';q.error=(e&&e.message)||'خطا در ارتباط';}
     qSave();qRender();qProcess();
   }
+  function legacyAdd(){
+    var poll=setInterval(function(){fetch(API+'/api/progress/'+q.job).then(function(r){return r.json();}).then(function(p){if(p&&p.status==='run'){q.prog=p;paintProg(q);}}).catch(function(){});},1200);
+    return apiPost('/api/add',{url:q.url,job:q.job},sig).then(function(x){
+      clearInterval(poll);
+      if(!x.ok||!x.d.item)throw new Error((x.d&&x.d.error)||'آپلود ناموفق بود');
+      return x.d.item;
+    }).catch(function(e){clearInterval(poll);throw e;});
+  }
   var isVidUrl=/\.(mp4|webm|mov|m4v)(\?|#|$)/i.test(q.url);
-  var work=isVidUrl?qRunSteps(q,sig):Promise.resolve('legacy');
-  work.then(function(res){
-    if(res==='legacy'){
-      var poll=setInterval(function(){fetch(API+'/api/progress/'+q.job).then(function(r){return r.json();}).then(function(p){if(p&&p.status==='run'){q.prog=p;paintProg(q);}}).catch(function(){});},1200);
-      return apiPost('/api/add',{url:q.url,job:q.job},sig).then(function(x){
-        clearInterval(poll);
-        if(!x.ok||!x.d.item)throw new Error((x.d&&x.d.error)||'آپلود ناموفق بود');
-        return x.d.item;
-      }).catch(function(e){clearInterval(poll);throw e;});
-    }
-    return res;
-  }).then(finish).catch(fail);
+  var work;
+  if(isVidUrl){
+    work=qRunGha(q,sig).then(function(res){
+      if(res==='legacy')return qRunSteps(q,sig);
+      return res;
+    }).then(function(res){
+      if(res==='legacy')return legacyAdd();
+      return res;
+    });
+  }else{
+    work=legacyAdd();
+  }
+  work.then(finish).catch(fail);
 }
 /* add sheet */
 var addOverlay=document.getElementById('addOverlay'),urlInput=document.getElementById('urlInput'),doAdd=document.getElementById('doAdd');
