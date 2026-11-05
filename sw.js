@@ -1,5 +1,5 @@
 // هات گالری — سرویس‌ورکر: پوسته‌ی اپ برای نصب و اجرای آفلاین؛ لیست گالری آخرین نسخه‌ی کش‌شده را آفلاین نشان می‌دهد
-const CACHE = 'hg-v10';
+const CACHE = 'hg-v11';
 const RAW = 'https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
 
 // استریم فیلم از روی پارت‌های گیت‌هاب: سرویس‌ورکر (بخشی از خود اپ، روی دستگاه کاربر) درخواست‌های
@@ -104,7 +104,7 @@ async function streamVideo(id, req) {
 const CORE = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', (e) => {
-  // hg-v10: نسخه‌ی تازه خودکار فعال نمی‌شود؛ منتظر اعمال دستی کاربر از منوی «به‌روزرسانی اپ» می‌ماند
+  // hg-v11: نسخه‌ی تازه خودکار فعال نمی‌شود؛ منتظر اعمال دستی کاربر از منوی «به‌روزرسانی اپ» می‌ماند
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)));
 });
 
