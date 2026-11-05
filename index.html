@@ -295,6 +295,7 @@ body.selecting .qpill{display:none}
 
 <div class="scrim" id="scrim"></div>
 <div class="menu" id="menu" role="menu">
+  <button id="miSelect"><span>انتخاب</span></button>
   <button id="miQueue"><span>صف آپلود</span><span class="qbadge" id="qBadge"></span></button>
   <button id="miNewFolder"><span>پوشه‌ی جدید</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V17a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><path d="M12 10.5v5M9.5 13h5"/></svg></button>
   <button id="miView"><span>نما</span><span id="miViewState" style="color:var(--faint);font-size:13.5px">گرید</span></button>
@@ -375,7 +376,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:37</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-05 20:43</span></p>
   </div>
 </section>
 
@@ -473,7 +474,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-05 20:37';
+var RUN_BUILD='2026-11-05 20:43';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -608,19 +609,22 @@ function loadInto(item,el,w){
 /* hg-v11: پیش‌نمایش متحرک فیلم (GIF اسلایدشو) — فقط با هاور موس یا فوکوس کیبورد لود می‌شود؛
    روی لمسی هیچ درخواستی صادر نمی‌شود. موقع خروج، دقیقاً همان سورس قبلی سلول (تامنیل یا بلور) برمی‌گردد. */
 var hoverCapable=false;try{hoverCapable=window.matchMedia('(hover: hover) and (pointer: fine)').matches;}catch(e){}
+function cellPreviewOn(cell,item){
+  var t=cell.querySelector('img:not(.blurph)');if(!t)return;
+  if(cell._pvPrev===undefined)cell._pvPrev=t.getAttribute('src');
+  if(t.getAttribute('src')!==RAW_BASE+item.preview)t.src=RAW_BASE+item.preview;
+}
+function cellPreviewOff(cell,item){
+  var t=cell.querySelector('img:not(.blurph)');if(!t||cell._pvPrev===undefined)return;
+  t.src=cell._pvPrev;delete cell._pvPrev;
+}
 function attachPreviewHover(cell,item){
   if(!item||!item.preview)return;
-  var prevSrc=null;
   function on(){
     if(!hoverCapable||selecting||(typeof reorderState!=='undefined'&&reorderState))return;
-    var t=cell.querySelector('img:not(.blurph)');if(!t)return;
-    if(prevSrc===null)prevSrc=t.getAttribute('src');
-    if(t.getAttribute('src')!==RAW_BASE+item.preview)t.src=RAW_BASE+item.preview;
+    cellPreviewOn(cell,item);
   }
-  function off(){
-    var t=cell.querySelector('img:not(.blurph)');if(!t||prevSrc===null)return;
-    t.src=prevSrc;prevSrc=null;
-  }
+  function off(){cellPreviewOff(cell,item);}
   cell.addEventListener('mouseenter',on);
   cell.addEventListener('mouseleave',off);
   cell.addEventListener('focus',on);
@@ -802,17 +806,36 @@ function render(){
   var mv=document.getElementById('miViewState');if(mv)mv.textContent=viewLabel();
   renderViewMode=null;
 }
+/* hg-v11 (بازبینی ۲): لانگ‌پرس روی سلول آیتم دیگر سلکشن را شروع نمی‌کند — سلکشن فقط از ردیف
+   «انتخاب» در منوی ⋯ است. لانگ‌پرس روی کارت فیلم = نگه‌داشتن پیش‌نمایش GIF تا وقتی انگشت هست
+   (معادل لمسی هاور)؛ با رها کردن، تصویر قبلی برمی‌گردد و کلیکِ بعد از هولد کاملاً خنثی می‌شود. */
 function bindCell(c,item,idx,el,list){
-  var timer=null,sx=0,sy=0,longFired=false;
-  c.addEventListener('pointerdown',function(e){if(gPtrs.size>1)return;sx=e.clientX;sy=e.clientY;longFired=false;timer=setTimeout(function(){if(pinchActive||gPtrs.size>1)return;if(typeof reorderState!=='undefined'&&reorderState)return;longFired=true;if(!selecting)enterSelect(item.id);else toggleSelect(item.id);if(navigator.vibrate)navigator.vibrate(12);},480);lpRegister(cancel);});
-  function cancel(){if(timer){clearTimeout(timer);timer=null;}lpUnregister(cancel);}
-  c.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancel();});
-  c.addEventListener('pointerup',cancel);c.addEventListener('pointercancel',cancel);c.addEventListener('pointerleave',cancel);
+  var holdTimer=null,sx=0,sy=0,holding=false,suppressClickUntil=0;
+  function cancelHold(){if(holdTimer){clearTimeout(holdTimer);holdTimer=null;}lpUnregister(cancelHold);}
+  function endHold(){
+    cancelHold();
+    if(holding){holding=false;cellPreviewOff(c,item);suppressClickUntil=Date.now()+700;}
+  }
+  c.addEventListener('pointerdown',function(e){
+    if(gPtrs.size>1)return;
+    sx=e.clientX;sy=e.clientY;
+    if(!isVideo(item)||!item.preview)return;
+    holdTimer=setTimeout(function(){
+      holdTimer=null;
+      if(pinchActive||gPtrs.size>1||selecting||(typeof reorderState!=='undefined'&&reorderState))return;
+      holding=true;cellPreviewOn(c,item);
+      if(navigator.vibrate)navigator.vibrate(8);
+    },480);
+    lpRegister(cancelHold);
+  });
+  c.addEventListener('pointermove',function(e){if(Math.abs(e.clientX-sx)>10||Math.abs(e.clientY-sy)>10)cancelHold();});
+  c.addEventListener('pointerup',endHold);c.addEventListener('pointercancel',endHold);c.addEventListener('pointerleave',endHold);
   c.addEventListener('contextmenu',function(e){e.preventDefault();});
   c.addEventListener('click',function(){
+    if(Date.now()<suppressClickUntil)return;
+    if(holding)return;
     if(Date.now()-lastPinchEnd<400)return;
     if(typeof reorderState!=='undefined'&&reorderState)return;
-    if(longFired){longFired=false;return;}
     if(selecting){toggleSelect(item.id);return;}
     var L=list||photos;var cur=L.indexOf(item);openViewer(cur<0?idx:cur,el,L);
   });
@@ -1681,6 +1704,7 @@ function folderUpdate(f,patch,busyMsg,doneMsg){
 function folderSheetRows(f,includeOpen){
   var rows=[];
   if(includeOpen)rows.push({label:'باز کردن',cb:function(){openFolder(f.id);}});
+  rows.push({label:'انتخاب',sub:'انتخاب چند مورد با هم برای انتقال یا حذف',cb:function(){enterSelect();}});
   rows.push({label:f.nopreview?'روشن کردن پیش‌نمایش':'خاموش کردن پیش‌نمایش',sub:'کاور پوشه، عکس یا فیلم داخلش را نشان می‌دهد',cb:function(){folderUpdate(f,{nopreview:!f.nopreview},'در حال ذخیره…',f.nopreview?'پیش‌نمایش روشن شد':'پیش‌نمایش خاموش شد');}});
   rows.push({label:'نمای این پوشه',sub:viewLabelOf(effViewFor(f))+(f.view?'':' (از نمای سراسری)'),cb:function(){toggleFolderView(f);}});
   rows.push({label:'تغییر کاور پوشه',sub:f.cover?'کاور دستی تنظیم شده است':'کاور فعلی، جدیدترین مورد پوشه است',cb:function(){openCoverPicker(f);}});
@@ -1776,6 +1800,7 @@ document.getElementById('selMove').addEventListener('click',function(){
   rows.push({label:'پوشه‌ی جدید',cb:function(){createFolder(function(nf){doMove(ids,nf.id);},(folderViewEl.classList.contains('open')&&curFolder)?curFolder:null);}});
   showSheet('انتقال '+ids.length+' مورد به',rows);
 });
+document.getElementById('miSelect').addEventListener('click',function(){closeMenu();enterSelect();});
 document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
 document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncAccent();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
