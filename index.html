@@ -171,6 +171,9 @@ body.selecting .qpill{display:none}
 .qrow .tx{flex:1;min-width:0}
 .qrow .u{font-size:12.5px;color:var(--faint);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .qrow .s{font-size:13.5px;margin-top:2px;color:var(--sub)}
+.qbar{height:4px;border-radius:2px;background:var(--pressed);margin-top:7px;display:none;overflow:hidden}
+.qbar.on{display:block}
+.qfill{height:100%;background:var(--blue);border-radius:2px;width:0;transition:width .35s ease}
 .qrow .s.err{color:var(--red)}
 .qrow .s.done{color:#30d158}
 .qrow .acts{flex:0 0 auto;display:flex;align-items:center;gap:2px}
@@ -506,6 +509,7 @@ function openViewer(i,thumbEl,list){
   if(!vList.length)return;
   viewerEl.classList.remove('nochrome');viewerEl.classList.add('open');document.body.style.overflow='hidden';
   buildStrip();showPhoto(i,0);
+  pushLayer('viewer',vCloseVisual);
   var item=vList[i];
   if(thumbEl&&!isVideo(item)&&thumbEl.src&&thumbEl.complete&&thumbEl.naturalWidth){
     var r=thumbEl.getBoundingClientRect();
@@ -521,7 +525,20 @@ function openViewer(i,thumbEl,list){
     });
   }
 }
-function closeViewer(){vVid.pause();hideProg();viewerEl.classList.remove('open');viewerId=null;vList=null;zoomed=false;vImg.style.transform='';document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();}
+// لایه‌های تمام‌صفحه: دکمه‌ی بک گوشی فقط همان نما را می‌بندد، نه کل اپ را
+var layers=[],suppressPop=false;
+function pushLayer(name,closeFn){layers.push({name:name,closeFn:closeFn});try{history.pushState({hgLayer:name},'');}catch(e){}}
+function releaseLayer(name){
+  var i=-1;for(var k=layers.length-1;k>=0;k--)if(layers[k].name===name){i=k;break;}
+  if(i<0)return;var wasTop=i===layers.length-1;layers.splice(i,1);
+  if(wasTop){suppressPop=true;try{history.back();}catch(e){}}
+}
+window.addEventListener('popstate',function(){
+  if(suppressPop){suppressPop=false;return;}
+  var l=layers.pop();if(l&&l.closeFn)l.closeFn();
+});
+function vCloseVisual(){vVid.pause();hideProg();viewerEl.classList.remove('open');viewerId=null;vList=null;zoomed=false;vImg.style.transform='';document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();}
+function closeViewer(){vCloseVisual();releaseLayer('viewer');}
 function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
 document.getElementById('vClose').addEventListener('click',function(ev){ev.stopPropagation();closeViewer();});
 document.getElementById('vDelete').addEventListener('click',function(ev){
@@ -601,13 +618,13 @@ menuBtn.addEventListener('click',function(){
   menu.classList.add('open');scrim.classList.add('open');
 });
 scrim.addEventListener('click',closeMenu);
-document.getElementById('miFav').addEventListener('click',function(){closeMenu();renderFavs();favViewEl.classList.add('open');});
-document.getElementById('favBack').addEventListener('click',function(){favViewEl.classList.remove('open');});
-document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();});
-document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();});
+document.getElementById('miFav').addEventListener('click',function(){closeMenu();renderFavs();favViewEl.classList.add('open');pushLayer('panel',function(){favViewEl.classList.remove('open');});});
+document.getElementById('favBack').addEventListener('click',function(){favViewEl.classList.remove('open');releaseLayer('panel');});
+document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
+document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
 document.getElementById('miSelect').addEventListener('click',function(){closeMenu();if(photos.length)enterSelect(null);else toast('چیزی برای انتخاب نیست');});
-document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();document.getElementById('settingsView').classList.add('open');});
-document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');});
+document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
+document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');});
 /* theme */
 function applyTheme(pref){
   var dark=pref==='dark'||(pref==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);
@@ -688,7 +705,23 @@ function fmtElapsed(ms){var s=Math.floor(ms/1000),m=Math.floor(s/60);s=s%60;retu
 function fmtSize(b){if(!b)return '';if(b<1024)return b+' بایت';if(b<1048576)return (b/1024).toFixed(0)+' کیلوبایت';return (b/1048576).toFixed(1)+' مگابایت';}
 function qActiveN(){return queue.filter(function(q){return q.status==='wait'||q.status==='up';}).length;}
 function qSave(){try{localStorage.setItem('hg-queue',JSON.stringify(queue.filter(function(q){return q.status==='wait'||q.status==='up';}).map(function(q){return q.url;})));}catch(e){}}
-function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(u){if(!photos.some(function(p){return p.source===u;}))queue.push({url:u,status:'wait',error:null,item:null,t0:0});});}catch(e){}}
+var qSeq=0;
+function qRestore(){try{(JSON.parse(localStorage.getItem('hg-queue')||'[]')).forEach(function(u){if(!photos.some(function(p){return p.source===u;}))queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,prog:null});});}catch(e){}}
+function progText(q){
+  var p=q.prog;if(!p||p.status!=='run')return null;
+  if(p.phase==='save')return{txt:'در حال ذخیره‌سازی…',pct:null};
+  var pct=p.total>0?Math.min(99,Math.floor(p.loaded/p.total*100)):null;
+  var txt=(p.phase==='up'?'در حال آپلود به گیت‌هاب':'در حال دانلود از منبع')+'… '+(pct!==null?pct+'٪ · ':'')+(p.total>0?fmtSize(p.loaded)+' از '+fmtSize(p.total):fmtSize(p.loaded));
+  if(p.partsTotal>1)txt+=' · پارت '+Math.min(p.partsDone+1,p.partsTotal)+' از '+p.partsTotal;
+  return{txt:txt,pct:pct};
+}
+function paintProg(q){
+  var row=qList.querySelector('[data-qid="'+q.qid+'"]');if(!row)return;
+  var pt=progText(q);if(!pt)return;
+  var s=row.querySelector('.s');if(s)s.textContent=pt.txt;
+  var bar=row.querySelector('.qbar'),fill=row.querySelector('.qfill');
+  if(bar&&fill){if(pt.pct===null)bar.classList.remove('on');else{bar.classList.add('on');fill.style.width=pt.pct+'%';}}
+}
 function updatePill(){
   var n=qActiveN();
   qBadge.textContent=n;qBadge.classList.toggle('show',n>0);
@@ -696,22 +729,25 @@ function updatePill(){
   qPill.classList.toggle('show',show);
   if(show){var up=queue.some(function(q){return q.status==='up';});qPillText.textContent=up?('در حال آپلود… '+n+' مورد در صف'):('در صف آپلود: '+n+' مورد');}
 }
-qPill.addEventListener('click',function(){qRender();queueView.classList.add('open');updatePill();});
+qPill.addEventListener('click',function(){qRender();queueView.classList.add('open');updatePill();pushLayer('panel',function(){queueView.classList.remove('open');updatePill();});});
 function qRender(){
   qList.innerHTML='';
   qEmpty.style.display=queue.length?'none':'block';
   qClear.style.display=queue.some(function(q){return q.status==='done';})?'block':'none';
   queue.forEach(function(q){
-    var row=document.createElement('div');row.className='qrow';
+    var row=document.createElement('div');row.className='qrow';row.dataset.qid=q.qid;
     var ic=document.createElement('div');ic.className='ic';ic.innerHTML=Q_ICONS[q.status];row.appendChild(ic);
     var tx=document.createElement('div');tx.className='tx';
     var u=document.createElement('div');u.className='u';u.dir='ltr';u.textContent=q.url;tx.appendChild(u);
     var s=document.createElement('div');s.className='s'+(q.status==='err'?' err':q.status==='done'?' done':'');
+    var ptUp=null;
     if(q.status==='wait')s.textContent='در صف';
-    else if(q.status==='up'){s.textContent='در حال آپلود… '+fmtElapsed(Date.now()-q.t0);s.dataset.qtime='1';}
+    else if(q.status==='up'){ptUp=progText(q);if(ptUp)s.textContent=ptUp.txt;else{s.textContent='در حال آپلود… '+fmtElapsed(Date.now()-q.t0);s.dataset.qtime='1';}}
     else if(q.status==='done')s.textContent='اضافه شد'+(q.item&&q.item.size?' · '+fmtSize(q.item.size):'');
     else s.textContent='خطا'+(q.error?': '+q.error:'');
-    tx.appendChild(s);row.appendChild(tx);
+    tx.appendChild(s);
+    if(q.status==='up'){var bar=document.createElement('div');bar.className='qbar';var fill=document.createElement('div');fill.className='qfill';bar.appendChild(fill);if(ptUp&&ptUp.pct!==null){bar.classList.add('on');fill.style.width=ptUp.pct+'%';}tx.appendChild(bar);}
+    row.appendChild(tx);
     var acts=document.createElement('div');acts.className='acts';
     if(q.status==='up'){var cb=document.createElement('button');cb.textContent='لغو';cb.addEventListener('click',function(){if(qCtrl)qCtrl.abort();});acts.appendChild(cb);}
     if(q.status==='err'){var rb=document.createElement('button');rb.textContent='تلاش دوباره';rb.addEventListener('click',function(){q.status='wait';q.error=null;qSave();qRender();qProcess();});acts.appendChild(rb);}
@@ -726,22 +762,23 @@ setInterval(function(){
   if(el){var up=queue.find(function(q){return q.status==='up';});if(up)el.textContent='در حال آپلود… '+fmtElapsed(Date.now()-up.t0);}
 },1000);
 function qEnqueue(list){
-  list.forEach(function(u){queue.push({url:u,status:'wait',error:null,item:null,t0:0});});
+  list.forEach(function(u){queue.push({qid:++qSeq,url:u,status:'wait',error:null,item:null,t0:0,job:null,prog:null});});
   qSave();qRender();qProcess();
 }
 function qProcess(){
   if(qRunning)return;
   var q=queue.find(function(x){return x.status==='wait';});
   if(!q){qRender();return;}
-  qRunning=true;q.status='up';q.t0=Date.now();qRender();
+  qRunning=true;q.status='up';q.t0=Date.now();q.prog=null;q.job='j'+Date.now().toString(36)+Math.random().toString(36).slice(2,7);qRender();
   qCtrl=('AbortController' in window)?new AbortController():null;
-  fetch(API+'/api/add',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:q.url}),signal:qCtrl?qCtrl.signal:undefined}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(x){
-    qRunning=false;qCtrl=null;
+  var poll=setInterval(function(){fetch(API+'/api/progress/'+q.job).then(function(r){return r.json();}).then(function(p){if(p&&p.status==='run'){q.prog=p;paintProg(q);}}).catch(function(){});},1200);
+  fetch(API+'/api/add',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({url:q.url,job:q.job}),signal:qCtrl?qCtrl.signal:undefined}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});}).then(function(x){
+    clearInterval(poll);qRunning=false;qCtrl=null;
     if(!x.ok||!x.d.item){q.status='err';q.error=(x.d&&x.d.error)||'آپلود ناموفق بود';}
     else{q.status='done';q.item=x.d.item;if(!photos.some(function(p){return p.id===x.d.item.id;})){photos.unshift(x.d.item);render();}toast(isVideo(x.d.item)?'فیلم اضافه شد':'عکس اضافه شد');}
     qSave();qRender();qProcess();
   }).catch(function(e){
-    qRunning=false;qCtrl=null;
+    clearInterval(poll);qRunning=false;qCtrl=null;
     if(e&&e.name==='AbortError'){queue=queue.filter(function(x){return x!==q;});toast('آپلود لغو شد');}
     else{q.status='err';q.error='خطا در ارتباط';}
     qSave();qRender();qProcess();
