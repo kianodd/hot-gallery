@@ -259,8 +259,8 @@ body.selecting .qpill{display:none}
 .grid.sg .cell img,.grid.sg .cell video{width:100%;height:auto;aspect-ratio:16/9}
 .grid.sg .cell.fcell{min-height:96px}
 /* hg-v29: پوشه‌ی آیکون‌دار در نمای تک‌ستونه کاشی عریض (۱۶/۹) هم‌اندازه‌ی کارت‌های مدیا + آیکون درشت‌تر */
-.grid.sg .cell.fcell.ficcell{aspect-ratio:16/9}
-.grid.sg .cell.fcell.ficcell .fic svg{width:88px;height:88px}
+.grid.sg .cell.fcell.ficcell{aspect-ratio:16/9;width:66%;justify-self:center}
+.grid.sg .cell.fcell.ficcell .fic svg{width:64px;height:64px}
 .cell img.blurph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(14px);transform:scale(1.18);transition:opacity .45s ease;pointer-events:none}
 .cell img.blurph.gone{opacity:0}
 .cell img.mainimg{opacity:0;transition:opacity .35s ease}
@@ -300,7 +300,6 @@ body.selecting .qpill{display:none}
 .fspdot.mid{background:#ffd60a}
 .fspdot.bad{background:#ff453a}
 @keyframes fspulse{0%{box-shadow:0 0 0 0 rgba(48,209,88,.45)}70%{box-shadow:0 0 0 5px rgba(48,209,88,0)}100%{box-shadow:0 0 0 0 rgba(48,209,88,0)}}
-.fspill .fsgh{color:rgba(255,255,255,.92);font-weight:600}
 .fspill .fsval{color:rgba(255,255,255,.75);font-weight:500;font-variant-numeric:tabular-nums}
 /* hg-v24: ردیف شارد کلیک‌پذیر + لیست ویدیوهای هر شارد با تامنیل کوچک */
 .shardrow{width:100%;text-align:right;cursor:pointer}
@@ -548,12 +547,12 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:23</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:26</span></p>
   </div>
 </section>
 
 <div class="viewer" id="viewer">
-  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline muted style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="boostpill" id="boostPill"></div><div class="fspill" id="fsPingPill"><span class="fspdot" id="fsPingDot"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6.5 4 13L16 12h5"/></svg><span class="fsgh">GitHub</span><span class="fsval" id="fsPingVal">…</span></div>
+  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline muted style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="boostpill" id="boostPill"></div><div class="fspill" id="fsPingPill"><span class="fspdot" id="fsPingDot"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6.5 4 13L16 12h5"/></svg><span class="fsval" id="fsPingVal">…</span></div>
   <div class="vtop"><div class="vtop-in">
     <button id="vClose" aria-label="بازگشت"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="vmeta"><div class="d" id="vDate"></div><div class="n" id="vNum"></div></div>
@@ -740,7 +739,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 12:23';
+var RUN_BUILD='2026-11-06 12:26';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2839,6 +2838,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:31,d:'۱۵ آبان ۱۴۰۵',items:['در صفحه‌ی صف آپلود، با کلیک روی هر آپلود سروری (یا دکمه‌ی «اکشن») ران گیت‌هاب‌اکشنِ همان آپلود باز می‌شود','عرض پوشه‌های آیکون‌دار در نمای تک‌ستونه ۶۶٪ شد','متن «GitHub» از پیل پینگ تمام‌صفحه حذف شد؛ فقط نقطه‌ی وضعیت و عدد پینگ ماند']},
  {n:30,d:'۱۵ آبان ۱۴۰۵',items:['پیل پینگ گیت‌هاب در پخش تمام‌صفحه خیلی کوچک‌تر و فشرده‌تر شد']},
  {n:29,d:'۱۵ آبان ۱۴۰۵',items:['«پربازدیدترین فیلم‌ها» از منوی کناری حذف شد؛ دکمه‌اش در نوار بالا هست','پوشه‌هایی که پیش‌نمایش‌شان آیکون است، در نمای تک‌ستونه کاشی عریض هم‌اندازه‌ی بقیه‌ی کارت‌ها می‌گیرند','پیل پینگ گیت‌هاب در پخش تمام‌صفحه نمایش داده می‌شود (اشکال برطرف شد)']},
  {n:28,d:'۱۵ آبان ۱۴۰۵',items:['دکمه‌ی «افزودن» شد یک دکمه‌ی شناور پایینِ سمت راست صفحه‌ی اصلی','جای دکمه‌ی افزودن در نوار بالا، دکمه‌ی «پربازدیدترین فیلم‌ها» آمد']},
@@ -3552,6 +3552,11 @@ function updatePill(){
   if(show){var up=queue.some(function(q){return q.status==='up';});qPillText.textContent=up?('در حال آپلود… '+n+' مورد در صف'):('در صف آپلود: '+n+' مورد');}
 }
 qPill.addEventListener('click',function(){qRender();queueView.classList.add('open');updatePill();pushLayer('panel',function(){queueView.classList.remove('open');updatePill();});});
+/* hg-v31: لینک ران گیت‌هاب‌اکشنِ یک جاب سروری (وقتی ورکر run_id را پیدا و ثبت کرده باشد) */
+function qRunUrl(q){
+  if(!q||!q.srv||!q.runId)return null;
+  return 'https://github.com/kianodd/'+(q.repo||'hot-gallery-data')+'/actions/runs/'+q.runId;
+}
 function qRender(){
   qList.innerHTML='';
   qEmpty.style.display=queue.length?'none':'block';
@@ -3574,6 +3579,14 @@ function qRender(){
     var acts=document.createElement('div');acts.className='acts';
     if(q.status==='up'){var cb=document.createElement('button');cb.textContent='لغو';cb.addEventListener('click',function(){if(q.srv){apiPost('/api/queue/cancel',{id:q.sid}).then(function(){qSyncQueue();}).catch(function(){qSyncQueue();});}else qCancelActive(q);});acts.appendChild(cb);}
     if(q.status==='err'){var rb=document.createElement('button');rb.textContent='تلاش دوباره';rb.addEventListener('click',function(){if(q.srv){q.status='wait';q.error=null;qRender();apiPost('/api/queue/retry',{id:q.sid}).then(function(){qSyncQueue();}).catch(function(){qSyncQueue();});}else{q.status='wait';q.error=null;qSave();qRender();qProcess();}});acts.appendChild(rb);}
+    var ru=qRunUrl(q);
+    if(ru){
+      var ab=document.createElement('button');ab.textContent='اکشن ↗';ab.setAttribute('aria-label','باز کردن اکشن گیت‌هاب');
+      ab.addEventListener('click',function(ev){ev.stopPropagation();window.open(ru,'_blank');});
+      acts.appendChild(ab);
+      row.style.cursor='pointer';row.title='باز کردن اکشن گیت‌هاب';
+      row.addEventListener('click',function(ev){if(ev.target.closest('button'))return;window.open(ru,'_blank');});
+    }
     if(q.status!=='up'){var xb=document.createElement('button');xb.className='x';xb.textContent='×';xb.setAttribute('aria-label','حذف از صف');xb.addEventListener('click',function(){if(q.srv){if(q.status==='wait'){apiPost('/api/queue/cancel',{id:q.sid}).catch(function(){});}else{qDismissed[q.sid]=1;try{localStorage.setItem('hg-qdismiss',JSON.stringify(qDismissed));}catch(e){}}queue=queue.filter(function(x){return x!==q;});qRender();if(q.status==='wait')qSyncQueue();}else{queue=queue.filter(function(x){return x!==q;});qSave();qRender();}});acts.appendChild(xb);}
     row.appendChild(acts);qList.appendChild(row);
   });
@@ -3837,7 +3850,7 @@ var qDismissed={};try{qDismissed=JSON.parse(localStorage.getItem('hg-qdismiss')|
 var qDoneSeen={};
 function qSrvEntry(j){
   var st=j.status==='pending'?'wait':j.status==='running'?'up':j.status==='done'?'done':j.status==='cancelled'?'cancelled':'err';
-  var e={qid:j.id,srv:true,sid:j.id,url:j.url,status:st,error:j.error||null,item:null,t0:j.created_at||Date.now(),job:j.id,ghaItem:j.item_id||null,prog:null,folder:j.folder||null,pk:j.kind==='image'?'image':'video'};
+  var e={qid:j.id,srv:true,sid:j.id,url:j.url,status:st,error:j.error||null,item:null,t0:j.created_at||Date.now(),job:j.id,ghaItem:j.item_id||null,prog:null,folder:j.folder||null,pk:j.kind==='image'?'image':'video',runId:j.run_id||null,repo:j.repo||null};
   if(j.prog)e.prog={status:'run',phase:j.kind==='image'?'up':'gha',state:j.prog.state||'',loaded:j.prog.loaded||0,total:j.prog.total||0,partsDone:j.prog.partsDone||0,partsTotal:j.prog.partsTotal||0};
   if(st==='done'&&j.item_id){var it=photos.find(function(p){return p.id===j.item_id;});if(it)e.item=it;}
   if(st==='err'&&j.error==='تکراری است — قبلاً اضافه شده'){e.status='dup';e.error=j.error;}
