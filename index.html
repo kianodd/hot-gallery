@@ -281,6 +281,17 @@ body.selecting .qpill{display:none}
 .rootbar-in .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15.5px;font-weight:700;pointer-events:none}
 /* hg-v23: نشانگر سرعت موقت (نگه‌داشتن سمت راست فیلم در فول‌اسکرین) — بالای وسط ویوئر */
 .boostpill{position:absolute;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-8px);z-index:40;background:rgba(0,0,0,.62);color:#fff;font-size:15px;font-weight:700;padding:8px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);direction:rtl}
+/* hg-v26: پیل پینگ گیت‌هاب در پخش تمام‌صفحه — شیشه‌ای، بالا سمت چپ، فقط وقتی ویوئر
+   فیلم و در حالت فول‌اسکرین است (کلاس‌های hg-fs و on-video روی #viewer) */
+.fspill{position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;z-index:46;display:flex;align-items:center;gap:7px;direction:ltr;background:rgba(22,22,30,.52);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 13px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.1px;backdrop-filter:blur(14px) saturate(1.5);-webkit-backdrop-filter:blur(14px) saturate(1.5);box-shadow:0 8px 28px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.14);opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+#viewer.hg-fs.on-video .fspill{opacity:1;transform:translateY(0)}
+.fspdot{width:8px;height:8px;border-radius:50%;background:#8e8e93;flex:none}
+.fspdot.ok{background:#30d158;animation:fspulse 2.2s ease-out infinite}
+.fspdot.mid{background:#ffd60a}
+.fspdot.bad{background:#ff453a}
+@keyframes fspulse{0%{box-shadow:0 0 0 0 rgba(48,209,88,.45)}70%{box-shadow:0 0 0 8px rgba(48,209,88,0)}100%{box-shadow:0 0 0 0 rgba(48,209,88,0)}}
+.fspill .fsgh{color:rgba(255,255,255,.92);font-weight:600}
+.fspill .fsval{color:rgba(255,255,255,.75);font-weight:500;font-variant-numeric:tabular-nums}
 /* hg-v24: ردیف شارد کلیک‌پذیر + لیست ویدیوهای هر شارد با تامنیل کوچک */
 .shardrow{width:100%;text-align:right;cursor:pointer}
 .shardrow:active{background:var(--pressed)}
@@ -504,11 +515,10 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="clearCacheBtn"><span style="color:var(--red)">پاک‌کردن کش</span></button>
     </div>
     <p class="snote">کش فقط نسخه‌های موقتِ بندانگشتی‌ها و فایل‌های برنامه است؛ پاک‌کردنش هیچ عکس، فیلم، پسندیده یا تنظیمی را حذف نمی‌کند و دفعه‌ی بعد دوباره ساخته می‌شود.</p>
-    <p class="slabel" style="margin-top:26px">فضای ذخیره‌سازی شاردها</p>
-    <div class="group" id="shardGroup">
-      <div class="irow"><span class="k">در حال بارگذاری…</span><span class="v"></span></div>
+    <p class="slabel" style="margin-top:26px">ذخیره‌سازی</p>
+    <div class="group">
+      <button class="opt" id="shardsOpt"><span>شاردها</span><span class="ck" style="visibility:visible;color:var(--faint);font-size:15px">‹</span></button>
     </div>
-    <p class="snote">عکس‌ها روی شارد اصلی می‌مانند و فیلم‌ها بین شاردهای دیگر پخش می‌شوند. «حجم گالری» مجموع فایل‌های ثبت‌شده در هر شارد است؛ «مخزن» اندازه‌ی واقعی مخزن گیت‌هاب با تاریخچه‌اش است. روی هر شارد بزن تا فیلم‌های داخلش را با تامنیل ببینی؛ روی هر فیلم هم بزنی پخش می‌شود.</p>
     <p class="slabel" style="margin-top:26px">آمار</p>
     <div class="group">
       <button class="opt" id="statsOpt"><span>آمار گالری</span><span class="ck" style="visibility:visible;color:var(--faint);font-size:15px">‹</span></button>
@@ -517,12 +527,12 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 11:50</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 11:55</span></p>
   </div>
 </section>
 
 <div class="viewer" id="viewer">
-  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline muted style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="boostpill" id="boostPill"></div>
+  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline muted style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="boostpill" id="boostPill"></div><div class="fspill" id="fsPingPill"><span class="fspdot" id="fsPingDot"></span><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l2.5-6.5 4 13L16 12h5"/></svg><span class="fsgh">GitHub</span><span class="fsval" id="fsPingVal">…</span></div>
   <div class="vtop"><div class="vtop-in">
     <button id="vClose" aria-label="بازگشت"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="vmeta"><div class="d" id="vDate"></div><div class="n" id="vNum"></div></div>
@@ -606,6 +616,19 @@ body{font-size:calc(16px * var(--fsk))}
   <div class="sbody"><div id="changelogBody"></div></div>
 </section>
 
+<section class="view-settings" id="shardsView" aria-label="شاردها">
+  <div class="sbar">
+    <button class="sback" id="shardsBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>بازگشت</span></button>
+    <div class="stitle">شاردها</div>
+  </div>
+  <div class="sbody">
+    <div class="group" id="shardGroup">
+      <div class="irow"><span class="k">در حال بارگذاری…</span><span class="v"></span></div>
+    </div>
+    <p class="snote">عکس‌ها روی شارد اصلی می‌مانند و فیلم‌ها بین شاردهای دیگر پخش می‌شوند. «حجم گالری» مجموع فایل‌های ثبت‌شده در هر شارد است؛ «مخزن» اندازه‌ی واقعی مخزن گیت‌هاب با تاریخچه‌اش است. روی هر شارد بزن تا فیلم‌های داخلش را با تامنیل ببینی؛ روی هر فیلم هم بزنی پخش می‌شود.</p>
+  </div>
+</section>
+
 <section class="view-settings" id="shardView" aria-label="ویدیوهای شارد">
   <div class="sbar">
     <button class="sback" id="shardBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>بازگشت</span></button>
@@ -672,7 +695,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 11:50';
+var RUN_BUILD='2026-11-06 11:55';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1041,9 +1064,18 @@ function folderCell(f){
   var c=document.createElement('button');c.className='cell fcell'+(selected[f.id]?' sel':'');c.dataset.fid=f.id;c.dataset.id=f.id;c.setAttribute('aria-label','پوشه '+f.name);
   var firstC=items.length?((f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0]):null;
   if(firstC&&!f.nopreview&&!coverWarmed[f.id]&&firstC.blur){
-    /* hg-v15 (۳۱۳): پوشه‌ای که این نشست هنوز باز نشده، هیچ درخواست شبکه‌ای برای آیتم‌های
-       داخلش صادر نمی‌کند — نه تامنیل، نه ارتقای HQ؛ فقط بلورِ درون‌خطیِ ایندکس نشان داده می‌شود */
+    /* hg-v15 (۳۱۳): پوشه‌ای که این نشست هنوز باز نشده، برای آیتم‌های داخلش درخواست شبکه‌ای
+       صادر نمی‌شود؛ فقط بلورِ درون‌خطیِ ایندکس نشان داده می‌شود.
+       hg-v26: استثنا به دستور کاربر — اگر کاور، فیلم است، تامنیل واقعیِ همان کاور به‌محض
+       دیده‌شدن سلول پوشه در ویوپورت لود و جای بلور می‌نشیند (همان مسیر hqObserve/hqUpgrade
+       کارت‌های فیلم؛ فقط خود کاور، نه بقیه‌ی آیتم‌های پوشه). */
     var bel=document.createElement('img');bel.alt='';bel.src=blurUri(firstC);c.appendChild(bel);c._coverId=firstC.id;
+    if(isVideo(firstC)&&firstC.thumb)hqObserve(c,firstC);
+  }
+  else if(firstC&&!f.nopreview&&!coverWarmed[f.id]&&isVideo(firstC)&&firstC.thumb){
+    /* hg-v26: کاورِ فیلمی که بلور ندارد هم با دیده‌شدن پوشه لود می‌شود (تا قبل از آن آیکن پوشه) */
+    var bel2=document.createElement('img');bel2.alt='';c.appendChild(bel2);c._coverId=firstC.id;
+    hqObserve(c,firstC);
   }
   else if(items.length&&!f.nopreview&&coverWarmed[f.id]){
     var first=firstC;
@@ -1084,8 +1116,10 @@ function favFolderCell(){
   var favs=photos.filter(function(p){return p.fav;});
   var c=document.createElement('button');c.className='cell fcell favcell';c.dataset.fav='1';c.setAttribute('aria-label','پوشه پسندیده‌ها');
   if(favs.length&&!favNoPreview()&&!favWarmed&&favs[0].blur){
-    /* hg-v15 (۳۱۳): کاور پسندیده‌ها هم تا قبل از اولین باز شدن، فقط بلور درون‌خطی است */
+    /* hg-v15 (۳۱۳): کاور پسندیده‌ها هم تا قبل از اولین باز شدن، فقط بلور درون‌خطی است؛
+       hg-v26: اگر کاور فیلم است، تامنیل واقعی‌اش با دیده‌شدن سلول در ویوپورت لود می‌شود */
     var bel2=document.createElement('img');bel2.alt='';bel2.src=blurUri(favs[0]);c.appendChild(bel2);c._coverId=favs[0].id;
+    if(isVideo(favs[0])&&favs[0].thumb)hqObserve(c,favs[0]);
   }
   else if(favs.length&&!favNoPreview()&&favWarmed){
     var first=favs[0];
@@ -1597,6 +1631,10 @@ function setVidSource(u){
   bindMediaEvents();
 }
 function vidPlay(){applyMuted();var p;if(plyr){try{p=plyr.play();}catch(e){}}else{p=liveVid().play();}if(p&&p.catch)p.catch(function(){});}
+/* hg-v26: فیلم‌ها اتوپلی نیستند — با باز شدن یا جابه‌جایی، فیلم فقط آماده و متوقف
+   می‌ماند (بی‌صدا بودنِ پیش‌فرضِ hg-v14 سر جایش است) و پخش فقط با لمس خود کاربر
+   شروع می‌شود. دکمه‌های شیت «ادامه/از اول» چون لمس صریح کاربرند، مثل قبل پخش می‌کنند. */
+function vidManualReady(){applyMuted();try{liveVid().pause();}catch(e){}}
 function curItemIsVideo(){var L=vItems();var it=L&&L[vIdx];return !!(it&&isVideo(it));}
 /* hg-v15 (۸۹): آمار تماشا — تعداد پخش و مجموع ثانیه‌های تماشای هر فیلم، محلی روی همین
    دستگاه در localStorage (hg-watch) می‌ماند. پخش وقتی شمرده می‌شود که پخش واقعاً شروع شود
@@ -1647,7 +1685,7 @@ function playVideoSmart(item){
   vGateDone=true;
   var pos=resumePosFor(item);
   if(pos)showResumeSheet(item,pos);
-  else vidPlay();
+  else vidManualReady();
 }
 function onVidMetadata(item){
   if(!item||item.id!==vGateId||vGateDone)return;
@@ -2328,7 +2366,7 @@ document.getElementById('selMove').addEventListener('click',function(){
 document.getElementById('miSelect').addEventListener('click',function(){closeMenu();enterSelect();});
 document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
-document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncFontOpts();syncBoostOpts();syncAccent();syncDecoyUI();refreshCacheSize();refreshShards();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
+document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncFontOpts();syncBoostOpts();syncAccent();syncDecoyUI();refreshCacheSize();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
 document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');});
 /* theme */
 function applyTheme(pref){
@@ -2683,9 +2721,23 @@ function openShardVideos(repo){
   pushLayer('panel',function(){shardViewEl.classList.remove('open');});
 }
 document.getElementById('shardBack').addEventListener('click',function(){shardViewEl.classList.remove('open');releaseLayer('panel');});
+/* hg-v26: بخش شاردها صفحه‌ی جدا شد — از تنظیمات باز می‌شود (مثل آمار) و لیست
+   فیلم‌های هر شارد روی همین صفحه باز می‌شود و برگشت به همین‌جا برمی‌گردد */
+var shardsViewEl=document.getElementById('shardsView');
+function openShards(){
+  refreshShards();
+  shardsViewEl.classList.add('open');
+  pushLayer('panel',function(){shardsViewEl.classList.remove('open');});
+}
+document.getElementById('shardsOpt').addEventListener('click',function(){
+  document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');
+  openShards();
+});
+document.getElementById('shardsBack').addEventListener('click',function(){shardsViewEl.classList.remove('open');releaseLayer('panel');});
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:26,d:'۱۵ آبان ۱۴۰۵',items:['در پخش تمام‌صفحه، پینگ گیت‌هاب به شکل یک پیل شیشه‌ای بالا سمت چپ نمایش داده می‌شود','فیلم‌ها دیگر خودکار پخش نمی‌شوند؛ پخش فقط با لمس خودت شروع می‌شود','تامنیلِ ویدیویی که کاور پوشه است، به‌محض دیده‌شدن پوشه لود می‌شود','بخش «شاردها» از تنظیمات به صفحه‌ی جدا منتقل شد']},
  {n:25,d:'۱۵ آبان ۱۴۰۵',items:['«پربازدیدترین فیلم‌ها» صفحه‌ی جدا شد و از منو باز می‌شود','داخل صفحه‌اش دو تب هست: «تعداد پخش» و «زمان تماشا»؛ لیست بر اساس تب انتخابی مرتب می‌شود و انتخابت می‌ماند']},
  {n:24,d:'۱۵ آبان ۱۴۰۵',items:['دیدن فیلم‌های هر شارد با تامنیل کوچک: در تنظیمات روی هر شارد بزن','لیست پنج فیلم پربازدید در صفحه‌ی آمار گالری','همین صفحه‌ی تغییرات نسخه‌ها به منو اضافه شد']},
  {n:23,d:'۱۵ آبان ۱۴۰۵',items:['نگه‌داشتن سمت راست فیلم در حالت تمام‌صفحه، سرعت پخش را موقت زیاد می‌کند؛ سرعتش از تنظیمات بین ۱٫۲۵ تا ۲ برابر انتخاب می‌شود','تنظیم اندازه‌ی متن اپ در تنظیمات (چهار اندازه)']},
@@ -3262,6 +3314,13 @@ function pingMenuSync(){
   var a=document.getElementById('miPingServer'),b=document.getElementById('miPingGh');
   if(a)a.querySelector('span').textContent='پینگ سرور: '+(pingState.w==null?'ناموفق':faNum(pingState.w)+' میلی‌ثانیه');
   if(b)b.querySelector('span').textContent='پینگ گیت‌هاب: '+(pingState.g==null?'ناموفق':faNum(pingState.g)+' میلی‌ثانیه');
+  /* hg-v26: پیل تمام‌صفحه هم با همان چرخه‌ی ۵ ثانیه‌ای زنده می‌ماند */
+  var dot=document.getElementById('fsPingDot'),val=document.getElementById('fsPingVal');
+  if(dot&&val){
+    var ms=pingState.g;
+    dot.className='fspdot '+(ms==null?'bad':(ms<450?'ok':(ms<1200?'mid':'bad')));
+    val.textContent=ms==null?'offline':faNum(ms)+' ms';
+  }
 }
 function pingTick(){
   if(document.hidden)return;
