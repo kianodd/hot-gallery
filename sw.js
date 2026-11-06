@@ -1,5 +1,5 @@
 // هات گالری — سرویس‌ورکر: پوسته‌ی اپ برای نصب و اجرای آفلاین؛ لیست گالری آخرین نسخه‌ی کش‌شده را آفلاین نشان می‌دهد
-const CACHE = 'hg-v42';
+const CACHE = 'hg-v43';
 /* hg-v15 (۳۰۵): کش اختصاصی بندانگشتی‌ها روی دستگاه — سقف ~۱۵۰MB با حذف قدیمی‌ترین‌ها (LRU تقریبی
    بر اساس ترتیب درج). فقط تصویرهای بندانگشتی/پیش‌نمایش اینجا می‌نشینند؛ پارت‌های فیلم هرگز کش نمی‌شوند. */
 const THUMBS = 'hg-thumbs';
@@ -50,8 +50,8 @@ function thumbCacheFirst(req) {
 const RAW = 'https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
 /* hg-v42: منبع گیت‌هاب کل اپ — از خود اپ با پیام می‌آید؛ پیش‌فرض آینه‌ی CDN است. */
 let GH_MODE = 'auto';
-self.addEventListener('message', function (e) { const d = e.data || {}; if (d.type === 'hg-ghsrc' && (d.mode === 'auto' || d.mode === 'cdn' || d.mode === 'gh')) GH_MODE = d.mode; });
-function rawFor(repo){return GH_MODE==='gh'?('https://raw.githubusercontent.com/kianodd/'+(repo||'hot-gallery-data')+'/main/'):('https://cdn.jsdelivr.net/gh/kianodd/'+(repo||'hot-gallery-data')+'@main/');}
+self.addEventListener('message', function (e) { const d = e.data || {}; if (d.type === 'hg-ghsrc') { let m = d.mode; if (m === 'cdn') m = 'jsd'; if (m === 'auto' || m === 'jsd' || m === 'ghproxy' || m === 'gh') GH_MODE = m; } });
+function rawFor(repo){const r=(repo||'hot-gallery-data');if(GH_MODE==='gh')return 'https://raw.githubusercontent.com/kianodd/'+r+'/main/';if(GH_MODE==='ghproxy')return 'https://gh-proxy.com/https://raw.githubusercontent.com/kianodd/'+r+'/main/';return 'https://cdn.jsdelivr.net/gh/kianodd/'+r+'@main/';}
 
 // استریم فیلم از روی پارت‌های گیت‌هاب: سرویس‌ورکر (بخشی از خود اپ، روی دستگاه کاربر) درخواست‌های
 // Range پخش‌کننده را به پارت درست نگاشت می‌کند؛ پخش فوری شروع می‌شود و جلو/عقب‌بردن هم کار می‌کند.
@@ -207,7 +207,7 @@ self.addEventListener('fetch', (e) => {
   }
 
   // مدیای خام گیت‌هاب: کش‌اول (عکس‌ها)؛ درخواست‌های Range فیلم دست نخورده از شبکه
-  if (url.hostname === 'raw.githubusercontent.com' || url.hostname === 'cdn.jsdelivr.net') {
+  if (url.hostname === 'raw.githubusercontent.com' || url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'gh-proxy.com' || url.hostname === 'raw.githack.com') {
     if (req.headers.has('range')) return;
     // hg-v15 (۳۰۵): تصویرها (تامنیل فیلم، عکس، پیش‌نمایش GIF) → کش بندانگشتی اختصاصی؛ بقیه مثل قبل
     if (/\.(jpe?g|png|webp|gif)$/i.test(url.pathname)) {
