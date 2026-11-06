@@ -259,8 +259,8 @@ body.selecting .qpill{display:none}
 .grid.sg .cell img,.grid.sg .cell video{width:100%;height:auto;aspect-ratio:16/9}
 .grid.sg .cell.fcell{min-height:96px}
 /* hg-v29: پوشه‌ی آیکون‌دار در نمای تک‌ستونه کاشی عریض + آیکون درشت‌تر؛
-   hg-v32: عرض ۶۶٪ ولی طول دقیقاً مثل حالت تمام‌عرض (نسبت 88/75 = ۱۶/۹ روی عرض کامل) */
-.grid.sg .cell.fcell.ficcell{aspect-ratio:88/75;width:66%;justify-self:center}
+   hg-v33: عرض کامل (۱۰۰٪) و ارتفاع ۷۰٪ ارتفاع قبلی — نسبت 160/63 (= ۷۰٪ × ۱۶/۹) */
+.grid.sg .cell.fcell.ficcell{aspect-ratio:160/63}
 .grid.sg .cell.fcell.ficcell .fic svg{width:88px;height:88px}
 .cell img.blurph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(14px);transform:scale(1.18);transition:opacity .45s ease;pointer-events:none}
 .cell img.blurph.gone{opacity:0}
@@ -548,7 +548,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:29</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:34</span></p>
   </div>
 </section>
 
@@ -740,7 +740,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 12:29';
+var RUN_BUILD='2026-11-06 12:34';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2839,6 +2839,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:33,d:'۱۵ آبان ۱۴۰۵',items:['کارت پوشه‌های آیکون‌دار در نمای تک‌ستونه: عرض کامل صفحه و ارتفاع ۷۰٪ حالت قبلی']},
  {n:32,d:'۱۵ آبان ۱۴۰۵',items:['طول کارت پوشه‌های آیکون‌دار در نمای تک‌ستونه به اندازه‌ی قبلی (تمام‌عرض) برگشت؛ فقط عرض‌شان ۶۶٪ است']},
  {n:31,d:'۱۵ آبان ۱۴۰۵',items:['در صفحه‌ی صف آپلود، با کلیک روی هر آپلود سروری (یا دکمه‌ی «اکشن») ران گیت‌هاب‌اکشنِ همان آپلود باز می‌شود','عرض پوشه‌های آیکون‌دار در نمای تک‌ستونه ۶۶٪ شد','متن «GitHub» از پیل پینگ تمام‌صفحه حذف شد؛ فقط نقطه‌ی وضعیت و عدد پینگ ماند']},
  {n:30,d:'۱۵ آبان ۱۴۰۵',items:['پیل پینگ گیت‌هاب در پخش تمام‌صفحه خیلی کوچک‌تر و فشرده‌تر شد']},
