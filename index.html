@@ -597,6 +597,13 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
       <div class="irow"><span class="k">پینگ گیت‌هاب (فقط‌خواندنی)</span><span class="v" id="cpRo">—</span><button class="cpbtn" data-conn-ping="ro">گرفتن پینگ</button></div>
     </div>
     <p class="snote">پینگ هر حالت جدا و مستقیم گرفته می‌شود، ربطی به حالت انتخاب‌شده ندارد؛ اگر بیش از ۱۰ ثانیه طول بکشد ناموفق حساب می‌شود.</p>
+    <p class="slabel" style="margin-top:26px">منبع داده‌های یوتیوب</p>
+    <div class="group">
+      <button class="opt" data-ytsrc-opt="auto"><span>خودکار (اول آینه‌ی CDN، بعد گیت‌هاب)</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-ytsrc-opt="cdn"><span>آینه‌ی CDN (jsDelivr)</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-ytsrc-opt="gh"><span>گیت‌هاب مستقیم</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+    </div>
+    <p class="snote">داده‌های تب یوتیوب (اشتراک‌ها، فید و تامنیل‌ها) روی گیت‌هاب منتشر می‌شوند؛ اگر نِتت گیت‌هاب را کند یا مسدود می‌کند، آینه‌ی CDN همان فایل‌ها را از یک مسیر دیگر می‌آورد و سرور موقع انتشار، کش آینه را تازه می‌کند. اگر هیچ‌کدام نرسد، اپ خودش از سرور می‌خواند. انتخابت روی همین دستگاه می‌ماند.</p>
     <p class="slabel" style="margin-top:26px">اندازه‌ی متن</p>
     <div class="group">
       <button class="opt" data-font-opt="0.88"><span>کوچک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
@@ -640,7 +647,7 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 18:35</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 20:55</span></p>
   </div>
 </section>
 
@@ -907,7 +914,7 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://gapi.kiandevteam.ir';
-var RUN_BUILD='2026-11-06 18:35';
+var RUN_BUILD='2026-11-06 20:55';
 /* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
    (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
    هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
@@ -3146,6 +3153,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:41,d:'۱۵ آبان ۱۴۰۵',items:['آپشن «منبع داده‌های یوتیوب» به تنظیمات اضافه شد: خودکار، آینه‌ی CDN یا گیت‌هاب مستقیم — وقتی گیت‌هاب روی نِتت کند یا مسدود است، آینه‌ی jsDelivr همان داده‌ها و تامنیل‌های تب یوتیوب را از یک مسیر دیگر می‌آورد','سرور موقع انتشار داده‌ها و تامنیل‌های تازه، کش آینه‌ی CDN را هم پاک می‌کند تا داده‌ها کهنه نمانند']},
  {n:40,d:'۱۵ آبان ۱۴۰۵',items:['داده‌های تب یوتیوب (اشتراک‌ها، فید و صفحه‌ی کانال‌ها) حالا علاوه بر سرور، به‌صورت فایل JSON روی گیت‌هاب هم منتشر می‌شوند و اپ اول از گیت‌هاب می‌خواند — موقع اختلال کلادفلر هم تب یوتیوب کار می‌کند','کرون سرور هر ۱۰ دقیقه این فایل‌ها را کنار تامنیل‌ها در همان شارد تازه می‌کند و با هر سابسکرایب/لغو اشتراک هم فوری به‌روز می‌شوند']},
  {n:39,d:'۱۵ آبان ۱۴۰۵',items:['تب «یوتیوب» پایین اپ اضافه شد: جستجوی کانال و مشترک‌شدن داخل خود برنامه','فید ویدیوهای کانال‌های ساب‌شده زیر سرچ‌بار، قاطی و مرتب بر اساس تاریخ؛ با کلیک روی اسم کانال، صفحه‌ی جدا ویدیوهای همان کانال باز می‌شود','کرون سرور هر ۱۰ دقیقه فید کانال‌ها را تازه می‌کند و تامنیل ویدیوها را در شارد جدا و بدون شماره (hot-gallery-yt-thumbs) ذخیره می‌کند؛ تامنیل مستقیم از یوتیوب لود نمی‌شود','هر ویدیو دکمه‌ی «افزودن به دانلود» دارد با انتخاب کیفیت ویدیو و صدا؛ دانلود در صف بخش اصلی می‌نشیند و در پوشه‌ی YouTube ذخیره می‌شود','صفحه‌ی جدا «اشتراک‌ها» (دکمه‌اش کنار دکمه‌ی تازه‌سازی در تب یوتیوب) مثل صفحه‌ی Subscriptions یوتیوب: فهرست همه‌ی کانال‌های ساب‌شده، باز کردن صفحه‌ی هر کانال و لغو اشتراک از همان‌جا','وضعیت اتصال ورکر و گیت‌هاب با همان دو دایره‌ی رنگی کنار عنوان صفحه‌ی اصلی، در هدر تب یوتیوب هم کنار اسم YouTube نمایش داده می‌شود و هر ۵ ثانیه با همان چرخه‌ی پینگ تازه می‌شود','صفحه‌ی اشتراک‌ها حالا فوراً با لیستِ ذخیره‌شده روی گوشی باز می‌شود و تازه‌سازی از سرور در پس‌زمینه انجام می‌شود؛ دیگر برای باز شدنش منتظر شبکه نمی‌ماند']},
  {n:38,d:'۱۵ آبان ۱۴۰۵',items:['بالای صفحه‌ی شاردها حالا تعداد شاردها و مجموع حجم گالری (و مجموع اندازه‌ی مخزن‌ها، وقتی معلوم باشد) نمایش داده می‌شود']},
@@ -4344,11 +4352,32 @@ function ytCompact(n){
   var m=n/1000000;return faNum(m>=100?Math.round(m):(Math.round(m*10)/10))+' میلیون';
 }
 function ytAvatarEl(url,name,cls){
-  if(url){var im=document.createElement('img');im.className=cls;im.src=url;im.alt='';im.loading='lazy';im.onerror=function(){var f=ytAvatarEl(null,name,cls);im.replaceWith(f);};return im;}
+  if(url){var im=document.createElement('img');im.className=cls;im.src=ytImgUrl(url);im.alt='';im.loading='lazy';im.onerror=function(){if(im.src!==url){im.src=url;return;}var f=ytAvatarEl(null,name,cls);im.replaceWith(f);};return im;}
   var d=document.createElement('div');d.className=cls+'f';d.textContent=(ytEsc(name).trim().charAt(0)||'؟');return d;
 }
 var YT_DATA_RAW='https://raw.githubusercontent.com/kianodd/hot-gallery-yt-thumbs/main/data/';
-function ytGhJson(name){return fetch(YT_DATA_RAW+name,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('gh '+r.status);return r.json();});}
+var YT_CDN_RAW='https://cdn.jsdelivr.net/gh/kianodd/hot-gallery-yt-thumbs@main/data/';
+var YT_THUMB_PREFIX='https://raw.githubusercontent.com/kianodd/hot-gallery-yt-thumbs/main/';
+var YT_CDN_PREFIX='https://cdn.jsdelivr.net/gh/kianodd/hot-gallery-yt-thumbs@main/';
+/* hg-v41: منبع داده‌های یوتیوب از تنظیمات انتخاب می‌شود (hg-ytsrc): auto = اول آینه‌ی CDN
+   بعد گیت‌هاب، cdn = فقط آینه، gh = گیت‌هاب مستقیم؛ فال‌بک نهایی همیشه ورکر است. */
+function ytSrcMode(){try{return localStorage.getItem('hg-ytsrc')||'auto';}catch(e){return 'auto';}}
+function ytOkJson(r){if(!r.ok)throw new Error('src '+r.status);return r.json();}
+function ytGhJson(name){
+  var m=ytSrcMode(),bases=[];
+  if(m!=='gh')bases.push(YT_CDN_RAW);
+  if(m!=='cdn')bases.push(YT_DATA_RAW);
+  var p=Promise.reject(new Error('no source'));
+  bases.forEach(function(b){p=p.catch(function(){return fetch(b+name,{cache:'no-store'}).then(ytOkJson);});});
+  return p;
+}
+function ytImgUrl(u){
+  if(!u||ytSrcMode()==='gh')return u;
+  return u.indexOf(YT_THUMB_PREFIX)===0?YT_CDN_PREFIX+u.slice(YT_THUMB_PREFIX.length):u;
+}
+function syncYtSrcOpts(){document.querySelectorAll('[data-ytsrc-opt]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-ytsrc-opt')===ytSrcMode());});}
+document.querySelectorAll('[data-ytsrc-opt]').forEach(function(b){b.addEventListener('click',function(){try{localStorage.setItem('hg-ytsrc',b.getAttribute('data-ytsrc-opt'));}catch(e){}syncYtSrcOpts();ytFeedAt=0;toast('منبع داده‌های یوتیوب عوض شد');});});
+syncYtSrcOpts();
 function ytSubsSource(){return ytGhJson('subs.json').catch(function(){return ytApiGet('/api/yt/subs');});}
 function ytFeedSource(){return ytGhJson('feed.json').catch(function(){return ytApiGet('/api/yt/feed?limit=80');});}
 function ytChannelSource(cid){return ytGhJson('channel-'+cid+'.json').catch(function(){return ytApiGet('/api/yt/channel/'+encodeURIComponent(cid));});}
@@ -4364,6 +4393,7 @@ function ytTabSync(){
   var otherOpen=!!document.querySelector('.view-settings.open:not(#ytView):not(#ytChannelView):not(#ytSubsView),.overlay.open,.as-wrap.open');
   var hide=otherOpen||document.body.classList.contains('selecting')||(lv&&lv.classList.contains('open'))||(typeof viewerEl!=='undefined'&&viewerEl&&viewerEl.classList.contains('open'));
   tabBarEl.style.display=hide?'none':'flex';
+  if(typeof syncYtSrcOpts==='function')syncYtSrcOpts();
 }
 window.ytTabSync=ytTabSync;
 setInterval(ytTabSync,700);
@@ -4440,7 +4470,7 @@ document.getElementById('ytSearchInput').addEventListener('keydown',function(e){
 function ytVideoCard(v){
   var card=document.createElement('div');card.className='yt-card';
   var th=document.createElement('div');th.className='yt-thumb';
-  if(v.thumb_url){var im=document.createElement('img');im.src=v.thumb_url;im.alt='';im.loading='lazy';th.appendChild(im);}
+  if(v.thumb_url){var im=document.createElement('img');im.src=ytImgUrl(v.thumb_url);im.alt='';im.loading='lazy';im.onerror=function(){if(im.src!==v.thumb_url)im.src=v.thumb_url;};th.appendChild(im);}
   else{var ph=document.createElement('div');ph.className='ph';ph.innerHTML='<svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor" opacity=".8"><path d="M7 4.8v14.4L19 12z"/></svg>';th.appendChild(ph);}
   card.appendChild(th);
   var meta=document.createElement('div');meta.className='yt-meta';
