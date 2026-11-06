@@ -640,7 +640,7 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 18:21</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 18:35</span></p>
   </div>
 </section>
 
@@ -907,7 +907,7 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://gapi.kiandevteam.ir';
-var RUN_BUILD='2026-11-06 18:21';
+var RUN_BUILD='2026-11-06 18:35';
 /* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
    (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
    هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
@@ -3146,6 +3146,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:40,d:'۱۵ آبان ۱۴۰۵',items:['داده‌های تب یوتیوب (اشتراک‌ها، فید و صفحه‌ی کانال‌ها) حالا علاوه بر سرور، به‌صورت فایل JSON روی گیت‌هاب هم منتشر می‌شوند و اپ اول از گیت‌هاب می‌خواند — موقع اختلال کلادفلر هم تب یوتیوب کار می‌کند','کرون سرور هر ۱۰ دقیقه این فایل‌ها را کنار تامنیل‌ها در همان شارد تازه می‌کند و با هر سابسکرایب/لغو اشتراک هم فوری به‌روز می‌شوند']},
  {n:39,d:'۱۵ آبان ۱۴۰۵',items:['تب «یوتیوب» پایین اپ اضافه شد: جستجوی کانال و مشترک‌شدن داخل خود برنامه','فید ویدیوهای کانال‌های ساب‌شده زیر سرچ‌بار، قاطی و مرتب بر اساس تاریخ؛ با کلیک روی اسم کانال، صفحه‌ی جدا ویدیوهای همان کانال باز می‌شود','کرون سرور هر ۱۰ دقیقه فید کانال‌ها را تازه می‌کند و تامنیل ویدیوها را در شارد جدا و بدون شماره (hot-gallery-yt-thumbs) ذخیره می‌کند؛ تامنیل مستقیم از یوتیوب لود نمی‌شود','هر ویدیو دکمه‌ی «افزودن به دانلود» دارد با انتخاب کیفیت ویدیو و صدا؛ دانلود در صف بخش اصلی می‌نشیند و در پوشه‌ی YouTube ذخیره می‌شود','صفحه‌ی جدا «اشتراک‌ها» (دکمه‌اش کنار دکمه‌ی تازه‌سازی در تب یوتیوب) مثل صفحه‌ی Subscriptions یوتیوب: فهرست همه‌ی کانال‌های ساب‌شده، باز کردن صفحه‌ی هر کانال و لغو اشتراک از همان‌جا','وضعیت اتصال ورکر و گیت‌هاب با همان دو دایره‌ی رنگی کنار عنوان صفحه‌ی اصلی، در هدر تب یوتیوب هم کنار اسم YouTube نمایش داده می‌شود و هر ۵ ثانیه با همان چرخه‌ی پینگ تازه می‌شود','صفحه‌ی اشتراک‌ها حالا فوراً با لیستِ ذخیره‌شده روی گوشی باز می‌شود و تازه‌سازی از سرور در پس‌زمینه انجام می‌شود؛ دیگر برای باز شدنش منتظر شبکه نمی‌ماند']},
  {n:38,d:'۱۵ آبان ۱۴۰۵',items:['بالای صفحه‌ی شاردها حالا تعداد شاردها و مجموع حجم گالری (و مجموع اندازه‌ی مخزن‌ها، وقتی معلوم باشد) نمایش داده می‌شود']},
  {n:37,d:'۱۵ آبان ۱۴۰۵',items:['کاورِ عکسیِ پوشه‌ها هم مثل کاورِ فیلم، به‌محض دیده‌شدن پوشه در صفحه لود می‌شه و جای بلور می‌شینه']},
@@ -4346,6 +4347,11 @@ function ytAvatarEl(url,name,cls){
   if(url){var im=document.createElement('img');im.className=cls;im.src=url;im.alt='';im.loading='lazy';im.onerror=function(){var f=ytAvatarEl(null,name,cls);im.replaceWith(f);};return im;}
   var d=document.createElement('div');d.className=cls+'f';d.textContent=(ytEsc(name).trim().charAt(0)||'؟');return d;
 }
+var YT_DATA_RAW='https://raw.githubusercontent.com/kianodd/hot-gallery-yt-thumbs/main/data/';
+function ytGhJson(name){return fetch(YT_DATA_RAW+name,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error('gh '+r.status);return r.json();});}
+function ytSubsSource(){return ytGhJson('subs.json').catch(function(){return ytApiGet('/api/yt/subs');});}
+function ytFeedSource(){return ytGhJson('feed.json').catch(function(){return ytApiGet('/api/yt/feed?limit=80');});}
+function ytChannelSource(cid){return ytGhJson('channel-'+cid+'.json').catch(function(){return ytApiGet('/api/yt/channel/'+encodeURIComponent(cid));});}
 function ytApiGet(path){
   return fetch(API+path).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});
 }
@@ -4477,8 +4483,8 @@ function ytLoadHome(force){
   var feed=document.getElementById('ytFeed');
   if(!feed.childNodes.length)feed.innerHTML='<div class="yt-loading">در حال بارگذاری فید…</div>';
   Promise.all([
-    ytApiGet('/api/yt/subs').catch(function(){return{channels:[]};}),
-    ytApiGet('/api/yt/feed?limit=80').catch(function(){return{videos:[]};})
+    ytSubsSource().catch(function(){return{channels:[]};}),
+    ytFeedSource().catch(function(){return{videos:[]};})
   ]).then(function(res){
     ytSubs=res[0].channels||[];ytFeedAt=Date.now();try{localStorage.setItem('hg-ytsubs',JSON.stringify(ytSubs));}catch(e){}
     ytRenderSubsStrip();
@@ -4486,7 +4492,7 @@ function ytLoadHome(force){
     var vids=res[1].videos||[];
     feed.innerHTML='';
     if(!ytSubs.length){
-      feed.innerHTML='<div class="yt-empty"><div class="big">هنوز کانالی را سابسکرایب نکرده‌ای</div><p>بالا اسم کانال را جستجو کن و «مشترک شدن» را بزن؛ ویدیوهای تازه‌ی کانال‌های ساب‌شده اینجا به ترتیب تاریخ می‌آیند و کرون سرور هر ۱۰ دقیقه فید و تامنیل‌ها را تازه می‌کند.</p></div>';
+      feed.innerHTML='<div class="yt-empty"><div class="big">هنوز کانالی را سابسکرایب نکرده‌ای</div><p>بالا اسم کانال را جستجو کن و «مشترک شدن» را بزن؛ ویدیوهای تازه‌ی کانال‌های ساب‌شده اینجا به ترتیب تاریخ می‌آیند و کرون سرور هر ۱۰ دقیقه فید و تامنیل‌ها را تازه و داده‌ها را روی گیت‌هاب منتشر می‌کند.</p></div>';
     }else if(!vids.length){
       feed.innerHTML='<div class="yt-empty"><div class="big">هنوز ویدیویی در فید نیست</div><p>کرون سرور هر ۱۰ دقیقه ویدیوهای تازه را می‌آورد؛ با دکمه‌ی تازه‌سازی بالا هم می‌توانی همین حالا بگی چک کند.</p></div>';
     }else{
@@ -4508,7 +4514,7 @@ function ytOpenChannel(cid,hint){
   var head=document.getElementById('ytChannelHead'),list=document.getElementById('ytChannelVideos');
   document.getElementById('ytChannelBarTitle').textContent=(hint&&hint.title)||'کانال';
   head.innerHTML='<div class="yt-loading">در حال بارگذاری کانال…</div>';list.innerHTML='';
-  ytApiGet('/api/yt/channel/'+encodeURIComponent(cid)).then(function(d){
+  ytChannelSource(cid).then(function(d){
     ytCurChannel=d.channel;ytPaintChannelHead(d.channel);
     list.innerHTML='';
     if(!(d.videos||[]).length)list.innerHTML='<div class="yt-empty"><div class="big">ویدیویی ثبت نشده</div><p>کرون سرور هر ۱۰ دقیقه ویدیوهای این کانال را می‌آورد.</p></div>';
@@ -4597,7 +4603,7 @@ function ytOpenSubsPage(){
   ytSubsViewEl.classList.add('open');
   pushLayer('panel',function(){ytSubsViewEl.classList.remove('open');ytTabSync();});
   ytTabSync();
-  ytApiGet('/api/yt/subs').then(function(d){ytSubs=d.channels||[];try{localStorage.setItem('hg-ytsubs',JSON.stringify(ytSubs));}catch(e){}ytRenderSubsStrip();if(ytSubsViewEl.classList.contains('open'))ytRenderSubsPage();}).catch(function(){});
+  ytSubsSource().then(function(d){ytSubs=d.channels||[];try{localStorage.setItem('hg-ytsubs',JSON.stringify(ytSubs));}catch(e){}ytRenderSubsStrip();if(ytSubsViewEl.classList.contains('open'))ytRenderSubsPage();}).catch(function(){});
 }
 document.getElementById('ytSubsBtn').addEventListener('click',ytOpenSubsPage);
 document.getElementById('ytSubsBack').addEventListener('click',function(){ytSubsViewEl.classList.remove('open');releaseLayer('panel');ytTabSync();});
