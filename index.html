@@ -548,7 +548,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:34</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:36</span></p>
   </div>
 </section>
 
@@ -740,7 +740,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 12:34';
+var RUN_BUILD='2026-11-06 12:36';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2839,6 +2839,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:34,d:'۱۵ آبان ۱۴۰۵',items:['اگه پینگ سرور یا گیت‌هاب بیشتر از ۱۰ ثانیه طول بکشه، خودکار یه پینگ تازه گرفته می‌شه']},
  {n:33,d:'۱۵ آبان ۱۴۰۵',items:['کارت پوشه‌های آیکون‌دار در نمای تک‌ستونه: عرض کامل صفحه و ارتفاع ۷۰٪ حالت قبلی']},
  {n:32,d:'۱۵ آبان ۱۴۰۵',items:['طول کارت پوشه‌های آیکون‌دار در نمای تک‌ستونه به اندازه‌ی قبلی (تمام‌عرض) برگشت؛ فقط عرض‌شان ۶۶٪ است']},
  {n:31,d:'۱۵ آبان ۱۴۰۵',items:['در صفحه‌ی صف آپلود، با کلیک روی هر آپلود سروری (یا دکمه‌ی «اکشن») ران گیت‌هاب‌اکشنِ همان آپلود باز می‌شود','عرض پوشه‌های آیکون‌دار در نمای تک‌ستونه ۶۶٪ شد','متن «GitHub» از پیل پینگ تمام‌صفحه حذف شد؛ فقط نقطه‌ی وضعیت و عدد پینگ ماند']},
@@ -3503,10 +3504,35 @@ function pingMenuSync(){
     val.textContent=ms==null?'offline':faNum(ms)+' ms';
   }
 }
+/* hg-v34: واچ‌داگ پینگ — اگه یه پینگ بیشتر از ۱۰ ثانیه طول کشید، همون لحظه یه پینگ
+   تازه گرفته می‌شه (نه اینکه تا ابد روی مقدار قبلی بمونه)؛ جواب دیررسِ تلاش قبلی هم
+   با شماره‌ی نسل نادیده گرفته می‌شه. اگه تلاش دوم هم ۱۰ ثانیه گیر کرد، ناموفق ثبت می‌شه. */
+var PING_TIMEOUT=10000;
+function pingRun(which){
+  var url=which==='w'?(API+'/api/ping?x='+Date.now()):('https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/index.json?x='+Date.now());
+  var dotEl=document.getElementById(which==='w'?'dotW':'dotGh');
+  var gen=0;
+  function attempt(isRetry){
+    var myGen=++gen,settled=false;
+    var to=setTimeout(function(){
+      if(settled||myGen!==gen)return;settled=true;
+      if(!isRetry){attempt(true);}
+      else{pingBusy[which]=false;pingState[which]=null;pingDot(dotEl,null);pingMenuSync();}
+    },PING_TIMEOUT);
+    pingOnce(url).then(function(ms){
+      if(settled||myGen!==gen)return;settled=true;clearTimeout(to);
+      pingBusy[which]=false;pingState[which]=ms;pingDot(dotEl,ms);pingMenuSync();
+    }).catch(function(){
+      if(settled||myGen!==gen)return;settled=true;clearTimeout(to);
+      pingBusy[which]=false;pingState[which]=null;pingDot(dotEl,null);pingMenuSync();
+    });
+  }
+  attempt(false);
+}
 function pingTick(){
   if(document.hidden)return;
-  if(!pingBusy.w){pingBusy.w=true;pingOnce(API+'/api/ping?x='+Date.now()).then(function(ms){pingState.w=ms;pingDot(document.getElementById('dotW'),ms);}).catch(function(){pingState.w=null;pingDot(document.getElementById('dotW'),null);}).then(function(){pingBusy.w=false;pingMenuSync();});}
-  if(!pingBusy.g){pingBusy.g=true;pingOnce('https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/index.json?x='+Date.now()).then(function(ms){pingState.g=ms;pingDot(document.getElementById('dotGh'),ms);}).catch(function(){pingState.g=null;pingDot(document.getElementById('dotGh'),null);}).then(function(){pingBusy.g=false;pingMenuSync();});}
+  if(!pingBusy.w){pingBusy.w=true;pingRun('w');}
+  if(!pingBusy.g){pingBusy.g=true;pingRun('g');}
 }
 pingTick();setInterval(pingTick,5000);
 document.addEventListener('visibilitychange',function(){if(!document.hidden)pingTick();});
