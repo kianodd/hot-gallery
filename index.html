@@ -195,8 +195,9 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .lk-ic{width:84px;height:84px;border-radius:20px;background:#000;display:grid;place-items:center;margin-bottom:10px;box-shadow:0 0 0 .5px var(--hair)}
 .lk-title{font-size:21px;font-weight:700}
 .lk-sub{color:var(--faint);font-size:14px;margin:0 0 16px}
-.lk-btn{display:flex;align-items:center;gap:9px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;padding:13px 24px;border-radius:999px}
+.lk-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;padding:13px 24px;border-radius:999px;min-width:248px}
 .lk-btn:active{filter:brightness(.88)}
+.lk-btn2{background:var(--field);color:var(--blue)}
 .lk-err{color:var(--red);font-size:13.5px;min-height:20px;margin:8px 0 0}
 /* hg-v9: نشانگر مشغولیت غیرمسدودکننده — قرص کوچک گوشه‌ی پایین-چپ با اسپینر؛ هرگز لمس را قفل نمی‌کند */
 .busypill{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:160;background:rgba(38,38,40,.94);color:#fff;display:none;align-items:center;gap:9px;padding:10px 14px;border-radius:999px;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,.3);pointer-events:none;max-width:78vw;white-space:nowrap;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
@@ -411,7 +412,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 03:57</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 04:03</span></p>
   </div>
 </section>
 
@@ -485,10 +486,10 @@ body.selecting .qpill{display:none}
 <div class="lockview" id="lockView">
   <div class="lk-ic"><svg width="52" height="52" viewBox="0 0 52 52"><rect x="4" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="4" y="28" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="28" width="20" height="20" rx="5" fill="#ff2d55"/></svg></div>
   <div class="lk-title">گالری</div>
-  <p class="lk-sub">برای ورود، اثر انگشتت را تأیید کن</p>
-  <button class="lk-btn" id="lockBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 10.2a2.1 2.1 0 0 1 2.1 2.1c0 1.9.35 3.4 1 5.2"/><path d="M9.9 12.3a2.1 2.1 0 0 1 2.1-2.1"/><path d="M12 7.2a5.1 5.1 0 0 1 5.1 5.1c0 1.6.18 2.9.55 4.3"/><path d="M6.9 12.3a5.1 5.1 0 0 1 1-2.9"/><path d="M12 4a8.2 8.2 0 0 1 8.2 8.3c0 1.9.28 3.6.85 5.2"/><path d="M3.8 12.3A8.2 8.2 0 0 1 6.6 6"/></svg><span>باز کردن با اثر انگشت</span></button>
+  <p class="lk-sub">یک روش ورود را انتخاب کن</p>
+  <button class="lk-btn" id="lockBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 10.2a2.1 2.1 0 0 1 2.1 2.1c0 1.9.35 3.4 1 5.2"/><path d="M9.9 12.3a2.1 2.1 0 0 1 2.1-2.1"/><path d="M12 7.2a5.1 5.1 0 0 1 5.1 5.1c0 1.6.18 2.9.55 4.3"/><path d="M6.9 12.3a5.1 5.1 0 0 1 1-2.9"/><path d="M12 4a8.2 8.2 0 0 1 8.2 8.3c0 1.9.28 3.6.85 5.2"/><path d="M3.8 12.3A8.2 8.2 0 0 1 6.6 6"/></svg><span>ورود با اثر انگشت</span></button>
+  <button class="lk-btn lk-btn2" id="lockCodeBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg><span>ورود با رمز</span></button>
   <p class="lk-err" id="lockErr"></p>
-  <button class="lk-btn" id="lockCodeBtn" style="display:none;background:none;color:var(--blue);font-size:15px;min-height:34px">ورود با رمز</button>
 </div>
 
 
@@ -530,7 +531,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 03:57';
+var RUN_BUILD='2026-11-06 04:03';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2179,18 +2180,20 @@ function disableLock(){
 }
 document.getElementById('lockOpt').addEventListener('click',function(){lockEnabled()?disableLock():enableLock();});
 var lockBusy=false;
-function attemptUnlock(auto){
+/* hg-v16: ورود خودکار با اثر انگشت حذف شد — صفحه‌ی قفل فقط انتخاب‌گر است و پرامپت
+   وب‌آتن فقط وقتی می‌آید که کاربر خودش دکمه‌ی «ورود با اثر انگشت» را لمس کند */
+function attemptUnlock(){
   if(lockBusy)return;lockBusy=true;lockErr.textContent='';
   tryUnlock().then(function(ok){
     lockBusy=false;
     if(ok){lockView.classList.remove('open');document.body.style.overflow='';}
-    else lockErr.textContent=auto?'برای باز کردن، دکمه‌ی اثر انگشت را بزن':'تأیید نشد؛ دوباره تلاش کن';
+    else lockErr.textContent='تأیید نشد؛ دوباره تلاش کن';
   });
 }
-document.getElementById('lockBtn').addEventListener('click',function(){attemptUnlock(false);});
+document.getElementById('lockBtn').addEventListener('click',function(){attemptUnlock();});
 function maybeLock(){
   if(lockEnabled()&&isStandalone()&&!lockView.classList.contains('open')){
-    lockView.classList.add('open');document.body.style.overflow='hidden';attemptUnlock(true);
+    lockView.classList.add('open');document.body.style.overflow='hidden';lockErr.textContent='';
   }
 }
 var hiddenAt=0;
@@ -2242,7 +2245,9 @@ function syncDecoyUI(){
   var note=document.getElementById('decoyNote');if(note)note.style.display=decoyMode?'none':'';
   var ex=document.getElementById('decoyExitGroup');if(ex)ex.style.display=decoyMode?'':'none';
   var exn=document.getElementById('decoyExitNote');if(exn)exn.style.display=decoyMode?'':'none';
-  var lcb=document.getElementById('lockCodeBtn');if(lcb)lcb.style.display=decoyHas()?'':'none';
+  /* hg-v16: دکمه‌ی «ورود با رمز» همیشه روی صفحه‌ی قفل نمایش داده می‌شود (مثل جایگزینِ
+     رمز در صفحه‌ی قفل آیفون) تا بودنش چیزی را لو ندهد؛ اگر رمز دومی تنظیم نشده باشد،
+     decoyCheck برای هر رمزی false می‌دهد و ورود مثل یک رمز اشتباه، طبیعی رد می‌شود */
 }
 function startDecoySession(){
   try{sessionStorage.setItem('hg-decoy-session','1');}catch(e){}
@@ -2253,14 +2258,15 @@ function startDecoySession(){
   closeMenu();
   load().then(function(){syncDecoyUI();});
 }
-/* شیت ورود رمز — حالت‌ها: set (تنظیم، دومرحله‌ای)، enter (ورود به حالت مهمان)،
-   verify-change و verify-delete (اول رمز فعلی) */
+/* شیت ورود رمز — حالت‌ها: set (تنظیم، دومرحله‌ای)، enter (ورود با رمز)،
+   verify-change و verify-delete (اول رمز فعلی). متن حالت enter خنثی است و روی
+   سطوح ورود هیچ توضیحی درباره‌ی حالت مهمان/فریب نمی‌آید (hg-v16) */
 var pinOverlay=document.getElementById('pinOverlay'),pinInput=document.getElementById('pinInput'),pinTitle=document.getElementById('pinTitle'),pinSub=document.getElementById('pinSub'),pinErr=document.getElementById('pinErr');
 var pinMode=null,pinStage=0,pinFirst='';
 function openPinSheet(mode){
   pinMode=mode;pinStage=0;pinFirst='';pinErr.textContent='';pinInput.value='';
   pinTitle.textContent=mode==='enter'?'ورود با رمز':'رمز دوم';
-  pinSub.textContent=mode==='set'?'یک رمز ۴ تا ۶ رقمی برای حالت مهمان انتخاب کن':mode==='enter'?'رمز دوم را وارد کن تا گالری در حالت مهمان باز شود':mode==='verify-delete'?'برای حذف رمز دوم، رمز فعلی را وارد کن':'اول رمز دوم فعلی را وارد کن';
+  pinSub.textContent=mode==='set'?'یک رمز ۴ تا ۶ رقمی برای حالت مهمان انتخاب کن':mode==='enter'?'رمز را وارد کن':mode==='verify-delete'?'برای حذف رمز دوم، رمز فعلی را وارد کن':'اول رمز دوم فعلی را وارد کن';
   pinOverlay.classList.add('open');
   setTimeout(function(){try{pinInput.focus();}catch(e){}},90);
 }
