@@ -252,6 +252,11 @@ body.selecting .qpill{display:none}
 .irow + .irow:before{content:"";position:absolute;top:0;right:16px;left:0;border-top:.5px solid var(--hair)}
 .irow .k{color:var(--faint);flex:none}
 .irow .v{font-weight:500;text-align:left;word-break:break-all}
+.statgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.statbox{background:var(--card);border-radius:12px;padding:15px 8px;text-align:center}
+.statbox .n{font-size:23px;font-weight:700;line-height:1.25}
+.statbox .l{font-size:12.5px;color:var(--faint);margin-top:4px}
+#pinOverlay{z-index:210}
 .sw{width:34px;height:34px;border-radius:50%;position:relative;flex:none;display:grid;place-items:center;color:#fff}
 .sw .ckm{display:none}
 .sw.on{box-shadow:0 0 0 2px var(--card),0 0 0 4.5px var(--blue)}
@@ -315,6 +320,7 @@ body.selecting .qpill{display:none}
   <button id="miPingServer"><span>پینگ سرور</span></button>
   <button id="miPingGh"><span>پینگ گیت‌هاب</span></button>
   <button id="miUpdate" style="display:none"><span>به‌روزرسانی اپ</span><span id="miUpdateSub" style="color:var(--blue);font-size:13.5px"></span></button>
+  <button id="miStats"><span>آمار گالری</span></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
 
@@ -387,9 +393,25 @@ body.selecting .qpill{display:none}
     <p class="slabel" style="margin-top:26px">حریم خصوصی</p>
     <div class="group">
       <button class="opt" id="lockOpt"><span>قفل اثر انگشت (حالت برنامه)</span><span class="ck" id="lockState" style="visibility:visible;color:var(--faint);font-size:14px">خاموش</span></button>
+      <button class="opt" id="decoyOpt"><span>رمز دوم (حالت فریب)</span><span class="ck" id="decoyState" style="visibility:visible;color:var(--faint);font-size:14px">تنظیم نشده</span></button>
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 02:00</span></p>
+    <p class="snote" id="decoyNote">رمز دوم یک درِ محلی روی همین دستگاه است: در «حالت مهمان»، پوشه‌هایی که خصوصی انتخابشان کنی کاملاً پنهان می‌شوند، انگار وجود ندارند. این رمز روی سرور نیست و داده‌های گالری مثل قبل روی مخزن داده می‌مانند؛ برای قفل‌کردن خود برنامه از قفل اثر انگشت استفاده کن.</p>
+    <p class="slabel" style="margin-top:26px">حافظه‌ی کش</p>
+    <div class="group">
+      <div class="irow"><span class="k">حجم کش روی این دستگاه</span><span class="v" id="cacheSizeVal">…</span></div>
+      <button class="opt" id="clearCacheBtn"><span style="color:var(--red)">پاک‌کردن کش</span></button>
+    </div>
+    <p class="snote">کش فقط نسخه‌های موقتِ بندانگشتی‌ها و فایل‌های برنامه است؛ پاک‌کردنش هیچ عکس، فیلم، پسندیده یا تنظیمی را حذف نمی‌کند و دفعه‌ی بعد دوباره ساخته می‌شود.</p>
+    <p class="slabel" style="margin-top:26px">آمار</p>
+    <div class="group">
+      <button class="opt" id="statsOpt"><span>آمار گالری</span><span class="ck" style="visibility:visible;color:var(--faint);font-size:15px">‹</span></button>
+    </div>
+    <div class="group" id="decoyExitGroup" style="display:none;margin-top:26px">
+      <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
+    </div>
+    <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 03:43</span></p>
   </div>
 </section>
 
@@ -448,6 +470,14 @@ body.selecting .qpill{display:none}
   </div>
 </section>
 
+<section class="view-settings" id="statsView" aria-label="آمار گالری">
+  <div class="sbar">
+    <button class="sback" id="statsBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>بازگشت</span></button>
+    <div class="stitle">آمار گالری</div>
+  </div>
+  <div class="sbody"><div id="statsBody"></div></div>
+</section>
+
 <div class="qpill" id="qPill"><span class="spin"></span><span id="qPillText"></span></div>
 
 <div class="busypill" id="busyPill"><span class="spin"></span><span id="busyTxt">در حال حذف…</span></div>
@@ -458,6 +488,7 @@ body.selecting .qpill{display:none}
   <p class="lk-sub">برای ورود، اثر انگشتت را تأیید کن</p>
   <button class="lk-btn" id="lockBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 10.2a2.1 2.1 0 0 1 2.1 2.1c0 1.9.35 3.4 1 5.2"/><path d="M9.9 12.3a2.1 2.1 0 0 1 2.1-2.1"/><path d="M12 7.2a5.1 5.1 0 0 1 5.1 5.1c0 1.6.18 2.9.55 4.3"/><path d="M6.9 12.3a5.1 5.1 0 0 1 1-2.9"/><path d="M12 4a8.2 8.2 0 0 1 8.2 8.3c0 1.9.28 3.6.85 5.2"/><path d="M3.8 12.3A8.2 8.2 0 0 1 6.6 6"/></svg><span>باز کردن با اثر انگشت</span></button>
   <p class="lk-err" id="lockErr"></p>
+  <button class="lk-btn" id="lockCodeBtn" style="display:none;background:none;color:var(--blue);font-size:15px;min-height:34px">ورود با رمز</button>
 </div>
 
 
@@ -482,12 +513,24 @@ body.selecting .qpill{display:none}
   </div>
 </section>
 
+<div class="overlay" id="pinOverlay"><div class="sc" data-close-pin="1"></div>
+  <div class="sheet" role="dialog" aria-modal="true">
+    <div class="grab"></div>
+    <h2 id="pinTitle">رمز دوم</h2>
+    <p class="sub" id="pinSub"></p>
+    <input id="pinInput" type="password" inputmode="numeric" autocomplete="off" maxlength="6" dir="ltr" style="text-align:center;letter-spacing:8px;font-size:22px">
+    <p class="lk-err" id="pinErr" style="text-align:center"></p>
+    <button class="primary" id="pinOk">تأیید</button>
+    <button class="cancel" data-close-pin="1">لغو</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 02:00';
+var RUN_BUILD='2026-11-06 03:43';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -609,7 +652,7 @@ function loadInto(item,el,w){
     if(!isVideo(item)&&!item.manifest){
       el.crossOrigin='anonymous';
       el.onerror=function(){imgFallback(el,item);};
-      el.src=thumbUrl(item,w||gridThumbW());
+      prioThumb(el,thumbUrl(item,w||gridThumbW()));
       var cell0=el.closest('.cell');if(cell0){var ph0=cell0.querySelector('.ph');if(ph0)ph0.style.display='none';}
       var th0=document.querySelector('[data-strip="'+item.id+'"]');if(th0&&!th0.src){th0.src=thumbUrl(item,200);th0._srcDone=true;}
       if(viewerId===item.id)showCurrentMedia();
@@ -728,6 +771,38 @@ function hqUpgrade(item){
   pre.onerror=function(){delete hqLoading[item.id];};
   pre.src=RAW_BASE+item.thumb;
 }
+/* hg-v15 (۳۱۵): صف اولویت بندانگشتی — سورس واقعی فقط وقتی به سلول داده می‌شود که داخل یا
+   نزدیک ویوپورت باشد (IntersectionObserver با حاشیه‌ی ۵۰۰px)؛ حداکثر ۴ لود هم‌زمان.
+   سلولی که تازه دیده شده وارد صف می‌شود و جلوتر از سلول‌های هنوز نادیده لود می‌شود،
+   چون نادیده‌ها اصلاً در صف نیستند. بدون IO، رفتار قبلی (لود فوری) برمی‌گردد. */
+var prioIO=null,prioPending=new Map(),tqWait=[],tqBusy=0;var TQ_MAX=4;
+function prioEnsureIO(){
+  if(prioIO||!('IntersectionObserver' in window))return;
+  prioIO=new IntersectionObserver(function(entries){
+    entries.forEach(function(en){
+      if(!en.isIntersecting)return;
+      var el=en.target;try{prioIO.unobserve(el);}catch(e){}
+      var job=prioPending.get(el);prioPending.delete(el);
+      if(job){tqWait.push(job);tqPump();}
+    });
+  },{root:null,rootMargin:'500px',threshold:0.01});
+}
+function tqPump(){
+  while(tqBusy<TQ_MAX&&tqWait.length){
+    var job=tqWait.shift();var el=job.el;
+    if(!el.isConnected)continue;
+    tqBusy++;
+    var done=function(){el.removeEventListener('load',done);el.removeEventListener('error',done);tqBusy=Math.max(0,tqBusy-1);tqPump();};
+    el.addEventListener('load',done);el.addEventListener('error',done);
+    el.src=job.src;
+  }
+}
+function prioThumb(el,src){
+  if(!el||!src)return;
+  if(!('IntersectionObserver' in window)){el.src=src;return;}
+  prioEnsureIO();prioPending.set(el,{el:el,src:src});prioIO.observe(el);
+}
+function prioReset(){if(prioIO)prioIO.disconnect();prioPending.clear();tqWait=[];tqBusy=0;}
 function cellPreviewOn(cell,item){
   if(!item||!item.preview)return;
   if(pvActive&&pvActive.cell===cell)return;
@@ -799,7 +874,7 @@ function buildCell(item,idx,list){
   }else if(useThumb){
     el.addEventListener('load',function(){ph.style.display='none';fadeBlur();},{once:true});
     el.addEventListener('error',function(){ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';},{once:true});
-    el.src=RAW_BASE+item.thumb;
+    prioThumb(el,RAW_BASE+item.thumb);
     var bspT=c.querySelector('.badge span');if(bspT&&item.dur)bspT.textContent=fmtDur(item.dur);
   }else if(item.manifest){
     var su0=streamUrlFor(item);
@@ -818,11 +893,12 @@ function folderCell(f){
   var items=folderItemsRec(f.id);
   var c=document.createElement('button');c.className='cell fcell'+(selected[f.id]?' sel':'');c.dataset.fid=f.id;c.dataset.id=f.id;c.setAttribute('aria-label','پوشه '+f.name);
   var firstC=items.length?((f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0]):null;
-  if(firstC&&!f.nopreview&&firstC.blur&&!isLoaded(firstC)){
+  if(firstC&&!f.nopreview&&!coverWarmed[f.id]&&firstC.blur){
+    /* hg-v15 (۳۱۳): پوشه‌ای که این نشست هنوز باز نشده، هیچ درخواست شبکه‌ای برای آیتم‌های
+       داخلش صادر نمی‌کند — نه تامنیل، نه ارتقای HQ؛ فقط بلورِ درون‌خطیِ ایندکس نشان داده می‌شود */
     var bel=document.createElement('img');bel.alt='';bel.src=blurUri(firstC);c.appendChild(bel);c._coverId=firstC.id;
-    hqObserve(c,firstC);
   }
-  else if(items.length&&!f.nopreview&&(coverWarmed[f.id]||isLoaded(firstC))){
+  else if(items.length&&!f.nopreview&&coverWarmed[f.id]){
     var first=firstC;
     var el=document.createElement(isVideo(first)&&first.thumb?'img':(isVideo(first)?'video':'img'));el.alt='';
     if(isVideo(first)&&!first.thumb){el.muted=true;el.playsInline=true;el.preload='metadata';}
@@ -860,11 +936,11 @@ function favNoPreview(){try{return localStorage.getItem('hg-favnoprev')==='1';}c
 function favFolderCell(){
   var favs=photos.filter(function(p){return p.fav;});
   var c=document.createElement('button');c.className='cell fcell favcell';c.dataset.fav='1';c.setAttribute('aria-label','پوشه پسندیده‌ها');
-  if(favs.length&&!favNoPreview()&&favs[0].blur&&!isLoaded(favs[0])){
+  if(favs.length&&!favNoPreview()&&!favWarmed&&favs[0].blur){
+    /* hg-v15 (۳۱۳): کاور پسندیده‌ها هم تا قبل از اولین باز شدن، فقط بلور درون‌خطی است */
     var bel2=document.createElement('img');bel2.alt='';bel2.src=blurUri(favs[0]);c.appendChild(bel2);c._coverId=favs[0].id;
-    hqObserve(c,favs[0]);
   }
-  else if(favs.length&&!favNoPreview()&&(favWarmed||isLoaded(favs[0]))){
+  else if(favs.length&&!favNoPreview()&&favWarmed){
     var first=favs[0];
     var el=document.createElement(isVideo(first)&&first.thumb?'img':(isVideo(first)?'video':'img'));el.alt='';
     if(isVideo(first)&&!first.thumb){el.muted=true;el.playsInline=true;el.preload='metadata';}
@@ -906,7 +982,7 @@ function jalaliKey(ts){try{var ps=new Intl.DateTimeFormat('fa-IR',{year:'numeric
 function jalaliLabel(ts){try{return new Intl.DateTimeFormat('fa-IR',{month:'long',year:'numeric'}).format(new Date(ts||0));}catch(e){return '';}}
 function jalaliDay(ts){try{return new Intl.DateTimeFormat('fa-IR',{day:'numeric',month:'long'}).format(new Date(ts||0));}catch(e){return '';}}
 function render(){
-  pvStop();pvResetObservers();hqResetObservers();
+  pvStop();pvResetObservers();hqResetObservers();prioReset();
   renderViewMode=viewMode;
   grid.innerHTML='';
   emptyEl.style.display=(photos.length||folders.length)?'none':'block';
@@ -1070,7 +1146,18 @@ document.addEventListener('gesturechange',function(e){e.preventDefault();});
 document.addEventListener('wheel',function(e){if(e.ctrlKey&&!(e.target&&e.target.closest&&e.target.closest('#vStage')))e.preventDefault();},{passive:false});
 document.addEventListener('visibilitychange',function(){if(document.hidden)pinchReset();});
 function load(){
-  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){photos=(d&&d.photos)||[];folders=(d&&d.folders)||[];pruneLoaded();render();if(curFolder)renderFolder();}).catch(function(){toast('خطا در دریافت گالری');});
+  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){
+    folders=(d&&d.folders)||[];
+    var all=(d&&d.photos)||[];
+    if(decoyMode){
+      /* hg-v15 (۳۵۹): در حالت مهمان، آیتم‌های پوشه‌های خصوصی اصلاً وارد حافظه‌ی اپ نمی‌شوند */
+      var ps=decoyPrivSet();
+      photos=all.filter(function(p){return !(p.folder&&ps[p.folder]);});
+      folders=folders.filter(function(f){return !ps[f.id];});
+    }else photos=all;
+    if(!decoyMode)pruneLoaded();
+    render();if(curFolder)renderFolder();
+  }).catch(function(){toast('خطا در دریافت گالری');});
 }
 var titleBox=document.querySelector('.htitle'),titleRefreshing=false;
 document.getElementById('appTitle').addEventListener('click',function(){
@@ -1364,6 +1451,21 @@ function setVidSource(u){
 }
 function vidPlay(){applyMuted();var p;if(plyr){try{p=plyr.play();}catch(e){}}else{p=liveVid().play();}if(p&&p.catch)p.catch(function(){});}
 function curItemIsVideo(){var L=vItems();var it=L&&L[vIdx];return !!(it&&isVideo(it));}
+/* hg-v15 (۸۹): آمار تماشا — تعداد پخش و مجموع ثانیه‌های تماشای هر فیلم، محلی روی همین
+   دستگاه در localStorage (hg-watch) می‌ماند. پخش وقتی شمرده می‌شود که پخش واقعاً شروع شود
+   ('playing')؛ زمان تماشا از دلتای ساعتِ مدیا بین تیک‌های یک‌ثانیه‌ای جمع می‌شود و با
+   seek بازنشانی می‌شود تا پرش‌ها زمانِ دیده‌نشده را حساب نکنند. */
+var watchMap={};try{watchMap=JSON.parse(localStorage.getItem('hg-watch')||'{}')||{};}catch(e){watchMap={};}
+function persistWatch(){try{localStorage.setItem('hg-watch',JSON.stringify(watchMap));}catch(e){}}
+var wSess=null;
+function watchRec(id){var r=watchMap[id];if(!r){r={n:0,s:0};watchMap[id]=r;}return r;}
+function watchAccumulate(){
+  if(!wSess)return;var m=liveVid();if(!m)return;
+  var t=m.currentTime||0;var d=t-wSess.last;
+  if(d>0&&d<=2.5)watchRec(wSess.id).s+=d;
+  wSess.last=t;
+}
+function watchFlush(){watchAccumulate();if(wSess){wSess=null;persistWatch();}}
 /* hg-v9: ادامه‌ی تماشا — موقعیت هر فیلم در localStorage (hg-pos) می‌ماند؛ با باز شدن دوباره‌ی
    فیلمی که قبلاً دیده شده، قبل از پخش شیت «ادامه از جای قبلی / شروع از اول» نشان داده می‌شود */
 var posMap={};try{posMap=JSON.parse(localStorage.getItem('hg-pos')||'{}')||{};}catch(e){posMap={};}
@@ -1436,6 +1538,19 @@ function bindMediaEvents(){
   m.addEventListener('volumechange',function(){var mm=liveVid();vidMuted=!!(mm&&mm.muted);syncMuteBtn();});
   m.addEventListener('loadedmetadata',function(){var it=vItems()[vIdx];if(it&&isVideo(it)&&viewerId===it.id)onVidMetadata(it);});
   m.addEventListener('playing',function(){var it=vItems()[vIdx];if(it&&isVideo(it)&&viewerId===it.id)markLoaded(it);});
+  m.addEventListener('playing',function(){
+    var it=vItems()[vIdx];if(!it||!isVideo(it)||viewerId!==it.id)return;
+    if(!wSess||wSess.id!==it.id){wSess={id:it.id,last:liveVid().currentTime||0,tick:0};watchRec(it.id).n++;persistWatch();}
+    else wSess.last=liveVid().currentTime||0;
+  });
+  m.addEventListener('timeupdate',function(){
+    if(!wSess)return;var now=Date.now();if(now-(wSess.tick||0)<1000)return;wSess.tick=now;
+    watchAccumulate();persistWatch();
+  });
+  m.addEventListener('seeking',function(){if(wSess)wSess.last=liveVid().currentTime||0;});
+  m.addEventListener('seeked',function(){if(wSess)wSess.last=liveVid().currentTime||0;});
+  m.addEventListener('pause',function(){if(wSess)watchFlush();});
+  m.addEventListener('ended',function(){if(wSess)watchFlush();});
   m.addEventListener('error',function(){
     if(!viewerId)return;var item=vItems()[vIdx];if(!item||!item.manifest||urls[item.id])return;
     var su=streamUrlFor(item);
@@ -1497,7 +1612,7 @@ function showCurrentMedia(){
 }
 function showPhoto(i,dir){
   var L=vItems();if(!L.length)return;
-  if(viewerId&&viewerId!==L[i].id)savePosFor(viewerId);
+  if(viewerId&&viewerId!==L[i].id){watchFlush();savePosFor(viewerId);}
   vIdx=i;viewerId=L[i].id;vGateId=viewerId;vGateDone=false;vImg.style.filter='';resetZoom();syncFavBtn();hideProg();liveVid().removeAttribute('poster');vSnapPoster=null;
   if(isVideo(L[i]))resetMutedDefault();
   viewerEl.classList.toggle('on-photo',!isVideo(L[i]));viewerEl.classList.toggle('on-video',!!isVideo(L[i]));
@@ -1557,7 +1672,7 @@ window.addEventListener('popstate',function(){
   if(suppressPop){suppressPop=false;return;}
   var l=layers.pop();if(l&&l.closeFn)l.closeFn();
 });
-function vCloseVisual(){if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');viewerEl.classList.remove('hg-fs');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
+function vCloseVisual(){watchFlush();if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');viewerEl.classList.remove('hg-fs');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
 function closeViewer(){vCloseVisual();releaseLayer('viewer');}
 function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
 document.getElementById('vClose').addEventListener('click',function(ev){ev.stopPropagation();closeViewer();});
@@ -1584,7 +1699,7 @@ vFavBtn.addEventListener('click',function(ev){
   fetch(API+'/api/fav/'+encodeURIComponent(item.id),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fav:nf})}).then(function(r){if(!r.ok)throw new Error(r.status);}).catch(function(){item.fav=!nf;syncFavBtn();toast('ثبت مورد علاقه ناموفق بود');});
 });
 function renderFavs(){
-  pvStop();pvResetObservers();hqResetObservers();
+  pvStop();pvResetObservers();hqResetObservers();prioReset();
   var favs=photos.filter(function(p){return p.fav;});
   favGrid.innerHTML='';
   favEmpty.style.display=favs.length?'none':'block';
@@ -1865,7 +1980,7 @@ function openFolder(id){
   });
 }
 function renderFolder(){
-  pvStop();pvResetObservers();hqResetObservers();
+  pvStop();pvResetObservers();hqResetObservers();prioReset();
   var f=folderById(curFolder);if(!f)return;
   var fv=effViewFor(f);renderViewMode=fv;
   folderTitleEl.textContent=f.name;
@@ -2016,7 +2131,7 @@ document.getElementById('selMove').addEventListener('click',function(){
 document.getElementById('miSelect').addEventListener('click',function(){closeMenu();enterSelect();});
 document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
-document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncAccent();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
+document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncAccent();syncDecoyUI();refreshCacheSize();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
 document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');});
 /* theme */
 function applyTheme(pref){
@@ -2084,6 +2199,264 @@ document.addEventListener('visibilitychange',function(){
   else if(hiddenAt&&Date.now()-hiddenAt>120000){hiddenAt=0;maybeLock();}
 });
 syncLockOpt();maybeLock();
+/* ================= hg-v15: آمار تماشا در شیت اطلاعات (۸۹) همین بالا وصل شد؛ این بخش:
+   کش بندانگشتی روی دستگاه (۳۰۵، سمت سرویس‌ورکر) + مدیریت فضای کش (۳۱۱) +
+   داشبورد آمار (۶۵۱) + رمز دوم/حالت مهمان (۳۵۹) ================= */
+
+/* ---------- ۳۵۹: رمز دوم (Decoy) — درِ محلی روی همین دستگاه ----------
+   هش رمز (SHA-256 با salt) فقط در localStorage می‌ماند، هرگز متن خام ذخیره نمی‌شود.
+   حالت مهمان فقط برای همین نشست (sessionStorage) است: پوشه‌های «خصوصی» و همه‌ی
+   زیرپوشه‌هایشان کاملاً از ایندکسِ در حافظه حذف می‌شوند، نه اینکه قفل نشان داده شوند. */
+var decoyMode=false;
+try{decoyMode=sessionStorage.getItem('hg-decoy-session')==='1'&&!!localStorage.getItem('hg-decoy-hash');}catch(e){decoyMode=false;}
+function decoyHas(){try{return !!localStorage.getItem('hg-decoy-hash');}catch(e){return false;}}
+function decoyPrivSet(){
+  var st={};
+  try{(JSON.parse(localStorage.getItem('hg-decoy-priv')||'[]')).forEach(function(id){var ds=folderDescSet(id);Object.keys(ds).forEach(function(k){st[k]=1;});});}catch(e){}
+  return st;
+}
+function decoySalt(){
+  var sl=null;try{sl=localStorage.getItem('hg-decoy-salt');}catch(e){}
+  if(!sl){var hx='0123456789abcdef';var b=rndB(8);sl='';for(var i=0;i<8;i++)sl+=hx[(b[i]>>4)&15]+hx[b[i]&15];try{localStorage.setItem('hg-decoy-salt',sl);}catch(e){}}
+  return sl;
+}
+function decoyHash(code){
+  var data=decoySalt()+':'+code;
+  if(window.crypto&&crypto.subtle&&crypto.subtle.digest&&window.TextEncoder){
+    return crypto.subtle.digest('SHA-256',new TextEncoder().encode(data)).then(function(buf){
+      return Array.prototype.map.call(new Uint8Array(buf),function(x){return ('0'+x.toString(16)).slice(-2);}).join('');
+    });
+  }
+  var x=0x811c9dc5;for(var i=0;i<data.length;i++){x^=data.charCodeAt(i);x=Math.imul(x,0x01000193)>>>0;}
+  return Promise.resolve('fnv'+x.toString(16));
+}
+function decoyCheck(code){
+  var stored=null;try{stored=localStorage.getItem('hg-decoy-hash');}catch(e){}
+  if(!stored)return Promise.resolve(false);
+  return decoyHash(code).then(function(h){return h===stored;});
+}
+function syncDecoyUI(){
+  var st=document.getElementById('decoyState');
+  if(st)st.textContent=decoyMode?'حالت مهمان فعال است':(decoyHas()?'تنظیم شده':'تنظیم نشده');
+  var opt=document.getElementById('decoyOpt');if(opt)opt.style.display=decoyMode?'none':'';
+  var note=document.getElementById('decoyNote');if(note)note.style.display=decoyMode?'none':'';
+  var ex=document.getElementById('decoyExitGroup');if(ex)ex.style.display=decoyMode?'':'none';
+  var exn=document.getElementById('decoyExitNote');if(exn)exn.style.display=decoyMode?'':'none';
+  var lcb=document.getElementById('lockCodeBtn');if(lcb)lcb.style.display=decoyHas()?'':'none';
+}
+function startDecoySession(){
+  try{sessionStorage.setItem('hg-decoy-session','1');}catch(e){}
+  decoyMode=true;
+  lockView.classList.remove('open');document.body.style.overflow='';
+  document.getElementById('settingsView').classList.remove('open');
+  folderViewEl.classList.remove('open');favViewEl.classList.remove('open');curFolder=null;
+  closeMenu();
+  load().then(function(){syncDecoyUI();});
+}
+/* شیت ورود رمز — حالت‌ها: set (تنظیم، دومرحله‌ای)، enter (ورود به حالت مهمان)،
+   verify-change و verify-delete (اول رمز فعلی) */
+var pinOverlay=document.getElementById('pinOverlay'),pinInput=document.getElementById('pinInput'),pinTitle=document.getElementById('pinTitle'),pinSub=document.getElementById('pinSub'),pinErr=document.getElementById('pinErr');
+var pinMode=null,pinStage=0,pinFirst='';
+function openPinSheet(mode){
+  pinMode=mode;pinStage=0;pinFirst='';pinErr.textContent='';pinInput.value='';
+  pinTitle.textContent=mode==='enter'?'ورود با رمز':'رمز دوم';
+  pinSub.textContent=mode==='set'?'یک رمز ۴ تا ۶ رقمی برای حالت مهمان انتخاب کن':mode==='enter'?'رمز دوم را وارد کن تا گالری در حالت مهمان باز شود':mode==='verify-delete'?'برای حذف رمز دوم، رمز فعلی را وارد کن':'اول رمز دوم فعلی را وارد کن';
+  pinOverlay.classList.add('open');
+  setTimeout(function(){try{pinInput.focus();}catch(e){}},90);
+}
+function closePinSheet(){pinOverlay.classList.remove('open');pinMode=null;}
+document.querySelectorAll('[data-close-pin]').forEach(function(el){el.addEventListener('click',closePinSheet);});
+pinInput.addEventListener('input',function(){pinInput.value=pinInput.value.replace(/[^\d]/g,'');pinErr.textContent='';});
+pinInput.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();document.getElementById('pinOk').click();}});
+document.getElementById('pinOk').addEventListener('click',function(){
+  var code=pinInput.value;
+  if(!/^\d{4,6}$/.test(code)){pinErr.textContent='رمز باید ۴ تا ۶ رقم باشد';return;}
+  if(pinMode==='set'){
+    if(pinStage===0){pinFirst=code;pinStage=1;pinInput.value='';pinSub.textContent='همان رمز را دوباره وارد کن';try{pinInput.focus();}catch(e){}return;}
+    if(code!==pinFirst){pinStage=0;pinFirst='';pinInput.value='';pinSub.textContent='دو رمز یکی نبود؛ از اول انتخاب کن';pinErr.textContent='رمزها مطابقت نداشتند';return;}
+    decoyHash(code).then(function(h){
+      try{localStorage.setItem('hg-decoy-hash',h);}catch(e){}
+      closePinSheet();syncDecoyUI();toast('رمز دوم تنظیم شد');
+      decoyPickFolders();
+    });
+    return;
+  }
+  decoyCheck(code).then(function(ok){
+    if(!ok){pinErr.textContent='رمز درست نیست';pinInput.value='';return;}
+    if(pinMode==='enter'){closePinSheet();startDecoySession();}
+    else if(pinMode==='verify-delete'){
+      try{localStorage.removeItem('hg-decoy-hash');localStorage.removeItem('hg-decoy-priv');}catch(e){}
+      closePinSheet();syncDecoyUI();toast('رمز دوم حذف شد');
+    }
+    else if(pinMode==='verify-change'){
+      pinMode='set';pinStage=0;pinFirst='';pinInput.value='';pinErr.textContent='';
+      pinSub.textContent='رمز دوم تازه را انتخاب کن';try{pinInput.focus();}catch(e){}
+    }
+  });
+});
+function decoyPickFolders(){
+  var cur={};try{(JSON.parse(localStorage.getItem('hg-decoy-priv')||'[]')).forEach(function(id){cur[id]=1;});}catch(e){}
+  lsTitle.textContent='پوشه‌های خصوصی';lsTitle.style.display='block';lsRows.innerHTML='';
+  var done=document.createElement('button');done.textContent='تمام';done.style.fontWeight='700';done.style.color='var(--blue)';
+  done.addEventListener('click',function(){
+    var ids=Object.keys(cur);
+    try{localStorage.setItem('hg-decoy-priv',JSON.stringify(ids));}catch(e){}
+    closeSheet();syncDecoyUI();toast(ids.length?'پوشه‌های خصوصی ذخیره شد':'پوشه‌ای خصوصی نشد');
+  });
+  lsRows.appendChild(done);
+  var hier=foldersHier();
+  if(!hier.length){var p=document.createElement('div');p.className='as-sub';p.style.padding='14px';p.textContent='هنوز پوشه‌ای وجود ندارد';lsRows.appendChild(p);}
+  hier.forEach(function(o){
+    var b=document.createElement('button');b.style.textAlign='right';b.style.paddingRight=(15+o.depth*18)+'px';
+    b.appendChild(document.createTextNode(o.f.name));
+    var ck=document.createElement('span');ck.className='as-sub';ck.textContent=cur[o.f.id]?'✓ خصوصی':'';
+    b.appendChild(ck);
+    b.addEventListener('click',function(){
+      if(cur[o.f.id])delete cur[o.f.id];else cur[o.f.id]=1;
+      ck.textContent=cur[o.f.id]?'✓ خصوصی':'';
+    });
+    lsRows.appendChild(b);
+  });
+  lsWrap.classList.add('open');
+}
+document.getElementById('decoyOpt').addEventListener('click',function(){
+  if(decoyMode){toast('در حالت مهمان هستی');return;}
+  if(!decoyHas()){openPinSheet('set');return;}
+  var n=0;try{n=(JSON.parse(localStorage.getItem('hg-decoy-priv')||'[]')).length;}catch(e){}
+  showSheet('رمز دوم (حالت فریب)',[
+    {label:'شروع حالت مهمان',sub:'گالری با رمز دوم و بدون پوشه‌های خصوصی باز می‌شود',cb:function(){openPinSheet('enter');}},
+    {label:'پوشه‌های خصوصی',sub:n?n+' پوشه انتخاب شده است':'هنوز پوشه‌ای انتخاب نشده است',cb:function(){decoyPickFolders();}},
+    {label:'تغییر رمز دوم',cb:function(){openPinSheet('verify-change');}},
+    {label:'حذف رمز دوم',danger:true,cb:function(){openPinSheet('verify-delete');}}
+  ]);
+});
+document.getElementById('lockCodeBtn').addEventListener('click',function(){openPinSheet('enter');});
+document.getElementById('decoyExitBtn').addEventListener('click',function(){
+  if(lockEnabled()&&waSupported()){
+    tryUnlock().then(function(ok){
+      if(ok){try{sessionStorage.removeItem('hg-decoy-session');}catch(e){}location.reload();}
+      else toast('تأیید اثر انگشت انجام نشد');
+    });
+  }else{
+    toast('برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن');
+  }
+});
+syncDecoyUI();
+
+/* ---------- ۳۱۱: مدیریت فضای کش ---------- */
+function faDec(x){return faNum(String(x).replace('.', '٫'));}
+function fmtBytesFa(b){
+  if(b==null||isNaN(b))return '—';
+  if(b<1024)return faNum(Math.round(b))+' بایت';
+  if(b<1048576)return faDec((b/1024).toFixed(1))+' کیلوبایت';
+  if(b<1073741824)return faDec((b/1048576).toFixed(1))+' مگابایت';
+  return faDec((b/1073741824).toFixed(2))+' گیگابایت';
+}
+function cacheSizeBytes(){
+  if(!('caches' in window)){
+    if(navigator.storage&&navigator.storage.estimate)return navigator.storage.estimate().then(function(e){return e.usage||0;});
+    return Promise.resolve(0);
+  }
+  return caches.keys().then(function(ks){
+    return Promise.all(ks.map(function(k){
+      return caches.open(k).then(function(c){
+        return c.keys().then(function(reqs){
+          return Promise.all(reqs.map(function(rq){
+            return c.match(rq).then(function(r){
+              if(!r)return 0;
+              var cl=r.headers.get('content-length');if(cl)return +cl||0;
+              return r.clone().blob().then(function(b){return b.size;}).catch(function(){return 0;});
+            }).catch(function(){return 0;});
+          }));
+        });
+      }).catch(function(){return [];});
+    }));
+  }).then(function(all){var t=0;all.forEach(function(a){a.forEach(function(n){t+=n;});});return t;});
+}
+function refreshCacheSize(){
+  var el=document.getElementById('cacheSizeVal');if(!el)return;
+  el.textContent='…';
+  cacheSizeBytes().then(function(n){el.textContent=fmtBytesFa(n);}).catch(function(){el.textContent='—';});
+}
+document.getElementById('clearCacheBtn').addEventListener('click',function(){
+  confirmSheet('پاک‌کردن کش',function(){
+    var done=function(){refreshCacheSize();toast('کش پاک شد');};
+    if(!('caches' in window)){done();return;}
+    caches.keys().then(function(ks){return Promise.all(ks.map(function(k){return caches.delete(k);}));}).then(done).catch(done);
+  });
+});
+
+/* ---------- ۶۵۱: داشبورد آمار ---------- */
+function openStats(){
+  renderStats();
+  document.getElementById('statsView').classList.add('open');
+  pushLayer('panel',function(){document.getElementById('statsView').classList.remove('open');});
+}
+document.getElementById('statsBack').addEventListener('click',function(){document.getElementById('statsView').classList.remove('open');releaseLayer('panel');});
+document.getElementById('miStats').addEventListener('click',function(){closeMenu();openStats();});
+document.getElementById('statsOpt').addEventListener('click',function(){
+  document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');
+  openStats();
+});
+function renderStats(){
+  var box=document.getElementById('statsBody');if(!box)return;
+  var total=photos.length,vc=0,sz=0,dur=0,favs=0,oldest=null,newest=null;
+  photos.forEach(function(p){
+    if(isVideo(p)){vc++;dur+=p.dur||0;}
+    if(p.fav)favs++;
+    sz+=p.size||0;
+    if(!oldest||(p.created_at||0)<(oldest.created_at||0))oldest=p;
+    if(!newest||(p.created_at||0)>(newest.created_at||0))newest=p;
+  });
+  var plays=0,wsecs=0;
+  photos.forEach(function(p){var w=watchMap[p.id];if(w){plays+=w.n||0;wsecs+=w.s||0;}});
+  box.innerHTML='';
+  var sg=document.createElement('div');sg.className='statgrid';
+  [['کل موارد',total],['عکس',total-vc],['فیلم',vc]].forEach(function(sm){
+    var b=document.createElement('div');b.className='statbox';
+    var n=document.createElement('div');n.className='n';n.textContent=faNum(sm[1]);
+    var l=document.createElement('div');l.className='l';l.textContent=sm[0];
+    b.appendChild(n);b.appendChild(l);sg.appendChild(b);
+  });
+  box.appendChild(sg);
+  function lbl(t){var p=document.createElement('p');p.className='slabel';p.style.marginTop='22px';p.textContent=t;box.appendChild(p);}
+  function grp(rows){
+    var g=document.createElement('div');g.className='group';
+    rows.forEach(function(r){
+      var d=document.createElement('div');d.className='irow';
+      var k=document.createElement('span');k.className='k';k.textContent=r[0];
+      var v=document.createElement('span');v.className='v';v.textContent=r[1];
+      d.appendChild(k);d.appendChild(v);g.appendChild(d);
+    });
+    box.appendChild(g);
+  }
+  lbl('حجم و زمان');
+  grp([
+    ['حجم کل',fmtBytesFa(sz)],
+    ['مجموع مدت فیلم‌ها',dur?faNum(fmtDur(dur)):'—'],
+    ['پسندیده‌ها',faNum(favs)+' مورد']
+  ]);
+  lbl('آمار تماشا');
+  grp([
+    ['مجموع دفعات پخش',faNum(plays)+' بار'],
+    ['مجموع زمان تماشا',wsecs>=1?faNum(fmtDur(Math.round(wsecs))):'—']
+  ]);
+  lbl('تاریخ‌ها');
+  grp([
+    ['قدیمی‌ترین مورد',oldest?faDate(oldest.created_at||Date.now()):'—'],
+    ['جدیدترین مورد',newest?faDate(newest.created_at||Date.now()):'—']
+  ]);
+  lbl('پوشه‌ها');
+  var frows=[];
+  var ri=rootItems();var rsz=0;ri.forEach(function(p){rsz+=p.size||0;});
+  frows.push(['گالری اصلی',faNum(ri.length)+' مورد · '+fmtBytesFa(rsz)]);
+  foldersHier().forEach(function(o){
+    var items=folderItems(o.f.id);var fsz=0;items.forEach(function(p){fsz+=p.size||0;});
+    frows.push([('— '.repeat(Math.min(o.depth,3)))+o.f.name,faNum(items.length)+' مورد · '+fmtBytesFa(fsz)]);
+  });
+  grp(frows);
+}
+
 
 
 /* ---------- اطلاعات و EXIF (۳۱)، کاور دستی (۱۸)، مرتب‌سازی با لمس طولانی (۱۹)، رنگ اصلی (۹۶) ---------- */
@@ -2146,6 +2519,7 @@ function fillInfoRows(item){
   var f=item.folder?folderById(item.folder):null;rows.push(['پوشه',f?f.name:'گالری اصلی']);
   if(item.source){try{rows.push(['منبع',new URL(item.source).hostname]);}catch(e){}}
   if(isVideo(item)&&item.parts)rows.push(['تعداد پارت',String(item.parts)]);
+  if(isVideo(item)){var wr=watchMap[item.id];if(wr&&(wr.n>0||wr.s>=1))rows.push(['آمار تماشا',faNum(wr.n||0)+' بار پخش · مجموع تماشا '+faNum(fmtDur(Math.round(wr.s||0)))]);else rows.push(['آمار تماشا','هنوز تماشا نشده']);}
   if(item.hash)rows.push(['هش',item.hash.slice(0,12)+'…']);
   if(item.exif){if(item.exif.make||item.exif.model)rows.push(['دوربین',((item.exif.make||'')+' '+(item.exif.model||'')).trim()]);if(item.exif.dt)rows.push(['تاریخ ثبت',item.exif.dt]);}
   var box=document.getElementById('infoRows');box.innerHTML='';
@@ -2242,7 +2616,7 @@ function bindReorder(cell,container){
 function anyPanelOpen(){
   if(viewerEl.classList.contains('open'))return true;
   if(folderViewEl.classList.contains('open')||favViewEl.classList.contains('open'))return true;
-  if(document.getElementById('settingsView').classList.contains('open')||document.getElementById('queueView').classList.contains('open')||document.getElementById('pickerView').classList.contains('open')||document.getElementById('lockView').classList.contains('open'))return true;
+  if(document.getElementById('settingsView').classList.contains('open')||document.getElementById('statsView').classList.contains('open')||document.getElementById('queueView').classList.contains('open')||document.getElementById('pickerView').classList.contains('open')||document.getElementById('lockView').classList.contains('open'))return true;
   if(document.querySelector('.overlay.open,.as-wrap.open'))return true;
   return false;
 }
