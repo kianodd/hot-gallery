@@ -194,15 +194,17 @@ body.selecting #selTools{display:flex;align-items:center;justify-content:space-b
 .flip{position:fixed;z-index:96;object-fit:cover;pointer-events:none;margin:0}
 .toast{position:fixed;left:50%;bottom:calc(26px + env(safe-area-inset-bottom));transform:translate(-50%,14px);background:rgba(38,38,40,.96);color:#fff;font-size:14px;padding:11px 18px;border-radius:12px;z-index:130;opacity:0;pointer-events:none;transition:.25s;max-width:92vw;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
 .toast.show{opacity:1;transform:translate(-50%,0)}
-.lockview{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:24px;text-align:center}
+.lockview{position:fixed;inset:0;z-index:200;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:flex-start;gap:10px;padding:calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));text-align:center}
 .lockview.open{display:flex}
-.lk-ic{width:84px;height:84px;border-radius:20px;background:#000;display:grid;place-items:center;margin-bottom:10px;box-shadow:0 0 0 .5px var(--hair)}
+.lk-ic{width:84px;height:84px;border-radius:20px;background:#000;display:grid;place-items:center;margin-top:9vh;margin-bottom:10px;box-shadow:0 0 0 .5px var(--hair)}
 .lk-title{font-size:21px;font-weight:700}
 .lk-sub{color:var(--faint);font-size:14px;margin:0 0 16px}
-.lk-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;padding:13px 24px;border-radius:999px;min-width:248px}
+/* hg-v20: دکمه‌های ورود پایین صفحه، نزدیک شست دست */
+.lk-actions{margin-top:auto;width:100%;max-width:420px;display:flex;flex-direction:column;align-items:center;gap:10px}
+.lk-btn{display:flex;align-items:center;justify-content:center;gap:9px;background:var(--blue);color:#fff;font-size:16px;font-weight:600;padding:15px 24px;border-radius:999px;width:100%;min-width:248px}
 .lk-btn:active{filter:brightness(.88)}
 .lk-btn2{background:var(--field);color:var(--blue)}
-.lk-err{color:var(--red);font-size:13.5px;min-height:20px;margin:8px 0 0}
+.lk-err{color:var(--red);font-size:13.5px;min-height:20px;margin:2px 0 0}
 /* hg-v9: نشانگر مشغولیت غیرمسدودکننده — قرص کوچک گوشه‌ی پایین-چپ با اسپینر؛ هرگز لمس را قفل نمی‌کند */
 .busypill{position:fixed;left:14px;bottom:calc(14px + env(safe-area-inset-bottom));z-index:160;background:rgba(38,38,40,.94);color:#fff;display:none;align-items:center;gap:9px;padding:10px 14px;border-radius:999px;font-size:13.5px;box-shadow:0 10px 30px rgba(0,0,0,.3);pointer-events:none;max-width:78vw;white-space:nowrap;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .busypill.show{display:flex}
@@ -421,7 +423,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 07:53</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 08:15</span></p>
   </div>
 </section>
 
@@ -496,9 +498,11 @@ body.selecting .qpill{display:none}
   <div class="lk-ic"><svg width="52" height="52" viewBox="0 0 52 52"><rect x="4" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="4" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="4" y="28" width="20" height="20" rx="5" fill="#f2f2f7"/><rect x="28" y="28" width="20" height="20" rx="5" fill="#ff2d55"/></svg></div>
   <div class="lk-title">گالری</div>
   <p class="lk-sub">یک روش ورود را انتخاب کن</p>
+  <div class="lk-actions">
   <button class="lk-btn" id="lockBtn"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M12 10.2a2.1 2.1 0 0 1 2.1 2.1c0 1.9.35 3.4 1 5.2"/><path d="M9.9 12.3a2.1 2.1 0 0 1 2.1-2.1"/><path d="M12 7.2a5.1 5.1 0 0 1 5.1 5.1c0 1.6.18 2.9.55 4.3"/><path d="M6.9 12.3a5.1 5.1 0 0 1 1-2.9"/><path d="M12 4a8.2 8.2 0 0 1 8.2 8.3c0 1.9.28 3.6.85 5.2"/><path d="M3.8 12.3A8.2 8.2 0 0 1 6.6 6"/></svg><span>ورود با اثر انگشت</span></button>
   <button class="lk-btn lk-btn2" id="lockCodeBtn"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><rect x="4" y="10" width="16" height="10" rx="2.5"/><path d="M8 10V7.5a4 4 0 0 1 8 0V10"/><circle cx="12" cy="15" r="1.4" fill="currentColor" stroke="none"/></svg><span>ورود با رمز</span></button>
   <p class="lk-err" id="lockErr"></p>
+  </div>
 </div>
 
 
@@ -540,7 +544,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 07:53';
+var RUN_BUILD='2026-11-06 08:15';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
