@@ -392,6 +392,71 @@ body{font-size:calc(16px * var(--fsk))}
 #miViewState,#miUpdateSub{font-size:calc(13.5px * var(--fsk)) !important}
 #lockState,#decoyState{font-size:calc(14px * var(--fsk)) !important}
 #folderPathBar{font-size:calc(12.5px * var(--fsk)) !important}
+
+/* hg-v39: تب پایین (گالری/یوتیوب) و بخش یوتیوب به سبک اپ یوتیوب */
+#tabBar{position:fixed;left:0;right:0;bottom:0;z-index:58;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-top:.5px solid var(--hair);display:flex;padding-bottom:env(safe-area-inset-bottom)}
+#tabBar .tab{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:7px 0 5px;font-size:11px;color:var(--faint);cursor:pointer}
+#tabBar .tab.on{color:var(--text)}
+#tabBar .tab .tico{height:24px;display:grid;place-items:center}
+#tabBar .tab[data-tab="yt"].on{color:#ff0033}
+#fabAdd{bottom:calc(78px + env(safe-area-inset-bottom))}
+.qpill{bottom:calc(76px + env(safe-area-inset-bottom))}
+.busypill{bottom:calc(74px + env(safe-area-inset-bottom))}
+.toast{bottom:calc(84px + env(safe-area-inset-bottom))}
+main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
+#ytView,#ytChannelView{background:var(--bg)}
+.yt-wrap{flex:1;overflow:auto;-webkit-overflow-scrolling:touch}
+.yt-top{position:sticky;top:0;z-index:5;background:var(--bar);backdrop-filter:blur(20px) saturate(1.6);-webkit-backdrop-filter:blur(20px) saturate(1.6);border-bottom:.5px solid var(--hair);padding:10px 12px 9px}
+.yt-logo{display:flex;align-items:center;gap:7px;margin:0 2px 9px}
+.yt-logo .play{width:30px;height:21px;border-radius:6px;background:#ff0033;display:grid;place-items:center;flex:none}
+.yt-logo .nm{font-size:19px;font-weight:800;letter-spacing:-.4px}
+.yt-logo .refresh{margin-inline-start:auto;color:var(--faint);width:36px;height:36px;display:grid;place-items:center;border-radius:50%}
+.yt-logo .refresh:active{background:var(--pressed)}
+.yt-search{display:flex;align-items:center;background:var(--field);border-radius:999px;padding:0 6px 0 14px;height:44px;gap:6px}
+.yt-search input{flex:1;background:none;border:0;outline:none;font-size:15.5px;color:var(--text);min-width:0;height:100%}
+.yt-search .sbtn{width:38px;height:38px;border-radius:50%;background:var(--pressed);display:grid;place-items:center;flex:none;color:var(--text)}
+.yt-subs{display:flex;gap:14px;overflow-x:auto;padding:12px 12px 4px;scrollbar-width:none}
+.yt-subs::-webkit-scrollbar{display:none}
+.yt-sub{display:flex;flex-direction:column;align-items:center;gap:5px;width:58px;flex:none;cursor:pointer}
+.yt-sub .av{width:46px;height:46px;border-radius:50%;object-fit:cover;background:var(--field)}
+.yt-sub .avf{width:46px;height:46px;border-radius:50%;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:18px;font-weight:700}
+.yt-sub .sn{font-size:11px;color:var(--sub);max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yt-sec{font-size:15px;font-weight:700;margin:14px 14px 4px}
+.yt-chrow{display:flex;align-items:center;gap:12px;padding:11px 14px;cursor:pointer}
+.yt-chrow:active{background:var(--pressed)}
+.yt-chrow .av{width:52px;height:52px;border-radius:50%;object-fit:cover;background:var(--field);flex:none}
+.yt-chrow .avf{width:52px;height:52px;border-radius:50%;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:20px;font-weight:700;flex:none}
+.yt-chrow .tx{flex:1;min-width:0}
+.yt-chrow .t{font-size:15.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.yt-chrow .s{font-size:12.5px;color:var(--faint);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.subbtn{flex:none;background:#ff0033;color:#fff;font-size:13.5px;font-weight:700;padding:8px 15px;border-radius:999px}
+.subbtn.on{background:var(--field);color:var(--sub)}
+.subbtn:disabled{opacity:.55}
+.yt-card{margin:0 0 10px;cursor:default}
+.yt-thumb{position:relative;width:100%;aspect-ratio:16/9;background:#111;overflow:hidden}
+.yt-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.yt-thumb .ph{position:absolute;inset:0;display:grid;place-items:center;color:rgba(255,255,255,.75);background:linear-gradient(135deg,#232323,#101010)}
+.yt-meta{display:flex;gap:10px;padding:10px 12px 12px;align-items:flex-start}
+.yt-meta .av{width:36px;height:36px;border-radius:50%;object-fit:cover;background:var(--field);flex:none;cursor:pointer}
+.yt-meta .avf{width:36px;height:36px;border-radius:50%;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:15px;font-weight:700;flex:none;cursor:pointer}
+.yt-meta .tx{flex:1;min-width:0}
+.yt-meta .t{font-size:14.5px;font-weight:600;line-height:1.75;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.yt-meta .s{font-size:12.5px;color:var(--faint);margin-top:2px}
+.yt-meta .s .chn{cursor:pointer}
+.yt-meta .s .chn:active{color:var(--text)}
+.yt-dl{flex:none;width:38px;height:38px;border-radius:50%;display:grid;place-items:center;color:var(--blue)}
+.yt-dl:active{background:var(--pressed)}
+.yt-head{display:flex;flex-direction:column;align-items:center;text-align:center;padding:22px 18px 8px;gap:7px}
+.yt-head .av{width:84px;height:84px;border-radius:50%;object-fit:cover;background:var(--field)}
+.yt-head .avf{width:84px;height:84px;border-radius:50%;background:#ff0033;color:#fff;display:grid;place-items:center;font-size:32px;font-weight:700}
+.yt-head .t{font-size:19px;font-weight:800}
+.yt-head .s{font-size:13px;color:var(--faint);line-height:1.9}
+.yt-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 6px}
+.yt-chip{padding:8px 14px;border-radius:999px;background:var(--field);font-size:14px;color:var(--text)}
+.yt-chip.on{background:#ff0033;color:#fff;font-weight:700}
+.yt-empty{padding:64px 28px;text-align:center;color:var(--faint);line-height:2}
+.yt-empty .big{font-size:16.5px;font-weight:700;color:var(--sub);margin-bottom:4px}
+.yt-loading{padding:40px;text-align:center;color:var(--faint)}
 </style>
 </head>
 <body>
@@ -571,7 +636,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 17:23</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 17:57</span></p>
   </div>
 </section>
 
@@ -759,12 +824,75 @@ body{font-size:calc(16px * var(--fsk))}
   </div>
 </div>
 
+
+<nav id="tabBar" aria-label="تب‌های اصلی">
+  <button class="tab on" data-tab="home" type="button">
+    <span class="tico"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="9" cy="9" r="1.6" fill="currentColor" stroke="none"/><path d="M3.5 17.5l4.7-4.7 3.3 3.3 3-3 6 6"/></svg></span>
+    <span>گالری</span>
+  </button>
+  <button class="tab" data-tab="yt" type="button">
+    <span class="tico"><svg width="28" height="24" viewBox="0 0 28 24" fill="none"><rect x="1.5" y="4" width="25" height="16" rx="4.5" fill="#ff0033"/><path d="M11.5 8.8v6.4L17 12z" fill="#fff"/></svg></span>
+    <span>یوتیوب</span>
+  </button>
+</nav>
+
+<section class="view-settings" id="ytView" aria-label="یوتیوب">
+  <div class="yt-wrap" id="ytScroll">
+    <div class="yt-top">
+      <div class="yt-logo">
+        <span class="play"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M7 4.8v14.4L19 12z"/></svg></span>
+        <span class="nm" dir="ltr">YouTube</span>
+        <button class="refresh" id="ytRefreshBtn" type="button" aria-label="تازه‌سازی فید"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 3.5V8h-4.5"/></svg></button>
+      </div>
+      <div class="yt-search">
+        <input id="ytSearchInput" type="search" placeholder="جستجوی کانال…" autocomplete="off" enterkeyhint="search">
+        <button class="sbtn" id="ytSearchBtn" type="button" aria-label="جستجو"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20.5 20.5L16.6 16.6"/></svg></button>
+      </div>
+    </div>
+    <div id="ytSearchWrap" style="display:none">
+      <div class="yt-sec">نتایج جستجو</div>
+      <div id="ytSearchResults"></div>
+    </div>
+    <div class="yt-subs" id="ytSubsStrip" style="display:none"></div>
+    <div id="ytFeedWrap">
+      <div class="yt-sec" id="ytFeedTitle">ویدیوهای تازه</div>
+      <div id="ytFeed"></div>
+    </div>
+  </div>
+</section>
+
+<section class="view-settings" id="ytChannelView" aria-label="کانال یوتیوب">
+  <div class="sbar">
+    <button class="sback" id="ytChannelBack" type="button"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>یوتیوب</span></button>
+    <div class="stitle" id="ytChannelBarTitle">کانال</div>
+  </div>
+  <div class="yt-wrap">
+    <div id="ytChannelHead"></div>
+    <div id="ytChannelVideos"></div>
+  </div>
+</section>
+
+<div class="overlay" id="ytDlOverlay"><div class="sc" data-close-ytdl="1"></div>
+  <div class="sheet" role="dialog" aria-modal="true" style="max-height:88vh;overflow:auto">
+    <div class="grab"></div>
+    <h2>افزودن به دانلود</h2>
+    <p class="sub" id="ytDlTitle" style="text-align:right"></p>
+    <p class="slabel">کیفیت ویدیو</p>
+    <div class="yt-chips" id="ytDlVQ"></div>
+    <p class="slabel" style="margin-top:14px">کیفیت صدا</p>
+    <div class="yt-chips" id="ytDlAQ"></div>
+    <p class="snote">فیلم با همین تنظیمات در صف دانلود بخش اصلی می‌نشیند و خودکار در پوشه‌ی YouTube ذخیره می‌شود. پیشرفت دانلود را از دکمه‌ی صف بالای گالری می‌بینی.</p>
+    <button class="primary" id="ytDlGo" type="button">افزودن به صف دانلود</button>
+    <button class="cancel" data-close-ytdl="1" type="button">لغو</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://gapi.kiandevteam.ir';
-var RUN_BUILD='2026-11-06 17:23';
+var RUN_BUILD='2026-11-06 17:57';
 /* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
    (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
    هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
@@ -2064,6 +2192,7 @@ function fabSync(){
     ||(lv&&lv.classList.contains('open'))
     ||!!document.querySelector('.view-settings.open,.overlay.open,.as-wrap.open');
   f.style.display=hide?'none':'grid';
+  if(window.ytTabSync)window.ytTabSync();
 }
 function vCloseVisual(){if(typeof boostOff==='function')boostOff();watchFlush();if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');viewerEl.classList.remove('hg-fs');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
 function closeViewer(){vCloseVisual();releaseLayer('viewer');}
@@ -3002,6 +3131,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:39,d:'۱۵ آبان ۱۴۰۵',items:['تب «یوتیوب» پایین اپ اضافه شد: جستجوی کانال و مشترک‌شدن داخل خود برنامه','فید ویدیوهای کانال‌های ساب‌شده زیر سرچ‌بار، قاطی و مرتب بر اساس تاریخ؛ با کلیک روی اسم کانال، صفحه‌ی جدا ویدیوهای همان کانال باز می‌شود','کرون سرور هر ۱۰ دقیقه فید کانال‌ها را تازه می‌کند و تامنیل ویدیوها را در شارد جدا و بدون شماره (hot-gallery-yt-thumbs) ذخیره می‌کند؛ تامنیل مستقیم از یوتیوب لود نمی‌شود','هر ویدیو دکمه‌ی «افزودن به دانلود» دارد با انتخاب کیفیت ویدیو و صدا؛ دانلود در صف بخش اصلی می‌نشیند و در پوشه‌ی YouTube ذخیره می‌شود']},
  {n:38,d:'۱۵ آبان ۱۴۰۵',items:['بالای صفحه‌ی شاردها حالا تعداد شاردها و مجموع حجم گالری (و مجموع اندازه‌ی مخزن‌ها، وقتی معلوم باشد) نمایش داده می‌شود']},
  {n:37,d:'۱۵ آبان ۱۴۰۵',items:['کاورِ عکسیِ پوشه‌ها هم مثل کاورِ فیلم، به‌محض دیده‌شدن پوشه در صفحه لود می‌شه و جای بلور می‌شینه']},
  {n:37,d:'۱۵ آبان ۱۴۰۵',items:['در بخش «اتصال سرور» تنظیمات، برای هر حالت دکمه‌ی «گرفتن پینگ» اضافه شد: خودکار (هر دو آدرس)، دامنه‌ی اختصاصی، آدرس اصلی و گیت‌هاب']},
@@ -4165,6 +4295,265 @@ doAdd.addEventListener('click',function(){
 });
 urlInput.addEventListener('keydown',function(e){if(e.key==='Enter')doAdd.click();});
 load().then(function(){qMigrate(function(){qRender();qProcess();qSyncQueue();setTimeout(checkUpdate,1200);});});
+</script>
+<script>
+/* hg-v39: تب یوتیوب — جستجوی کانال، اشتراک درون‌برنامه‌ای، فید ترکیبی کانال‌های ساب‌شده
+   (مرتب بر اساس تاریخ)، صفحه‌ی جدا برای هر کانال، و افزودن هر ویدیو به صف دانلود بخش اصلی
+   با انتخاب کیفیت ویدیو و صدا. تامنیل‌ها از شارد جدا (hot-gallery-yt-thumbs) می‌آیند که
+   کرون ۱۰ دقیقه‌ای سرور پرش می‌کند؛ هیچ تامنیلی مستقیم از یوتیوب لود نمی‌شود. */
+var ytViewEl=document.getElementById('ytView'),ytChannelViewEl=document.getElementById('ytChannelView'),tabBarEl=document.getElementById('tabBar');
+var ytSubs=[],ytFeedAt=0,ytCurChannel=null,ytDlVideo=null;
+var ytDlV=360,ytDlA=128;
+try{var _q=JSON.parse(localStorage.getItem('hg-ytq')||'null');if(_q){ytDlV=+_q.v||360;ytDlA=+_q.a||128;}}catch(e){}
+function ytEsc(s){return String(s==null?'':s);}
+function ytAgo(ts){
+  if(!ts)return '';
+  var d=Math.max(0,Date.now()-ts),m=Math.floor(d/60000),h=Math.floor(d/3600000),dd=Math.floor(d/86400000);
+  if(m<1)return 'هم‌اکنون';
+  if(m<60)return faNum(m)+' دقیقه پیش';
+  if(h<24)return faNum(h)+' ساعت پیش';
+  if(dd<7)return faNum(dd)+' روز پیش';
+  if(dd<30)return faNum(Math.floor(dd/7))+' هفته پیش';
+  if(dd<365)return faNum(Math.floor(dd/30))+' ماه پیش';
+  return faNum(Math.floor(dd/365))+' سال پیش';
+}
+function ytCompact(n){
+  n=+n||0;
+  if(n<1000)return faNum(n);
+  if(n<1000000){var k=n/1000;return faNum(k>=100?Math.round(k):(Math.round(k*10)/10))+' هزار';}
+  var m=n/1000000;return faNum(m>=100?Math.round(m):(Math.round(m*10)/10))+' میلیون';
+}
+function ytAvatarEl(url,name,cls){
+  if(url){var im=document.createElement('img');im.className=cls;im.src=url;im.alt='';im.loading='lazy';im.onerror=function(){var f=ytAvatarEl(null,name,cls);im.replaceWith(f);};return im;}
+  var d=document.createElement('div');d.className=cls+'f';d.textContent=(ytEsc(name).trim().charAt(0)||'؟');return d;
+}
+function ytApiGet(path){
+  return fetch(API+path).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});
+}
+function ytSetTab(name){
+  tabBarEl.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.getAttribute('data-tab')===name);});
+}
+function ytTabSync(){
+  if(!tabBarEl)return;
+  var lv=document.getElementById('lockView');
+  var otherOpen=!!document.querySelector('.view-settings.open:not(#ytView):not(#ytChannelView),.overlay.open,.as-wrap.open');
+  var hide=otherOpen||document.body.classList.contains('selecting')||(lv&&lv.classList.contains('open'))||(typeof viewerEl!=='undefined'&&viewerEl&&viewerEl.classList.contains('open'));
+  tabBarEl.style.display=hide?'none':'flex';
+}
+window.ytTabSync=ytTabSync;
+setInterval(ytTabSync,700);
+function ytOpen(){
+  if(ytViewEl.classList.contains('open'))return;
+  ytViewEl.classList.add('open');ytSetTab('yt');
+  pushLayer('panel',function(){ytViewEl.classList.remove('open');ytSetTab('home');ytTabSync();});
+  ytTabSync();ytLoadHome(false);
+}
+function ytClose(){
+  if(ytChannelViewEl.classList.contains('open')){ytChannelViewEl.classList.remove('open');releaseLayer('panel');}
+  if(ytViewEl.classList.contains('open')){ytViewEl.classList.remove('open');releaseLayer('panel');}
+  ytSetTab('home');ytTabSync();
+}
+tabBarEl.querySelectorAll('.tab').forEach(function(t){
+  t.addEventListener('click',function(){
+    if(t.getAttribute('data-tab')==='yt')ytOpen();else ytClose();
+  });
+});
+function ytSubBtn(c,onClick){
+  var b=document.createElement('button');b.type='button';b.className='subbtn'+(c.subscribed?' on':'');
+  b.textContent=c.subscribed?'مشترک شده':'مشترک شدن';
+  b.addEventListener('click',function(ev){ev.stopPropagation();onClick(b);});
+  return b;
+}
+function ytToggleSub(c,btn,done){
+  if(roMode()){roToast();return;}
+  btn.disabled=true;var was=c.subscribed;btn.textContent='…';
+  var p=was?apiPost('/api/yt/unsubscribe',{channel_id:c.channel_id})
+    :apiPost('/api/yt/subscribe',{channel_id:c.channel_id,title:c.title||'',handle:c.handle||'',avatar:c.avatar_src||'',subs:c.subs||0,description:c.description||''});
+  p.then(function(d){
+    c.subscribed=!was;
+    btn.disabled=false;btn.textContent=c.subscribed?'مشترک شده':'مشترک شدن';btn.classList.toggle('on',c.subscribed);
+    toast(c.subscribed?('در کانال «'+ytEsc(c.title)+'» مشترک شدی'+(d&&d.videos?(' — '+faNum(d.videos)+' ویدیوی تازه‌اش آمد'):'')):('اشتراک «'+ytEsc(c.title)+'» لغو شد'));
+    ytFeedAt=0;ytLoadHome(true);
+    if(done)done(c);
+  }).catch(function(e){btn.disabled=false;btn.textContent=was?'مشترک شده':'مشترک شدن';toast('ناموفق بود: '+(e&&e.message?e.message:e));});
+}
+function ytChannelRow(c){
+  var row=document.createElement('div');row.className='yt-chrow';
+  var av=ytAvatarEl(c.avatar_url||null,c.title,'av');
+  row.appendChild(av);
+  var tx=document.createElement('div');tx.className='tx';
+  var t=document.createElement('div');t.className='t';t.textContent=ytEsc(c.title);tx.appendChild(t);
+  var s=document.createElement('div');s.className='s';
+  var bits=[];
+  if(c.handle)bits.push(c.handle);
+  if(c.subs)bits.push(ytCompact(c.subs)+' مشترک');else if(c.subs_text)bits.push(c.subs_text);
+  if(c.videos!=null)bits.push(faNum(c.videos)+' ویدیو در فید');
+  s.textContent=bits.join(' · ')||'کانال یوتیوب';
+  tx.appendChild(s);row.appendChild(tx);
+  row.appendChild(ytSubBtn(c,function(btn){ytToggleSub(c,btn,function(){ytRenderSearchStates();});}));
+  row.addEventListener('click',function(){ytOpenChannel(c.channel_id,c);});
+  return row;
+}
+var ytLastResults=[];
+function ytRenderSearchStates(){
+  var wrap=document.getElementById('ytSearchResults');if(!wrap)return;
+  wrap.innerHTML='';ytLastResults.forEach(function(c){wrap.appendChild(ytChannelRow(c));});
+}
+function ytDoSearch(){
+  var q=document.getElementById('ytSearchInput').value.trim();
+  var wrap=document.getElementById('ytSearchWrap'),box=document.getElementById('ytSearchResults');
+  if(!q){wrap.style.display='none';return;}
+  wrap.style.display='block';box.innerHTML='<div class="yt-loading">در حال جستجوی کانال‌ها…</div>';
+  ytApiGet('/api/yt/search?q='+encodeURIComponent(q)).then(function(d){
+    ytLastResults=d.results||[];
+    if(!ytLastResults.length){box.innerHTML='<div class="yt-empty"><div class="big">کانالی پیدا نشد</div><p>اسم کانال، هندل (@name) یا لینک کانال یوتیوب را امتحان کن.</p></div>';return;}
+    ytRenderSearchStates();
+  }).catch(function(e){box.innerHTML='<div class="yt-empty"><div class="big">جستجو ناموفق بود</div><p>'+ytEsc(e&&e.message?e.message:e)+'</p></div>';});
+}
+document.getElementById('ytSearchBtn').addEventListener('click',ytDoSearch);
+document.getElementById('ytSearchInput').addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();ytDoSearch();}});
+function ytVideoCard(v){
+  var card=document.createElement('div');card.className='yt-card';
+  var th=document.createElement('div');th.className='yt-thumb';
+  if(v.thumb_url){var im=document.createElement('img');im.src=v.thumb_url;im.alt='';im.loading='lazy';th.appendChild(im);}
+  else{var ph=document.createElement('div');ph.className='ph';ph.innerHTML='<svg width="44" height="44" viewBox="0 0 24 24" fill="currentColor" opacity=".8"><path d="M7 4.8v14.4L19 12z"/></svg>';th.appendChild(ph);}
+  card.appendChild(th);
+  var meta=document.createElement('div');meta.className='yt-meta';
+  var av=ytAvatarEl(v.avatar_url||null,v.channel_title,'av');
+  av.addEventListener('click',function(){ytOpenChannel(v.channel_id,null);});
+  meta.appendChild(av);
+  var tx=document.createElement('div');tx.className='tx';
+  var t=document.createElement('div');t.className='t';t.textContent=ytEsc(v.title);tx.appendChild(t);
+  var s=document.createElement('div');s.className='s';
+  var chn=document.createElement('span');chn.className='chn';chn.textContent=ytEsc(v.channel_title);
+  chn.addEventListener('click',function(){ytOpenChannel(v.channel_id,null);});
+  s.appendChild(chn);
+  var bits=[];
+  if(v.views)bits.push(ytCompact(v.views)+' بازدید');
+  var ag=ytAgo(v.published);if(ag)bits.push(ag);
+  if(bits.length)s.appendChild(document.createTextNode(' · '+bits.join(' · ')));
+  tx.appendChild(s);meta.appendChild(tx);
+  var dl=document.createElement('button');dl.type='button';dl.className='yt-dl';dl.setAttribute('aria-label','افزودن به دانلود');
+  dl.innerHTML='<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11m0 0l-4.2-4.2M12 15l4.2-4.2"/><path d="M4 17.5v1.2A1.8 1.8 0 0 0 5.8 20.5h12.4a1.8 1.8 0 0 0 1.8-1.8v-1.2"/></svg>';
+  dl.addEventListener('click',function(){ytOpenDl(v);});
+  meta.appendChild(dl);
+  card.appendChild(meta);
+  return card;
+}
+function ytRenderSubsStrip(){
+  var strip=document.getElementById('ytSubsStrip');
+  strip.innerHTML='';
+  if(!ytSubs.length){strip.style.display='none';return;}
+  strip.style.display='flex';
+  ytSubs.forEach(function(c){
+    var d=document.createElement('div');d.className='yt-sub';
+    d.appendChild(ytAvatarEl(c.avatar_url||null,c.title,'av'));
+    var n=document.createElement('div');n.className='sn';n.textContent=ytEsc(c.title);d.appendChild(n);
+    d.addEventListener('click',function(){ytOpenChannel(c.channel_id,c);});
+    strip.appendChild(d);
+  });
+}
+function ytLoadHome(force){
+  if(!force&&ytFeedAt&&Date.now()-ytFeedAt<60000)return;
+  var feed=document.getElementById('ytFeed');
+  if(!feed.childNodes.length)feed.innerHTML='<div class="yt-loading">در حال بارگذاری فید…</div>';
+  Promise.all([
+    ytApiGet('/api/yt/subs').catch(function(){return{channels:[]};}),
+    ytApiGet('/api/yt/feed?limit=80').catch(function(){return{videos:[]};})
+  ]).then(function(res){
+    ytSubs=res[0].channels||[];ytFeedAt=Date.now();
+    ytRenderSubsStrip();
+    var vids=res[1].videos||[];
+    feed.innerHTML='';
+    if(!ytSubs.length){
+      feed.innerHTML='<div class="yt-empty"><div class="big">هنوز کانالی را سابسکرایب نکرده‌ای</div><p>بالا اسم کانال را جستجو کن و «مشترک شدن» را بزن؛ ویدیوهای تازه‌ی کانال‌های ساب‌شده اینجا به ترتیب تاریخ می‌آیند و کرون سرور هر ۱۰ دقیقه فید و تامنیل‌ها را تازه می‌کند.</p></div>';
+    }else if(!vids.length){
+      feed.innerHTML='<div class="yt-empty"><div class="big">هنوز ویدیویی در فید نیست</div><p>کرون سرور هر ۱۰ دقیقه ویدیوهای تازه را می‌آورد؛ با دکمه‌ی تازه‌سازی بالا هم می‌توانی همین حالا بگی چک کند.</p></div>';
+    }else{
+      vids.forEach(function(v){feed.appendChild(ytVideoCard(v));});
+    }
+  });
+}
+document.getElementById('ytRefreshBtn').addEventListener('click',function(){
+  if(roMode()){roToast();return;}
+  apiPost('/api/yt/refresh',{}).then(function(){
+    toast('تازه‌سازی فید شروع شد — چند ثانیه دیگر دوباره می‌کشم');
+    setTimeout(function(){ytFeedAt=0;ytLoadHome(true);},7000);
+  }).catch(function(){toast('تازه‌سازی ناموفق بود');});
+});
+function ytOpenChannel(cid,hint){
+  ytChannelViewEl.classList.add('open');
+  pushLayer('panel',function(){ytChannelViewEl.classList.remove('open');ytTabSync();});
+  ytTabSync();
+  var head=document.getElementById('ytChannelHead'),list=document.getElementById('ytChannelVideos');
+  document.getElementById('ytChannelBarTitle').textContent=(hint&&hint.title)||'کانال';
+  head.innerHTML='<div class="yt-loading">در حال بارگذاری کانال…</div>';list.innerHTML='';
+  ytApiGet('/api/yt/channel/'+encodeURIComponent(cid)).then(function(d){
+    ytCurChannel=d.channel;ytPaintChannelHead(d.channel);
+    list.innerHTML='';
+    if(!(d.videos||[]).length)list.innerHTML='<div class="yt-empty"><div class="big">ویدیویی ثبت نشده</div><p>کرون سرور هر ۱۰ دقیقه ویدیوهای این کانال را می‌آورد.</p></div>';
+    (d.videos||[]).forEach(function(v){list.appendChild(ytVideoCard(v));});
+  }).catch(function(){
+    var c=hint||{channel_id:cid,title:'کانال',handle:'',subs:0,avatar_url:null,subscribed:false};
+    c.channel_id=cid;if(c.subscribed==null)c.subscribed=false;
+    ytCurChannel=c;ytPaintChannelHead(c);
+    list.innerHTML='<div class="yt-empty"><div class="big">بعد از مشترک شدن، ویدیوهای این کانال اینجا می‌آیند</div><p>کرون سرور هر ۱۰ دقیقه فید کانال‌های ساب‌شده را تازه می‌کند.</p></div>';
+  });
+}
+function ytPaintChannelHead(c){
+  var head=document.getElementById('ytChannelHead');head.innerHTML='';
+  document.getElementById('ytChannelBarTitle').textContent=ytEsc(c.title)||'کانال';
+  var box=document.createElement('div');box.className='yt-head';
+  box.appendChild(ytAvatarEl(c.avatar_url||null,c.title,'av'));
+  var t=document.createElement('div');t.className='t';t.textContent=ytEsc(c.title);box.appendChild(t);
+  var s=document.createElement('div');s.className='s';
+  var bits=[];if(c.handle)bits.push(c.handle);if(c.subs)bits.push(ytCompact(c.subs)+' مشترک');
+  s.textContent=bits.join(' · ');box.appendChild(s);
+  var btn=ytSubBtn(c,function(b){
+    var full={channel_id:c.channel_id,title:c.title,handle:c.handle,subs:c.subs,description:c.description||'',avatar_src:'',subscribed:c.subscribed};
+    var srch=ytLastResults.find(function(x){return x.channel_id===c.channel_id;});
+    if(srch)full.avatar_src=srch.avatar_src||'';
+    var sub0=ytSubs.find(function(x){return x.channel_id===c.channel_id;});
+    ytToggleSub(full,b,function(nc){c.subscribed=nc.subscribed;btn.textContent=c.subscribed?'مشترک شده':'مشترک شدن';btn.classList.toggle('on',c.subscribed);ytRenderSearchStates();});
+  });
+  box.appendChild(btn);
+  head.appendChild(box);
+}
+document.getElementById('ytChannelBack').addEventListener('click',function(){ytChannelViewEl.classList.remove('open');releaseLayer('panel');ytTabSync();});
+/* شیت تنظیمات دانلود: کیفیت ویدیو و صدا */
+var YT_VQ=[[0,'بهترین کیفیت'],[1080,'1080p'],[720,'720p'],[480,'480p'],[360,'360p'],[240,'240p'],[144,'144p']];
+var YT_AQ=[[0,'بهترین'],[320,'320 kbps'],[256,'256 kbps'],[192,'192 kbps'],[128,'128 kbps'],[96,'96 kbps'],[64,'64 kbps']];
+function ytChips(boxId,opts,cur,fn){
+  var box=document.getElementById(boxId);box.innerHTML='';
+  opts.forEach(function(o){
+    var b=document.createElement('button');b.type='button';b.className='yt-chip'+(o[0]===cur?' on':'');b.textContent=o[1];
+    b.addEventListener('click',function(){fn(o[0]);ytChips(boxId,opts,o[0],fn);});
+    box.appendChild(b);
+  });
+}
+function ytOpenDl(v){
+  if(roMode()){roToast();return;}
+  ytDlVideo=v;
+  document.getElementById('ytDlTitle').textContent=ytEsc(v.title);
+  ytChips('ytDlVQ',YT_VQ,ytDlV,function(x){ytDlV=x;});
+  ytChips('ytDlAQ',YT_AQ,ytDlA,function(x){ytDlA=x;});
+  document.getElementById('ytDlOverlay').classList.add('open');fabSync();ytTabSync();
+}
+function ytCloseDl(){document.getElementById('ytDlOverlay').classList.remove('open');fabSync();ytTabSync();}
+document.querySelectorAll('[data-close-ytdl]').forEach(function(el){el.addEventListener('click',ytCloseDl);});
+document.getElementById('ytDlGo').addEventListener('click',function(){
+  if(!ytDlVideo)return;
+  var btn=this;btn.disabled=true;
+  try{localStorage.setItem('hg-ytq',JSON.stringify({v:ytDlV,a:ytDlA}));}catch(e){}
+  apiPost('/api/queue/add',{urls:[ytDlVideo.watch],yt:{v:ytDlV,a:ytDlA}}).then(function(d){
+    btn.disabled=false;ytCloseDl();
+    if(d&&d.added&&d.added.length){toast('به صف دانلود اضافه شد — پوشه‌ی YouTube');if(typeof qSyncQueue==='function')qSyncQueue();}
+    else if(d&&d.dups&&d.dups.length)toast('این فیلم قبلاً در گالری یا صف دانلود هست');
+    else if(d&&d.errors&&d.errors.length)toast('ناموفق بود: '+ytEsc(d.errors[0].error||''));
+    else toast('انجام شد');
+  }).catch(function(e){btn.disabled=false;toast('ناموفق بود: '+(e&&e.message?e.message:e));});
+});
+ytTabSync();
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){setInterval(function(){reg.update();},60000);}).catch(function(){});});}</script>
 </body>
