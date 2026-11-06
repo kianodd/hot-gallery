@@ -424,7 +424,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 08:18</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 08:24</span></p>
   </div>
 </section>
 
@@ -545,7 +545,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 08:18';
+var RUN_BUILD='2026-11-06 08:24';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2271,10 +2271,21 @@ function syncDecoyUI(){
 function startDecoySession(){
   try{sessionStorage.setItem('hg-decoy-session','1');}catch(e){}
   decoyMode=true;
-  lockView.classList.remove('open');document.body.style.overflow='';
+  /* hg-v22: قبل از برداشتن صفحه‌ی قفل، پوشه‌ها و آیتم‌های خصوصی همین لحظه و هم‌گام از
+     حافظه و از رندر فعلی پاک می‌شوند. تا قبل از این فیکس، قفل اول کنار می‌رفت و گریدِ
+     کاملِ لودشده پشتش چند ثانیه (تا رسیدن لودِ فیلترشده از شبکه) دیده می‌شد و بعد
+     پوشه‌های خصوصی ناپدید می‌شدند. ترتیب زیر در یک تسک اجرا می‌شود، پس هیچ فریمی از
+     گریدِ فیلترنشده بعد از ورود با رمز نقاشی نمی‌شود؛ لودِ شبکه بعدش فقط تازه‌سازی است. */
+  var ps=decoyPrivSet();
+  if(Object.keys(ps).length){
+    photos=photos.filter(function(p){return !(p.folder&&ps[p.folder]);});
+    folders=folders.filter(function(f){return !ps[f.id];});
+  }
   document.getElementById('settingsView').classList.remove('open');
   folderViewEl.classList.remove('open');favViewEl.classList.remove('open');curFolder=null;
   closeMenu();
+  render();
+  lockView.classList.remove('open');document.body.style.overflow='';
   load().then(function(){syncDecoyUI();});
 }
 /* شیت ورود رمز — حالت‌ها: set (تنظیم، دومرحله‌ای)، enter (ورود با رمز)،
