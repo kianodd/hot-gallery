@@ -54,6 +54,9 @@ header{position:sticky;top:0;z-index:50;background:var(--bar);backdrop-filter:bl
 #roBanner.show{display:flex}
 #roBanner .grow{flex:1}
 #roBanner button{flex:none;border:0;background:var(--blue);color:#fff;border-radius:10px;padding:7px 12px;font-size:13px;cursor:pointer}
+/* hg-v37: دکمه‌ی گرفتن پینگِ هر حالت، در همان بخش انتخاب اتصال */
+.cpbtn{flex:none;border:0;background:var(--blue);color:#fff;border-radius:9px;padding:6px 11px;font-size:12.5px;cursor:pointer;margin-inline-start:10px}
+.cpbtn:disabled{opacity:.45}
 #menuBtn{right:6px;color:var(--text)}
 /* hg-v27: دکمه‌ی صف آپلود در نوار بالا، بغل دکمه‌ی منو — آیکون + شمارنده؛ صف خالی = مخفی */
 #qBtn{right:52px;color:var(--text)}
@@ -518,6 +521,13 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" data-conn-opt="ro"><span>فقط‌خواندنی از گیت‌هاب (بدون سرور)</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
     </div>
     <p class="snote">در حالت خودکار، اگر یک آدرس وصل نشود، اپ سراغ آدرس دیگر می‌رود. در حالت فقط‌خواندنی، گالری مستقیم از گیت‌هاب خوانده می‌شود و افزودن، حذف و ویرایش غیرفعال است. انتخابت روی همین دستگاه می‌ماند.</p>
+    <div class="group" style="margin-top:14px">
+      <div class="irow"><span class="k">پینگ خودکار (هر دو آدرس)</span><span class="v" id="cpAuto">—</span><button class="cpbtn" data-conn-ping="auto">گرفتن پینگ</button></div>
+      <div class="irow"><span class="k">پینگ دامنه‌ی اختصاصی</span><span class="v" id="cpGapi">—</span><button class="cpbtn" data-conn-ping="gapi">گرفتن پینگ</button></div>
+      <div class="irow"><span class="k">پینگ آدرس اصلی</span><span class="v" id="cpWorkers">—</span><button class="cpbtn" data-conn-ping="workers">گرفتن پینگ</button></div>
+      <div class="irow"><span class="k">پینگ گیت‌هاب (فقط‌خواندنی)</span><span class="v" id="cpRo">—</span><button class="cpbtn" data-conn-ping="ro">گرفتن پینگ</button></div>
+    </div>
+    <p class="snote">پینگ هر حالت جدا و مستقیم گرفته می‌شود، ربطی به حالت انتخاب‌شده ندارد؛ اگر بیش از ۱۰ ثانیه طول بکشد ناموفق حساب می‌شود.</p>
     <p class="slabel" style="margin-top:26px">اندازه‌ی متن</p>
     <div class="group">
       <button class="opt" data-font-opt="0.88"><span>کوچک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
@@ -561,7 +571,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:52</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:56</span></p>
   </div>
 </section>
 
@@ -753,7 +763,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://gapi.kiandevteam.ir';
-var RUN_BUILD='2026-11-06 12:52';
+var RUN_BUILD='2026-11-06 12:56';
 /* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
    (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
    هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
@@ -822,6 +832,42 @@ document.querySelectorAll('[data-conn-opt]').forEach(function(b){b.addEventListe
 var _roExit=document.getElementById('roExitBtn');
 if(_roExit)_roExit.addEventListener('click',function(){setConn('auto');toast('اتصال سرور روی حالت خودکار برگشت');});
 connBannerSync();
+/* hg-v37: پینگ دستیِ هر حالت، همان‌جا در بخش «اتصال سرور» — اندازه‌گیری مستقیم با
+   فچ اصلی (بدون چرخش و بدون قفل فقط‌خواندنی) تا عددِ واقعیِ همان آدرس دیده شود؛
+   سقف ۱۰ ثانیه، مثل واچ‌داگ پینگ اصلی */
+function connPingMeasure(url){
+  var t0=performance.now();
+  var meas=_hgFetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return Math.round(performance.now()-t0);});
+  var timeout=new Promise(function(_,rej){setTimeout(function(){rej(new Error('timeout'));},10000);});
+  return Promise.race([meas,timeout]);
+}
+function connPingUrl(mode){
+  if(mode==='gapi')return API_BASES[0]+'/api/ping?x='+Date.now();
+  if(mode==='workers')return API_BASES[1]+'/api/ping?x='+Date.now();
+  if(mode==='ro')return 'https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/index.json?x='+Date.now();
+  return null;
+}
+function connPingFmt(ms){return ms==null?'ناموفق':(faNum(ms)+' میلی‌ثانیه');}
+document.querySelectorAll('[data-conn-ping]').forEach(function(btn){
+  btn.addEventListener('click',function(){
+    var mode=btn.getAttribute('data-conn-ping');
+    var outId={auto:'cpAuto',gapi:'cpGapi',workers:'cpWorkers',ro:'cpRo'}[mode];
+    var out=document.getElementById(outId);if(!out)return;
+    btn.disabled=true;out.textContent='…';
+    function done(){btn.disabled=false;}
+    if(mode==='auto'){
+      Promise.all([
+        connPingMeasure(connPingUrl('gapi')).catch(function(){return null;}),
+        connPingMeasure(connPingUrl('workers')).catch(function(){return null;})
+      ]).then(function(res){
+        out.textContent='اختصاصی: '+connPingFmt(res[0])+' · اصلی: '+connPingFmt(res[1]);
+        done();
+      });
+    }else{
+      connPingMeasure(connPingUrl(mode)).then(function(ms){out.textContent=connPingFmt(ms);done();}).catch(function(){out.textContent='ناموفق';done();});
+    }
+  });
+});
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1034,7 +1080,9 @@ function pvResetObservers(){if(pvIO)pvIO.disconnect();pvVisibleIds={};}
    markLoaded سواپ تک‌فریمیِ upgradeCellsFor و ثبت در رجیستری hg-loaded را انجام می‌دهد —
    دقیقاً همان مسیر لودشدن در ویوئر، تا آپگرید بین رندرها و اجراها بماند. فقط فیلم‌ها؛
    عکس‌ها عمداً دست نخورده‌اند. برای کاور پوشه/پسندیده‌ها هم فقط خودِ کاور ارتقا می‌یابد
-   (هیچ آیتمی داخل پوشه‌ی بازنشده لود نمی‌شود). */
+   (هیچ آیتمی داخل پوشه‌ی بازنشده لود نمی‌شود).
+   hg-v37: عکس‌ها هم برای کاور پوشه/پسندیده‌ها وارد همین مسیر شدند (دستور کاربر) —
+   سلول‌های معمولیِ عکس در گرید همچنان مسیر صف اولویت خودشان را دارند. */
 var hqIO=null,hqLoading={};
 function hqEnsureIO(){
   if(hqIO||!('IntersectionObserver' in window))return;
@@ -1048,14 +1096,21 @@ function hqEnsureIO(){
 }
 function hqResetObservers(){if(hqIO)hqIO.disconnect();}
 function hqObserve(cell,item){
-  if(!cell||!item||!isVideo(item)||!item.thumb)return;
+  /* hg-v37: عکس‌ها هم مثل فیلم‌ها از همین مسیر می‌گذرند (کاورِ عکسِ پوشه) */
+  if(!cell||!item)return;
+  if(isVideo(item)){if(!item.thumb)return;}
+  else if(item.manifest)return;
   cell._hqItem=item;hqEnsureIO();
   if(hqIO)hqIO.observe(cell);else hqUpgrade(item);
 }
 function hqUpgrade(item){
-  if(!item||!isVideo(item)||!item.thumb)return;
+  if(!item)return;
+  if(isVideo(item)){if(!item.thumb)return;}
+  else if(item.manifest)return;
   if(isLoaded(item)){upgradeCellsFor(item);return;}
   if(hqLoading[item.id])return;
+  var src=isVideo(item)?(rawB(item)+item.thumb):realThumbFor(item,400);
+  if(!src)return;
   hqLoading[item.id]=1;
   var pre=new Image();
   pre.onload=function(){
@@ -1063,8 +1118,11 @@ function hqUpgrade(item){
     if(pre.decode){pre.decode().then(function(){markLoaded(item);},function(){markLoaded(item);});}
     else markLoaded(item);
   };
-  pre.onerror=function(){delete hqLoading[item.id];};
-  pre.src=rawB(item)+item.thumb;
+  pre.onerror=function(){
+    delete hqLoading[item.id];
+    if(!isVideo(item)&&!weservBad[item.id]){weservBad[item.id]=1;hqUpgrade(item);}
+  };
+  pre.src=src;
 }
 /* hg-v15 (۳۱۵): صف اولویت بندانگشتی — سورس واقعی فقط وقتی به سلول داده می‌شود که داخل یا
    نزدیک ویوپورت باشد (IntersectionObserver با حاشیه‌ی ۳۵۰px)؛ حداکثر ۴ لود هم‌زمان.
@@ -1199,12 +1257,14 @@ function folderCell(f){
        صادر نمی‌شود؛ فقط بلورِ درون‌خطیِ ایندکس نشان داده می‌شود.
        hg-v26: استثنا به دستور کاربر — اگر کاور، فیلم است، تامنیل واقعیِ همان کاور به‌محض
        دیده‌شدن سلول پوشه در ویوپورت لود و جای بلور می‌نشیند (همان مسیر hqObserve/hqUpgrade
-       کارت‌های فیلم؛ فقط خود کاور، نه بقیه‌ی آیتم‌های پوشه). */
+       کارت‌های فیلم؛ فقط خود کاور، نه بقیه‌ی آیتم‌های پوشه).
+       hg-v37: همان رفتار برای کاورِ عکس هم اعمال شد — گیت داخل hqObserve/hqUpgrade تصمیم می‌گیرد. */
     var bel=document.createElement('img');bel.alt='';bel.src=blurUri(firstC);c.appendChild(bel);c._coverId=firstC.id;
-    if(isVideo(firstC)&&firstC.thumb)hqObserve(c,firstC);
+    hqObserve(c,firstC);
   }
-  else if(firstC&&!f.nopreview&&!coverWarmed[f.id]&&isVideo(firstC)&&firstC.thumb){
-    /* hg-v26: کاورِ فیلمی که بلور ندارد هم با دیده‌شدن پوشه لود می‌شود (تا قبل از آن آیکن پوشه) */
+  else if(firstC&&!f.nopreview&&!coverWarmed[f.id]&&((isVideo(firstC)&&firstC.thumb)||(!isVideo(firstC)&&!firstC.manifest))){
+    /* hg-v26: کاوری که بلور ندارد هم با دیده‌شدن پوشه لود می‌شود (تا قبل از آن آیکن پوشه)؛
+       hg-v37: عکسِ بدون بلور هم اضافه شد */
     var bel2=document.createElement('img');bel2.alt='';c.appendChild(bel2);c._coverId=firstC.id;
     hqObserve(c,firstC);
   }
@@ -1250,7 +1310,7 @@ function favFolderCell(){
     /* hg-v15 (۳۱۳): کاور پسندیده‌ها هم تا قبل از اولین باز شدن، فقط بلور درون‌خطی است؛
        hg-v26: اگر کاور فیلم است، تامنیل واقعی‌اش با دیده‌شدن سلول در ویوپورت لود می‌شود */
     var bel2=document.createElement('img');bel2.alt='';bel2.src=blurUri(favs[0]);c.appendChild(bel2);c._coverId=favs[0].id;
-    if(isVideo(favs[0])&&favs[0].thumb)hqObserve(c,favs[0]);
+    hqObserve(c,favs[0]); /* hg-v37: کاورِ عکسِ پسندیده‌ها هم با دیده‌شدن لود می‌شود */
   }
   else if(favs.length&&!favNoPreview()&&favWarmed){
     var first=favs[0];
@@ -2936,6 +2996,8 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:37,d:'۱۵ آبان ۱۴۰۵',items:['کاورِ عکسیِ پوشه‌ها هم مثل کاورِ فیلم، به‌محض دیده‌شدن پوشه در صفحه لود می‌شه و جای بلور می‌شینه']},
+ {n:37,d:'۱۵ آبان ۱۴۰۵',items:['در بخش «اتصال سرور» تنظیمات، برای هر حالت دکمه‌ی «گرفتن پینگ» اضافه شد: خودکار (هر دو آدرس)، دامنه‌ی اختصاصی، آدرس اصلی و گیت‌هاب']},
  {n:36,d:'۱۵ آبان ۱۴۰۵',items:['در تنظیمات، بخش «اتصال سرور» اضافه شد: انتخاب دستی بین خودکار (چرخشی)، دامنه‌ی اختصاصی، آدرس اصلی و حالت فقط‌خواندنی','حالت فقط‌خواندنی: گالری مستقیم از گیت‌هاب خوانده می‌شود و بدون سرور هم عکس و فیلم‌ها دیده می‌شوند؛ افزودن و حذف و ویرایش در این حالت غیرفعال است']},
  {n:35,d:'۱۵ آبان ۱۴۰۵',items:['اتصال سرور بین دو آدرس ورکر (دامنه‌ی اختصاصی گالری و آدرس اصلی) چرخشی شد: اگه یکی وصل نشه، اپ خودکار اون یکی رو امتحان می‌کنه']},
  {n:34,d:'۱۵ آبان ۱۴۰۵',items:['اگه پینگ سرور یا گیت‌هاب بیشتر از ۱۰ ثانیه طول بکشه، خودکار یه پینگ تازه گرفته می‌شه']},
