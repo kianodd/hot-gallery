@@ -292,13 +292,14 @@ body.selecting .qpill{display:none}
 .boostpill{position:absolute;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-8px);z-index:40;background:rgba(0,0,0,.62);color:#fff;font-size:15px;font-weight:700;padding:8px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);direction:rtl}
 /* hg-v26: پیل پینگ گیت‌هاب در پخش تمام‌صفحه — شیشه‌ای، بالا سمت چپ، فقط وقتی ویوئر
    فیلم و در حالت فول‌اسکرین است (کلاس‌های hg-fs و on-video روی #viewer) */
-.fspill{position:absolute;top:calc(14px + env(safe-area-inset-top));left:14px;z-index:46;display:flex;align-items:center;gap:7px;direction:ltr;background:rgba(22,22,30,.52);border:1px solid rgba(255,255,255,.16);border-radius:999px;padding:7px 13px;color:#fff;font-size:13px;font-weight:600;letter-spacing:.1px;backdrop-filter:blur(14px) saturate(1.5);-webkit-backdrop-filter:blur(14px) saturate(1.5);box-shadow:0 8px 28px rgba(0,0,0,.38),inset 0 1px 0 rgba(255,255,255,.14);opacity:0;transform:translateY(-8px);pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+.fspill{position:absolute;top:calc(10px + env(safe-area-inset-top));left:10px;z-index:46;display:flex;align-items:center;gap:4px;direction:ltr;background:rgba(22,22,30,.52);border:.5px solid rgba(255,255,255,.16);border-radius:999px;padding:2px 7px;color:#fff;font-size:10px;font-weight:600;letter-spacing:0;backdrop-filter:blur(14px) saturate(1.5);-webkit-backdrop-filter:blur(14px) saturate(1.5);box-shadow:0 4px 14px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.14);opacity:0;transform:translateY(-5px);pointer-events:none;transition:opacity .3s ease,transform .3s ease}
+.fspill svg{width:9px;height:9px}
 #viewer.hg-fs.on-video .fspill{opacity:1;transform:translateY(0)}
-.fspdot{width:8px;height:8px;border-radius:50%;background:#8e8e93;flex:none}
+.fspdot{width:5px;height:5px;border-radius:50%;background:#8e8e93;flex:none}
 .fspdot.ok{background:#30d158;animation:fspulse 2.2s ease-out infinite}
 .fspdot.mid{background:#ffd60a}
 .fspdot.bad{background:#ff453a}
-@keyframes fspulse{0%{box-shadow:0 0 0 0 rgba(48,209,88,.45)}70%{box-shadow:0 0 0 8px rgba(48,209,88,0)}100%{box-shadow:0 0 0 0 rgba(48,209,88,0)}}
+@keyframes fspulse{0%{box-shadow:0 0 0 0 rgba(48,209,88,.45)}70%{box-shadow:0 0 0 5px rgba(48,209,88,0)}100%{box-shadow:0 0 0 0 rgba(48,209,88,0)}}
 .fspill .fsgh{color:rgba(255,255,255,.92);font-weight:600}
 .fspill .fsval{color:rgba(255,255,255,.75);font-weight:500;font-variant-numeric:tabular-nums}
 /* hg-v24: ردیف شارد کلیک‌پذیر + لیست ویدیوهای هر شارد با تامنیل کوچک */
@@ -547,7 +548,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:18</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:23</span></p>
   </div>
 </section>
 
@@ -739,7 +740,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 12:18';
+var RUN_BUILD='2026-11-06 12:23';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2838,6 +2839,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:30,d:'۱۵ آبان ۱۴۰۵',items:['پیل پینگ گیت‌هاب در پخش تمام‌صفحه خیلی کوچک‌تر و فشرده‌تر شد']},
  {n:29,d:'۱۵ آبان ۱۴۰۵',items:['«پربازدیدترین فیلم‌ها» از منوی کناری حذف شد؛ دکمه‌اش در نوار بالا هست','پوشه‌هایی که پیش‌نمایش‌شان آیکون است، در نمای تک‌ستونه کاشی عریض هم‌اندازه‌ی بقیه‌ی کارت‌ها می‌گیرند','پیل پینگ گیت‌هاب در پخش تمام‌صفحه نمایش داده می‌شود (اشکال برطرف شد)']},
  {n:28,d:'۱۵ آبان ۱۴۰۵',items:['دکمه‌ی «افزودن» شد یک دکمه‌ی شناور پایینِ سمت راست صفحه‌ی اصلی','جای دکمه‌ی افزودن در نوار بالا، دکمه‌ی «پربازدیدترین فیلم‌ها» آمد']},
  {n:27,d:'۱۵ آبان ۱۴۰۵',items:['دکمه‌ی صف آپلود به نوار بالا رفت: آیکون با شمارنده، و وقتی صف خالی است مخفی می‌شود','همه‌ی آیتم‌های منو آیکون گرفتند','صفحه‌ی «شاردها» به منوی کناری منتقل شد','برای پیش‌نمایش پوشه می‌شود آیکون انتخاب کرد: فهرست کامل آیکون‌ها با رنگ و پس‌زمینه‌ی قابل تنظیم','صفحه‌ی هر شارد اگر هم فیلم داشته باشد هم عکس، بالای صفحه‌اش تب «فیلم‌ها» و «عکس‌ها» می‌آید']},
