@@ -258,6 +258,9 @@ body.selecting .qpill{display:none}
 .grid.sg .cell{aspect-ratio:auto;border-radius:14px}
 .grid.sg .cell img,.grid.sg .cell video{width:100%;height:auto;aspect-ratio:16/9}
 .grid.sg .cell.fcell{min-height:96px}
+/* hg-v29: پوشه‌ی آیکون‌دار در نمای تک‌ستونه کاشی عریض (۱۶/۹) هم‌اندازه‌ی کارت‌های مدیا + آیکون درشت‌تر */
+.grid.sg .cell.fcell.ficcell{aspect-ratio:16/9}
+.grid.sg .cell.fcell.ficcell .fic svg{width:88px;height:88px}
 .cell img.blurph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;filter:blur(14px);transform:scale(1.18);transition:opacity .45s ease;pointer-events:none}
 .cell img.blurph.gone{opacity:0}
 .cell img.mainimg{opacity:0;transition:opacity .35s ease}
@@ -436,7 +439,6 @@ body{font-size:calc(16px * var(--fsk))}
   <button id="miPingGh"><span>پینگ گیت‌هاب</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3 12h4l2.5-6.5 4 13L16 12h5"/></svg></button>
   <button id="miUpdate" style="display:none"><span>به‌روزرسانی اپ</span><span id="miUpdateSub" style="color:var(--blue);font-size:13.5px"></span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M12 4v10.5m0 0L8 10.7M12 14.5l4-3.8"/><path d="M4 16.8v1.4A1.8 1.8 0 0 0 5.8 20h12.4a1.8 1.8 0 0 0 1.8-1.8v-1.4"/></svg></button>
   <button id="miStats"><span>آمار گالری</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M4 20h16"/><path d="M7.5 20v-5.5M12 20V6.5M16.5 20v-8.5"/></svg></button>
-  <button id="miTop"><span>پربازدیدترین فیلم‌ها</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M3.5 16.5L9 11l3.5 3.5L20 7"/><path d="M14.6 7H20v5.4"/></svg></button>
   <button id="miShards"><span>شاردها</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><ellipse cx="12" cy="5.2" rx="7.5" ry="2.8"/><path d="M4.5 5.2v6.3c0 1.6 3.4 2.8 7.5 2.8s7.5-1.2 7.5-2.8V5.2"/><path d="M4.5 11.5v6.3c0 1.6 3.4 2.8 7.5 2.8s7.5-1.2 7.5-2.8v-6.3"/></svg></button>
   <button id="miChangelog"><span>تغییرات نسخه‌ها</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.3 6h.01M4.3 12h.01M4.3 18h.01"/></svg></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
@@ -545,7 +547,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:06</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:18</span></p>
   </div>
 </section>
 
@@ -737,7 +739,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 12:06';
+var RUN_BUILD='2026-11-06 12:18';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1107,6 +1109,7 @@ function folderCell(f){
   var firstC=items.length?((f.cover?items.find(function(x){return x.id===f.cover;}):null)||items[0]):null;
   if(f.icon&&typeof FICONS!=='undefined'&&FICONS[f.icon.i]){
     /* hg-v27: آیکون سفارشی پوشه جای پیش‌نمایش را می‌گیرد (کاشی رنگی + آیکون وسط) */
+    c.classList.add('ficcell');
     var ict=document.createElement('span');ict.className='fic';ict.style.background=f.icon.b||'#2c2c2e';ict.innerHTML=ficonSvg(f.icon.i,58,f.icon.c||'#ffffff');c.appendChild(ict);
   }
   else if(firstC&&!f.nopreview&&!coverWarmed[f.id]&&firstC.blur){
@@ -1586,7 +1589,7 @@ function ensurePlyr(){
   try{
     plyr=new Plyr(vVid,{controls:['play-large','play','progress','current-time','duration','fullscreen'],seekTime:10,i18n:PLYR_I18N,storage:{enabled:false},keyboard:{focused:false,global:false},airplay:false});
     applyMuted();
-    try{plyr.on('enterfullscreen',function(){viewerEl.classList.add('hg-fs');fsLockLandscape();});plyr.on('exitfullscreen',function(){viewerEl.classList.remove('hg-fs');fsUnlock();});}catch(e){}
+    try{plyr.on('enterfullscreen',function(){viewerEl.classList.add('hg-fs');fsLockLandscape();fsPillsInto();});plyr.on('exitfullscreen',function(){viewerEl.classList.remove('hg-fs');fsUnlock();fsPillsHome();});}catch(e){}
     addSeekButtons();
     syncVidWrap();
     return true;
@@ -2194,7 +2197,22 @@ window.addEventListener('pointercancel',function(e){if(e.pointerId===boostPtr||b
 vStage.addEventListener('click',function(e){
   if(boostSuppressClick){e.stopPropagation();e.preventDefault();boostSuppressClick=false;if(boostSuppressTimer){clearTimeout(boostSuppressTimer);boostSuppressTimer=null;}}
 },true);
-document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement)boostOff();});
+document.addEventListener('fullscreenchange',function(){if(document.fullscreenElement){fsPillsInto();}else{boostOff();fsPillsHome();}});
+/* hg-v29: در فول‌اسکرین مرورگر فقط زیردرختِ المان فول‌اسکرین (کانتینر Plyr) را رندر
+   می‌کند؛ پیل پینگ و پیل سرعت بیرون از آن بودند و اصلاً دیده نمی‌شدند — موقع ورود به
+   فول‌اسکرین می‌روند داخل کانتینر پلیر و موقع خروج برمی‌گردند سر جایشان در ویوئر */
+function fsPillsInto(){
+  var c=null;try{c=(typeof plyr!=='undefined'&&plyr&&plyr.elements&&plyr.elements.container)||null;}catch(e){}
+  if(!c)return;
+  var b=document.getElementById('boostPill'),p=document.getElementById('fsPingPill');
+  if(b&&b.parentNode!==c)c.appendChild(b);
+  if(p&&p.parentNode!==c)c.appendChild(p);
+}
+function fsPillsHome(){
+  var b=document.getElementById('boostPill'),p=document.getElementById('fsPingPill');
+  if(b&&b.parentNode!==viewerEl)viewerEl.appendChild(b);
+  if(p&&p.parentNode!==viewerEl)viewerEl.appendChild(p);
+}
 /* menu */
 var menu=document.getElementById('menu'),scrim=document.getElementById('scrim'),menuBtn=document.getElementById('menuBtn');
 function closeMenu(){menu.classList.remove('open');scrim.classList.remove('open');}
@@ -2820,6 +2838,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:29,d:'۱۵ آبان ۱۴۰۵',items:['«پربازدیدترین فیلم‌ها» از منوی کناری حذف شد؛ دکمه‌اش در نوار بالا هست','پوشه‌هایی که پیش‌نمایش‌شان آیکون است، در نمای تک‌ستونه کاشی عریض هم‌اندازه‌ی بقیه‌ی کارت‌ها می‌گیرند','پیل پینگ گیت‌هاب در پخش تمام‌صفحه نمایش داده می‌شود (اشکال برطرف شد)']},
  {n:28,d:'۱۵ آبان ۱۴۰۵',items:['دکمه‌ی «افزودن» شد یک دکمه‌ی شناور پایینِ سمت راست صفحه‌ی اصلی','جای دکمه‌ی افزودن در نوار بالا، دکمه‌ی «پربازدیدترین فیلم‌ها» آمد']},
  {n:27,d:'۱۵ آبان ۱۴۰۵',items:['دکمه‌ی صف آپلود به نوار بالا رفت: آیکون با شمارنده، و وقتی صف خالی است مخفی می‌شود','همه‌ی آیتم‌های منو آیکون گرفتند','صفحه‌ی «شاردها» به منوی کناری منتقل شد','برای پیش‌نمایش پوشه می‌شود آیکون انتخاب کرد: فهرست کامل آیکون‌ها با رنگ و پس‌زمینه‌ی قابل تنظیم','صفحه‌ی هر شارد اگر هم فیلم داشته باشد هم عکس، بالای صفحه‌اش تب «فیلم‌ها» و «عکس‌ها» می‌آید']},
  {n:26,d:'۱۵ آبان ۱۴۰۵',items:['در پخش تمام‌صفحه، پینگ گیت‌هاب به شکل یک پیل شیشه‌ای بالا سمت چپ نمایش داده می‌شود','فیلم‌ها دیگر خودکار پخش نمی‌شوند؛ پخش فقط با لمس خودت شروع می‌شود','تامنیلِ ویدیویی که کاور پوشه است، به‌محض دیده‌شدن پوشه لود می‌شود','بخش «شاردها» از تنظیمات به صفحه‌ی جدا منتقل شد']},
@@ -2977,8 +2996,8 @@ document.querySelectorAll('#topSeg .segbtn').forEach(function(b){
   b.addEventListener('click',function(){try{localStorage.setItem('hg-topsort',b.dataset.topSort);}catch(e){}renderTopList();});
 });
 function openTopPage(){renderTopList();topViewEl.classList.add('open');pushLayer('panel',function(){topViewEl.classList.remove('open');});}
-document.getElementById('miTop').addEventListener('click',function(){closeMenu();openTopPage();});
-/* hg-v28: دکمه‌ی پربازدیدترین‌ها در نوار بالا، جای دکمه‌ی افزودنِ قبلی */
+/* hg-v28: دکمه‌ی پربازدیدترین‌ها در نوار بالا، جای دکمه‌ی افزودنِ قبلی؛
+   hg-v29: آیتم «پربازدیدترین فیلم‌ها» از منوی کناری حذف شد (فقط دکمه‌ی نوار بالا ماند) */
 document.getElementById('topBtn').addEventListener('click',function(){openTopPage();});
 document.getElementById('topBack').addEventListener('click',function(){topViewEl.classList.remove('open');releaseLayer('panel');});
 
