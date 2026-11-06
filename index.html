@@ -35,6 +35,10 @@ header{position:sticky;top:0;z-index:50;background:var(--bar);backdrop-filter:bl
 .hbar{position:relative;height:52px;max-width:1100px;margin:0 auto}
 .htitle{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;pointer-events:none;gap:7px}
 .htitle #appTitle{pointer-events:auto;cursor:pointer;padding:6px 10px;border-radius:8px;-webkit-tap-highlight-color:transparent}
+.htitle .pdot{width:8px;height:8px;border-radius:50%;background:#c7c7cc;flex:none;transition:background .3s}
+.htitle .pdot.ok{background:#30d158}
+.htitle .pdot.mid{background:#ffd60a}
+.htitle .pdot.bad{background:#ff453a}
 .htitle #appTitle:active{background:var(--pressed)}
 .htitle .tspin{display:none;width:14px;height:14px;flex:none}
 .htitle.refreshing .tspin{display:inline-block}
@@ -280,7 +284,7 @@ body.selecting .qpill{display:none}
     <button class="hbtn" id="addBtn" aria-label="افزودن">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
     </button>
-    <div class="htitle"><span id="appTitle">گالری</span><span class="spin tspin"></span></div>
+    <div class="htitle"><span class="pdot" id="dotW" title="ورکر"></span><span id="appTitle">گالری</span><span class="pdot" id="dotGh" title="گیت‌هاب"></span><span class="spin tspin"></span></div>
     <button class="hbtn" id="menuBtn" aria-label="منو">
       <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="1.9"/><circle cx="12" cy="12" r="1.9"/><circle cx="19" cy="12" r="1.9"/></svg>
       <span class="updot" id="upDot"></span>
@@ -417,7 +421,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 07:48</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 07:53</span></p>
   </div>
 </section>
 
@@ -536,7 +540,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 07:48';
+var RUN_BUILD='2026-11-06 07:53';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2896,22 +2900,22 @@ function pingOnce(url){
   var t0=performance.now();
   return fetch(url,{cache:'no-store'}).then(function(r){if(!r.ok)throw new Error(r.status);return Math.round(performance.now()-t0);});
 }
-document.getElementById('miPingServer').addEventListener('click',function(){
-  closeMenu();toast('در حال اندازه‌گیری پینگ سرور…');
-  pingOnce(API+'/api/ping?x='+Date.now()).then(function(ms){
-    showSheet('پینگ سرور',[{label:'پینگ سرور: '+faNum(ms)+' میلی‌ثانیه',cb:function(){}}]);
-  }).catch(function(){
-    showSheet('پینگ سرور',[{label:'پینگ سرور ناموفق بود',cb:function(){}}]);
-  });
-});
-document.getElementById('miPingGh').addEventListener('click',function(){
-  closeMenu();toast('در حال اندازه‌گیری پینگ گیت‌هاب…');
-  pingOnce('https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/index.json?x='+Date.now()).then(function(ms){
-    showSheet('پینگ گیت‌هاب',[{label:'پینگ گیت‌هاب: '+faNum(ms)+' میلی‌ثانیه',cb:function(){}}]);
-  }).catch(function(){
-    showSheet('پینگ گیت‌هاب',[{label:'پینگ گیت‌هاب ناموفق بود',cb:function(){}}]);
-  });
-});
+/* hg-v19: پینگ خودکار هر ۵ ثانیه — دو دایره‌ی کنار عنوان وضعیت اتصال ورکر و گیت‌هاب را با رنگ
+   نشان می‌دهند و عددها در منو زنده به‌روز می‌شوند؛ پینگ دستی حذف شد. */
+var pingState={w:null,g:null},pingBusy={w:false,g:false};
+function pingDot(el,ms){if(!el)return;el.className='pdot '+(ms==null?'bad':(ms<450?'ok':(ms<1200?'mid':'bad')));}
+function pingMenuSync(){
+  var a=document.getElementById('miPingServer'),b=document.getElementById('miPingGh');
+  if(a)a.querySelector('span').textContent='پینگ سرور: '+(pingState.w==null?'ناموفق':faNum(pingState.w)+' میلی‌ثانیه');
+  if(b)b.querySelector('span').textContent='پینگ گیت‌هاب: '+(pingState.g==null?'ناموفق':faNum(pingState.g)+' میلی‌ثانیه');
+}
+function pingTick(){
+  if(document.hidden)return;
+  if(!pingBusy.w){pingBusy.w=true;pingOnce(API+'/api/ping?x='+Date.now()).then(function(ms){pingState.w=ms;pingDot(document.getElementById('dotW'),ms);}).catch(function(){pingState.w=null;pingDot(document.getElementById('dotW'),null);}).then(function(){pingBusy.w=false;pingMenuSync();});}
+  if(!pingBusy.g){pingBusy.g=true;pingOnce('https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/index.json?x='+Date.now()).then(function(ms){pingState.g=ms;pingDot(document.getElementById('dotGh'),ms);}).catch(function(){pingState.g=null;pingDot(document.getElementById('dotGh'),null);}).then(function(){pingBusy.g=false;pingMenuSync();});}
+}
+pingTick();setInterval(pingTick,5000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)pingTick();});
 
 /* صف آپلود — آپلودها در پس‌زمینه و به‌ترتیب انجام می‌شوند؛ مورد کامل‌شده همان لحظه به گالری اضافه می‌شود */
 var queue=[];
