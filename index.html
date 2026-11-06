@@ -636,7 +636,7 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 17:57</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 18:07</span></p>
   </div>
 </section>
 
@@ -842,7 +842,7 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
       <div class="yt-logo">
         <span class="play"><svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M7 4.8v14.4L19 12z"/></svg></span>
         <span class="nm" dir="ltr">YouTube</span>
-        <button class="refresh" id="ytRefreshBtn" type="button" aria-label="تازه‌سازی فید"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 3.5V8h-4.5"/></svg></button>
+        <button class="refresh" id="ytRefreshBtn" type="button" aria-label="تازه‌سازی فید"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.34-5.66"/><path d="M20 3.5V8h-4.5"/></svg></button><button class="refresh" id="ytSubsBtn" type="button" aria-label="اشتراک‌ها" style="margin-inline-start:0"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="13" height="14" rx="3"/><path d="M8 9.5h5M8 13h5"/><path d="M18.5 8.5l2 1.8v5.4a2.3 2.3 0 0 1-2.3 2.3H16"/></svg></button>
       </div>
       <div class="yt-search">
         <input id="ytSearchInput" type="search" placeholder="جستجوی کانال…" autocomplete="off" enterkeyhint="search">
@@ -858,6 +858,17 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
       <div class="yt-sec" id="ytFeedTitle">ویدیوهای تازه</div>
       <div id="ytFeed"></div>
     </div>
+  </div>
+</section>
+
+<section class="view-settings" id="ytSubsView" aria-label="اشتراک‌ها">
+  <div class="sbar">
+    <button class="sback" id="ytSubsBack" type="button"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>یوتیوب</span></button>
+    <div class="stitle">اشتراک‌ها</div>
+  </div>
+  <div class="yt-wrap">
+    <div class="yt-sec" id="ytSubsCount"></div>
+    <div id="ytSubsList"></div>
   </div>
 </section>
 
@@ -892,7 +903,7 @@ main{padding-bottom:calc(150px + env(safe-area-inset-bottom))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://gapi.kiandevteam.ir';
-var RUN_BUILD='2026-11-06 17:57';
+var RUN_BUILD='2026-11-06 18:07';
 /* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
    (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
    هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
@@ -3131,7 +3142,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
- {n:39,d:'۱۵ آبان ۱۴۰۵',items:['تب «یوتیوب» پایین اپ اضافه شد: جستجوی کانال و مشترک‌شدن داخل خود برنامه','فید ویدیوهای کانال‌های ساب‌شده زیر سرچ‌بار، قاطی و مرتب بر اساس تاریخ؛ با کلیک روی اسم کانال، صفحه‌ی جدا ویدیوهای همان کانال باز می‌شود','کرون سرور هر ۱۰ دقیقه فید کانال‌ها را تازه می‌کند و تامنیل ویدیوها را در شارد جدا و بدون شماره (hot-gallery-yt-thumbs) ذخیره می‌کند؛ تامنیل مستقیم از یوتیوب لود نمی‌شود','هر ویدیو دکمه‌ی «افزودن به دانلود» دارد با انتخاب کیفیت ویدیو و صدا؛ دانلود در صف بخش اصلی می‌نشیند و در پوشه‌ی YouTube ذخیره می‌شود']},
+ {n:39,d:'۱۵ آبان ۱۴۰۵',items:['تب «یوتیوب» پایین اپ اضافه شد: جستجوی کانال و مشترک‌شدن داخل خود برنامه','فید ویدیوهای کانال‌های ساب‌شده زیر سرچ‌بار، قاطی و مرتب بر اساس تاریخ؛ با کلیک روی اسم کانال، صفحه‌ی جدا ویدیوهای همان کانال باز می‌شود','کرون سرور هر ۱۰ دقیقه فید کانال‌ها را تازه می‌کند و تامنیل ویدیوها را در شارد جدا و بدون شماره (hot-gallery-yt-thumbs) ذخیره می‌کند؛ تامنیل مستقیم از یوتیوب لود نمی‌شود','هر ویدیو دکمه‌ی «افزودن به دانلود» دارد با انتخاب کیفیت ویدیو و صدا؛ دانلود در صف بخش اصلی می‌نشیند و در پوشه‌ی YouTube ذخیره می‌شود','صفحه‌ی جدا «اشتراک‌ها» (دکمه‌اش کنار دکمه‌ی تازه‌سازی در تب یوتیوب) مثل صفحه‌ی Subscriptions یوتیوب: فهرست همه‌ی کانال‌های ساب‌شده، باز کردن صفحه‌ی هر کانال و لغو اشتراک از همان‌جا']},
  {n:38,d:'۱۵ آبان ۱۴۰۵',items:['بالای صفحه‌ی شاردها حالا تعداد شاردها و مجموع حجم گالری (و مجموع اندازه‌ی مخزن‌ها، وقتی معلوم باشد) نمایش داده می‌شود']},
  {n:37,d:'۱۵ آبان ۱۴۰۵',items:['کاورِ عکسیِ پوشه‌ها هم مثل کاورِ فیلم، به‌محض دیده‌شدن پوشه در صفحه لود می‌شه و جای بلور می‌شینه']},
  {n:37,d:'۱۵ آبان ۱۴۰۵',items:['در بخش «اتصال سرور» تنظیمات، برای هر حالت دکمه‌ی «گرفتن پینگ» اضافه شد: خودکار (هر دو آدرس)، دامنه‌ی اختصاصی، آدرس اصلی و گیت‌هاب']},
@@ -4336,7 +4347,7 @@ function ytSetTab(name){
 function ytTabSync(){
   if(!tabBarEl)return;
   var lv=document.getElementById('lockView');
-  var otherOpen=!!document.querySelector('.view-settings.open:not(#ytView):not(#ytChannelView),.overlay.open,.as-wrap.open');
+  var otherOpen=!!document.querySelector('.view-settings.open:not(#ytView):not(#ytChannelView):not(#ytSubsView),.overlay.open,.as-wrap.open');
   var hide=otherOpen||document.body.classList.contains('selecting')||(lv&&lv.classList.contains('open'))||(typeof viewerEl!=='undefined'&&viewerEl&&viewerEl.classList.contains('open'));
   tabBarEl.style.display=hide?'none':'flex';
 }
@@ -4463,6 +4474,7 @@ function ytLoadHome(force){
   ]).then(function(res){
     ytSubs=res[0].channels||[];ytFeedAt=Date.now();
     ytRenderSubsStrip();
+    if(ytSubsViewEl&&ytSubsViewEl.classList.contains('open'))ytRenderSubsPage();
     var vids=res[1].videos||[];
     feed.innerHTML='';
     if(!ytSubs.length){
@@ -4553,6 +4565,33 @@ document.getElementById('ytDlGo').addEventListener('click',function(){
     else toast('انجام شد');
   }).catch(function(e){btn.disabled=false;toast('ناموفق بود: '+(e&&e.message?e.message:e));});
 });
+/* hg-v39b: صفحه‌ی اشتراک‌ها — مثل صفحه‌ی Subscriptions یوتیوب؛ ردیف هر کانال بازش می‌کند
+   و دکمه‌ی «مشترک شده» از همان‌جا آن‌ساب می‌کند. */
+var ytSubsViewEl=document.getElementById('ytSubsView');
+function ytRenderSubsPage(){
+  var list=document.getElementById('ytSubsList');if(!list)return;
+  var cnt=document.getElementById('ytSubsCount');
+  list.innerHTML='';
+  if(cnt)cnt.textContent=ytSubs.length?('کانال‌های مشترک‌شده · '+faNum(ytSubs.length)):'';
+  if(!ytSubs.length){
+    list.innerHTML='<div class="yt-empty"><div class="big">هنوز اشتراکی نداری</div><p>از سرچ بالای تب یوتیوب کانال پیدا کن و «مشترک شدن» را بزن تا اینجا بیاید.</p></div>';
+    return;
+  }
+  ytSubs.forEach(function(c){
+    var cc={};for(var k in c)cc[k]=c[k];cc.subscribed=true;
+    list.appendChild(ytChannelRow(cc));
+  });
+}
+function ytOpenSubsPage(){
+  ytApiGet('/api/yt/subs').then(function(d){ytSubs=d.channels||[];ytRenderSubsStrip();}).catch(function(){}).then(function(){
+    ytRenderSubsPage();
+    ytSubsViewEl.classList.add('open');
+    pushLayer('panel',function(){ytSubsViewEl.classList.remove('open');ytTabSync();});
+    ytTabSync();
+  });
+}
+document.getElementById('ytSubsBtn').addEventListener('click',ytOpenSubsPage);
+document.getElementById('ytSubsBack').addEventListener('click',function(){ytSubsViewEl.classList.remove('open');releaseLayer('panel');ytTabSync();});
 ytTabSync();
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').then(function(reg){setInterval(function(){reg.update();},60000);}).catch(function(){});});}</script>
