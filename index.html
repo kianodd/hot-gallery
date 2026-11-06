@@ -571,7 +571,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:56</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 17:23</span></p>
   </div>
 </section>
 
@@ -666,6 +666,7 @@ body{font-size:calc(16px * var(--fsk))}
     <div class="stitle">شاردها</div>
   </div>
   <div class="sbody">
+    <p class="snote" id="shardsTotal" style="margin:0 6px 14px"></p>
     <div class="group" id="shardGroup">
       <div class="irow"><span class="k">در حال بارگذاری…</span><span class="v"></span></div>
     </div>
@@ -763,7 +764,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://gapi.kiandevteam.ir';
-var RUN_BUILD='2026-11-06 12:56';
+var RUN_BUILD='2026-11-06 17:23';
 /* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
    (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
    هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
@@ -2889,12 +2890,17 @@ function refreshShards(){
     var dl={ok:true,shards:Object.keys(byRepo).map(function(k){return byRepo[k];})};
     paintShards(g,dl);return;
   }
-  fetch(API+'/api/shards').then(function(r){return r.json();}).then(function(d){paintShards(g,d);}).catch(function(){g.innerHTML='<div class="irow"><span class="k">خطا در دریافت اطلاعات شاردها</span><span class="v">—</span></div>';});
+  fetch(API+'/api/shards').then(function(r){return r.json();}).then(function(d){paintShards(g,d);}).catch(function(){var te=document.getElementById('shardsTotal');if(te)te.textContent='';g.innerHTML='<div class="irow"><span class="k">خطا در دریافت اطلاعات شاردها</span><span class="v">—</span></div>';});
 }
 function paintShards(g,d){
-    if(!d||!d.ok||!d.shards){g.innerHTML='<div class="irow"><span class="k">خطا در دریافت اطلاعات شاردها</span><span class="v">—</span></div>';return;}
+    var totEl=document.getElementById('shardsTotal');
+    if(!d||!d.ok||!d.shards){if(totEl)totEl.textContent='';g.innerHTML='<div class="irow"><span class="k">خطا در دریافت اطلاعات شاردها</span><span class="v">—</span></div>';return;}
     g.innerHTML='';
-    if(!d.shards.length){g.innerHTML='<div class="irow"><span class="k">—</span><span class="v"></span></div>';return;}
+    if(!d.shards.length){if(totEl)totEl.textContent='';g.innerHTML='<div class="irow"><span class="k">—</span><span class="v"></span></div>';return;}
+    /* hg-v38: مجموع حجم و تعداد شاردها بالای صفحه‌ی شاردها */
+    var totBytes=0,totItems=0,totRepoKB=0,hasRepo=false;
+    d.shards.forEach(function(s){totBytes+=s.bytes||0;totItems+=s.items||0;if(s.repoSizeKB!=null){totRepoKB+=s.repoSizeKB;hasRepo=true;}});
+    if(totEl)totEl.textContent=faNum(d.shards.length)+' شارد · '+faNum(totItems)+' آیتم · مجموع حجم '+fmtBytesFa(totBytes)+(hasRepo?(' · مجموع مخزن '+fmtBytesFa(totRepoKB*1024)):'');
     d.shards.forEach(function(s){
       var name=shardNameOf(s.repo);
       var det=faNum(s.items)+' آیتم · '+faNum(s.videos)+' فیلم · '+faNum(s.photos)+' عکس'+(s.active?'':' · غیرفعال');
@@ -2996,6 +3002,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:38,d:'۱۵ آبان ۱۴۰۵',items:['بالای صفحه‌ی شاردها حالا تعداد شاردها و مجموع حجم گالری (و مجموع اندازه‌ی مخزن‌ها، وقتی معلوم باشد) نمایش داده می‌شود']},
  {n:37,d:'۱۵ آبان ۱۴۰۵',items:['کاورِ عکسیِ پوشه‌ها هم مثل کاورِ فیلم، به‌محض دیده‌شدن پوشه در صفحه لود می‌شه و جای بلور می‌شینه']},
  {n:37,d:'۱۵ آبان ۱۴۰۵',items:['در بخش «اتصال سرور» تنظیمات، برای هر حالت دکمه‌ی «گرفتن پینگ» اضافه شد: خودکار (هر دو آدرس)، دامنه‌ی اختصاصی، آدرس اصلی و گیت‌هاب']},
  {n:36,d:'۱۵ آبان ۱۴۰۵',items:['در تنظیمات، بخش «اتصال سرور» اضافه شد: انتخاب دستی بین خودکار (چرخشی)، دامنه‌ی اختصاصی، آدرس اصلی و حالت فقط‌خواندنی','حالت فقط‌خواندنی: گالری مستقیم از گیت‌هاب خوانده می‌شود و بدون سرور هم عکس و فیلم‌ها دیده می‌شوند؛ افزودن و حذف و ویرایش در این حالت غیرفعال است']},
