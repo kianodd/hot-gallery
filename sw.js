@@ -1,5 +1,5 @@
 // هات گالری — سرویس‌ورکر: پوسته‌ی اپ برای نصب و اجرای آفلاین؛ لیست گالری آخرین نسخه‌ی کش‌شده را آفلاین نشان می‌دهد
-const CACHE = 'hg-v16';
+const CACHE = 'hg-v17';
 /* hg-v15 (۳۰۵): کش اختصاصی بندانگشتی‌ها روی دستگاه — سقف ~۱۵۰MB با حذف قدیمی‌ترین‌ها (LRU تقریبی
    بر اساس ترتیب درج). فقط تصویرهای بندانگشتی/پیش‌نمایش اینجا می‌نشینند؛ پارت‌های فیلم هرگز کش نمی‌شوند. */
 const THUMBS = 'hg-thumbs';
@@ -48,13 +48,15 @@ function thumbCacheFirst(req) {
   );
 }
 const RAW = 'https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
+function rawFor(repo){return 'https://raw.githubusercontent.com/kianodd/'+(repo||'hot-gallery-data')+'/main/';}
 
 // استریم فیلم از روی پارت‌های گیت‌هاب: سرویس‌ورکر (بخشی از خود اپ، روی دستگاه کاربر) درخواست‌های
 // Range پخش‌کننده را به پارت درست نگاشت می‌کند؛ پخش فوری شروع می‌شود و جلو/عقب‌بردن هم کار می‌کند.
 const manCache = new Map();
-async function getManifest(id) {
-  if (manCache.has(id)) return manCache.get(id);
-  const r = await fetch(RAW + 'media/' + id + '.json');
+async function getManifest(id, repo) {
+  const ck = (repo || 'hot-gallery-data') + ':' + id;
+  if (manCache.has(ck)) return manCache.get(ck);
+  const r = await fetch(rawFor(repo) + 'media/' + id + '.json');
   if (!r.ok) throw new Error('manifest ' + r.status);
   const man = await r.json();
   let off = 0;
@@ -63,13 +65,13 @@ async function getManifest(id) {
     off += p.size;
     return q;
   });
-  manCache.set(id, man);
+  manCache.set(ck, man);
   return man;
 }
 
-async function streamVideo(id, req) {
+async function streamVideo(id, req, repo) {
   try {
-    const man = await getManifest(id);
+    const man = await getManifest(id, repo);
     const total = man.size;
     let start = 0,
       end = total - 1,
@@ -115,7 +117,7 @@ async function streamVideo(id, req) {
                 return;
               }
               const seg = segs[si];
-              const res = await fetch(RAW + seg.path, { headers: { Range: 'bytes=' + seg.from + '-' + seg.to } });
+              const res = await fetch(rawFor(repo) + seg.path, { headers: { Range: 'bytes=' + seg.from + '-' + seg.to } });
               if (res.status === 200 && (seg.from > 0 || seg.to < seg.partSize - 1)) {
                 const ab = await res.arrayBuffer();
                 const slice = new Uint8Array(ab).subarray(seg.from, seg.to + 1);
@@ -173,9 +175,9 @@ self.addEventListener('fetch', (e) => {
   const url = new URL(req.url);
 
   // استریم فیلم از پارت‌ها (آدرس مجازی داخل اسکوپ اپ)
-  const sm = url.origin === self.location.origin && url.pathname.match(/\/hgstream\/([A-Za-z0-9]+)$/);
+  const sm = url.origin === self.location.origin && url.pathname.match(/\/hgstream\/([A-Za-z0-9-]+)\/([A-Za-z0-9]+)$/);
   if (sm) {
-    e.respondWith(streamVideo(sm[1], req));
+    e.respondWith(streamVideo(sm[2], req, sm[1]));
     return;
   }
 
