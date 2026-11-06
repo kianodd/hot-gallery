@@ -290,6 +290,10 @@ body.selecting .qpill{display:none}
 .svthumb img{width:100%;height:100%;object-fit:cover;display:block}
 .svthumb .d{position:absolute;bottom:4px;inset-inline-end:5px;background:rgba(0,0,0,.62);color:#fff;font-weight:700;padding:1px 6px;border-radius:999px}
 .svthumb .rk{position:absolute;top:4px;inset-inline-start:5px;background:var(--blue);color:#fff;font-weight:700;min-width:19px;height:19px;border-radius:999px;display:grid;place-items:center;padding:0 5px}
+/* hg-v25: سوئیچ مرتب‌سازی پربازدیدها (تعداد پخش / زمان تماشا) */
+.seg{display:flex;gap:5px;background:var(--card);border-radius:12px;padding:5px;margin-bottom:12px}
+.segbtn{flex:1;padding:9px 0;border-radius:8px;font-weight:600;color:var(--faint);cursor:pointer;text-align:center}
+.segbtn.on{background:var(--blue);color:#fff}
 .clitem{padding:10px 16px;line-height:1.9;position:relative}
 .clitem + .clitem:before{content:"";position:absolute;top:0;right:16px;left:0;border-top:.5px solid var(--hair)}
 .clitem .bl{color:var(--blue);font-weight:700;margin-left:7px}
@@ -341,6 +345,7 @@ body{font-size:calc(16px * var(--fsk))}
 .irow{font-size:calc(14.5px * var(--fsk))}
 .statbox .n{font-size:calc(23px * var(--fsk))}
 .statbox .l{font-size:calc(12.5px * var(--fsk))}
+.segbtn{font-size:calc(14px * var(--fsk))}
 .clitem{font-size:calc(14px * var(--fsk))}
 .svt{font-size:calc(14.5px * var(--fsk))}
 .svs{font-size:calc(12.5px * var(--fsk))}
@@ -399,6 +404,7 @@ body{font-size:calc(16px * var(--fsk))}
   <button id="miPingGh"><span>پینگ گیت‌هاب</span></button>
   <button id="miUpdate" style="display:none"><span>به‌روزرسانی اپ</span><span id="miUpdateSub" style="color:var(--blue);font-size:13.5px"></span></button>
   <button id="miStats"><span>آمار گالری</span></button>
+  <button id="miTop"><span>پربازدیدترین فیلم‌ها</span></button>
   <button id="miChangelog"><span>تغییرات نسخه‌ها</span></button>
   <button id="miSettings"><span>تنظیمات</span><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--faint)"><circle cx="12" cy="12" r="3.2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button>
 </div>
@@ -511,7 +517,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 11:43</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 11:50</span></p>
   </div>
 </section>
 
@@ -576,6 +582,20 @@ body{font-size:calc(16px * var(--fsk))}
     <div class="stitle">آمار گالری</div>
   </div>
   <div class="sbody"><div id="statsBody"></div></div>
+</section>
+
+<section class="view-settings" id="topView" aria-label="پربازدیدترین فیلم‌ها">
+  <div class="sbar">
+    <button class="sback" id="topBack"><svg width="13" height="22" viewBox="0 0 13 22" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M11 2L3 11l8 9"/></svg><span>بازگشت</span></button>
+    <div class="stitle">پربازدیدترین فیلم‌ها</div>
+  </div>
+  <div class="sbody">
+    <div class="seg" id="topSeg">
+      <button type="button" class="segbtn" data-top-sort="plays">تعداد پخش</button>
+      <button type="button" class="segbtn" data-top-sort="time">زمان تماشا</button>
+    </div>
+    <div id="topListWrap"></div>
+  </div>
 </section>
 
 <section class="view-settings" id="changelogView" aria-label="تغییرات نسخه‌ها">
@@ -652,7 +672,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 11:43';
+var RUN_BUILD='2026-11-06 11:50';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2666,6 +2686,7 @@ document.getElementById('shardBack').addEventListener('click',function(){shardVi
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:25,d:'۱۵ آبان ۱۴۰۵',items:['«پربازدیدترین فیلم‌ها» صفحه‌ی جدا شد و از منو باز می‌شود','داخل صفحه‌اش دو تب هست: «تعداد پخش» و «زمان تماشا»؛ لیست بر اساس تب انتخابی مرتب می‌شود و انتخابت می‌ماند']},
  {n:24,d:'۱۵ آبان ۱۴۰۵',items:['دیدن فیلم‌های هر شارد با تامنیل کوچک: در تنظیمات روی هر شارد بزن','لیست پنج فیلم پربازدید در صفحه‌ی آمار گالری','همین صفحه‌ی تغییرات نسخه‌ها به منو اضافه شد']},
  {n:23,d:'۱۵ آبان ۱۴۰۵',items:['نگه‌داشتن سمت راست فیلم در حالت تمام‌صفحه، سرعت پخش را موقت زیاد می‌کند؛ سرعتش از تنظیمات بین ۱٫۲۵ تا ۲ برابر انتخاب می‌شود','تنظیم اندازه‌ی متن اپ در تنظیمات (چهار اندازه)']},
  {n:22,d:'۱۵ آبان ۱۴۰۵',items:['رفع نمایش لحظه‌ای پوشه‌های خصوصی هنگام ورود با رمز دوم']},
@@ -2773,19 +2794,7 @@ function renderStats(){
     ['مجموع دفعات پخش',faNum(plays)+' بار'],
     ['مجموع زمان تماشا',wsecs>=1?faNum(fmtDur(Math.round(wsecs))):'—']
   ]);
-  /* hg-v24: پنج فیلم پربازدید — بر اساس آمار تماشای محلی همین دستگاه (دفعات پخش،
-     و در تساوی مجموع ثانیه‌های تماشا)؛ کلیک روی هر ردیف همان فیلم را باز می‌کند */
-  lbl('پربازدیدترین فیلم‌ها');
-  var top=photos.filter(function(p){return isVideo(p)&&watchMap[p.id]&&(watchMap[p.id].n>0||watchMap[p.id].s>=1);}).sort(function(a,b){var wa=watchMap[a.id],wb=watchMap[b.id];return ((wb.n||0)-(wa.n||0))||((wb.s||0)-(wa.s||0));}).slice(0,5);
-  if(!top.length){
-    grp([['هنوز فیلمی تماشا نشده است','—']]);
-  }else{
-    top.forEach(function(item,i){
-      var w=watchMap[item.id];
-      var parts=[faNum(w.n||0)+' بار پخش','مجموع تماشا '+faNum(fmtDur(Math.round(w.s||0))),shardNameOf(item.repo||'hot-gallery-data')];
-      box.appendChild(videoRowEl(item,parts,i+1,function(im){openViewer(i,im,top);}));
-    });
-  }
+  /* hg-v25: لیست پربازدیدها از آمار جدا شد و صفحه‌ی خودش را دارد (از منو باز می‌شود) */
   lbl('تاریخ‌ها');
   grp([
     ['قدیمی‌ترین مورد',oldest?faDate(oldest.created_at||Date.now()):'—'],
@@ -2801,6 +2810,37 @@ function renderStats(){
   });
   grp(frows);
 }
+/* hg-v25: حالت مرتب‌سازی پربازدیدها روی دستگاه می‌ماند (hg-topsort)؛ پیش‌فرض «تعداد پخش» */
+function topSortMode(){try{return localStorage.getItem('hg-topsort')==='time'?'time':'plays';}catch(e){return 'plays';}}
+function renderTopList(){
+  var wrap=document.getElementById('topListWrap');if(!wrap)return;
+  var mode=topSortMode();
+  document.querySelectorAll('#topSeg .segbtn').forEach(function(b){b.classList.toggle('on',b.dataset.topSort===mode);});
+  var watched=photos.filter(function(p){return isVideo(p)&&watchMap[p.id]&&(watchMap[p.id].n>0||watchMap[p.id].s>=1);});
+  var seg=document.getElementById('topSeg');if(seg)seg.style.display=watched.length?'flex':'none';
+  watched.sort(function(a,b){var wa=watchMap[a.id],wb=watchMap[b.id];return mode==='time'?(((wb.s||0)-(wa.s||0))||((wb.n||0)-(wa.n||0))):(((wb.n||0)-(wa.n||0))||((wb.s||0)-(wa.s||0)));});
+  var top=watched.slice(0,5);
+  wrap.innerHTML='';
+  if(!top.length){
+    var g=document.createElement('div');g.className='group';
+    var d=document.createElement('div');d.className='irow';
+    var k=document.createElement('span');k.className='k';k.textContent='هنوز فیلمی تماشا نشده است';
+    var v=document.createElement('span');v.className='v';v.textContent='—';
+    d.appendChild(k);d.appendChild(v);g.appendChild(d);wrap.appendChild(g);return;
+  }
+  top.forEach(function(item,i){
+    var w=watchMap[item.id];
+    var parts=[faNum(w.n||0)+' بار پخش','مجموع تماشا '+faNum(fmtDur(Math.round(w.s||0))),shardNameOf(item.repo||'hot-gallery-data')];
+    wrap.appendChild(videoRowEl(item,parts,i+1,function(im){openViewer(i,im,top);}));
+  });
+}
+/* hg-v25: صفحه‌ی جدا برای پربازدیدها از منوی ⋯ — دو تب «تعداد پخش» و «زمان تماشا» */
+var topViewEl=document.getElementById('topView');
+document.querySelectorAll('#topSeg .segbtn').forEach(function(b){
+  b.addEventListener('click',function(){try{localStorage.setItem('hg-topsort',b.dataset.topSort);}catch(e){}renderTopList();});
+});
+document.getElementById('miTop').addEventListener('click',function(){closeMenu();renderTopList();topViewEl.classList.add('open');pushLayer('panel',function(){topViewEl.classList.remove('open');});});
+document.getElementById('topBack').addEventListener('click',function(){topViewEl.classList.remove('open');releaseLayer('panel');});
 
 
 
