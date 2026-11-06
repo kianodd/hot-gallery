@@ -70,6 +70,7 @@ main{max-width:1100px;margin:0 auto;padding:0 0 calc(30px + env(safe-area-inset-
 .spin{width:22px;height:22px;border-radius:50%;border:2.5px solid var(--hair);border-top-color:var(--faint);animation:sp 0.8s linear infinite}
 @keyframes sp{to{transform:rotate(360deg)}}
 .badge{position:absolute;bottom:5px;inset-inline-end:7px;z-index:2;color:#fff;font-size:11.5px;font-weight:600;display:flex;align-items:center;gap:4px;text-shadow:0 1px 4px rgba(0,0,0,.65);pointer-events:none}
+.shardbadge{position:absolute;bottom:5px;right:7px;z-index:2;color:#fff;font-size:10.5px;font-weight:700;background:rgba(0,0,0,.55);padding:2px 7px;border-radius:999px;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);pointer-events:none;white-space:nowrap}
 .pvbtn{position:absolute;top:6px;left:6px;z-index:4;display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:999px;background:rgba(0,0,0,.55);color:#fff;font-size:10.5px;font-weight:700;letter-spacing:.02em;cursor:pointer;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);border:.5px solid rgba(255,255,255,.25);user-select:none;-webkit-user-select:none;-webkit-tap-highlight-color:transparent}
 .pvbtn.on{background:rgba(10,132,255,.88)}
 body.selecting .pvbtn{display:none}
@@ -423,7 +424,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 08:15</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 08:18</span></p>
   </div>
 </section>
 
@@ -544,7 +545,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 08:15';
+var RUN_BUILD='2026-11-06 08:18';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -552,6 +553,9 @@ var photos=[],urls={},selecting=false,selected={};
 function isVideo(it){return it.kind==='video'||(it.mime&&it.mime.indexOf('video/')===0);}
 var RAW_BASE='https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
 function rawB(item){return item&&item.repo?('https://raw.githubusercontent.com/kianodd/'+item.repo+'/main/'):RAW_BASE;}
+/* hg-v21: برچسب شارد محل ذخیره‌ی هر ویدیو — پایینِ سمت راست کارت */
+function shardLabel(item){var r=(item&&item.repo)||'hot-gallery-data';if(r==='hot-gallery-data')return 'شارد اصلی';var m=/-(\d+)$/.exec(r);return m?('شارد '+faNum(m[1])):r;}
+function addShardBadge(cell,item){if(!cell||!isVideo(item))return;var s=document.createElement('span');s.className='shardbadge';s.textContent=shardLabel(item);cell.appendChild(s);}
 /* بندانگشتی چندسایزه + نسخه‌ی بهینه: اول پروکسی weserv (WebP) امتحان می‌شود؛ weserv برای فایل‌های این
    ریپو 404 می‌دهد (لایو تست شد)، پس با اولین خطا در نشست خاموش می‌شود و آدرس خام برمی‌گردد و نسخه‌ی
    WebP بهینه با Canvas از روی خود عکس ساخته و کش می‌شود. فایل اصلی در ریپو همیشه دست‌نخورده می‌ماند. */
@@ -881,6 +885,7 @@ function buildCell(item,idx,list){
     var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg><span></span>';c.appendChild(b);
     if(useThumb||(bu&&!loaded)){var bsp0=b.querySelector('span');if(item.dur)bsp0.textContent=fmtDur(item.dur);else if(item.size)bsp0.textContent=fmtSize(item.size);}
     else el.addEventListener('loadedmetadata',function(){b.querySelector('span').textContent=fmtDur(el.duration);});
+    addShardBadge(c,item);
   }
   var mk=document.createElement('span');mk.className='selmark';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);
   bindCell(c,item,idx,el,list);
@@ -1724,7 +1729,7 @@ function renderFavs(){
     var el=document.createElement((isVideo(item)&&!item.thumb&&!item.blur)?'video':'img');
     el.alt='';if(isVideo(item)){el.muted=true;el.playsInline=true;el.preload='metadata';}else{el.loading='lazy';}
     c.appendChild(el);
-    if(isVideo(item)){var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg>';c.appendChild(b);}
+    if(isVideo(item)){var b=document.createElement('span');b.className='badge';b.innerHTML='<svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M7 4.8v14.4L19 12z"/></svg>';c.appendChild(b);addShardBadge(c,item);}
     c.addEventListener('click',function(){openViewer(i,el,photos.filter(function(p){return p.fav;}));});
     if(isVideo(item)&&item.preview){attachPreviewHover(c,item);pvObserve(c,item);addPvButton(c,item);}
     hqObserve(c,item);
