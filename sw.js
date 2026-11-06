@@ -1,5 +1,52 @@
 // هات گالری — سرویس‌ورکر: پوسته‌ی اپ برای نصب و اجرای آفلاین؛ لیست گالری آخرین نسخه‌ی کش‌شده را آفلاین نشان می‌دهد
-const CACHE = 'hg-v14';
+const CACHE = 'hg-v15';
+/* hg-v15 (۳۰۵): کش اختصاصی بندانگشتی‌ها روی دستگاه — سقف ~۱۵۰MB با حذف قدیمی‌ترین‌ها (LRU تقریبی
+   بر اساس ترتیب درج). فقط تصویرهای بندانگشتی/پیش‌نمایش اینجا می‌نشینند؛ پارت‌های فیلم هرگز کش نمی‌شوند. */
+const THUMBS = 'hg-thumbs';
+const THUMB_CAP = 150 * 1024 * 1024;
+async function trimThumbs() {
+  try {
+    const c = await caches.open(THUMBS);
+    const keys = await c.keys();
+    let total = 0;
+    const sizes = [];
+    for (const k of keys) {
+      const r = await c.match(k);
+      let n = 0;
+      if (r) {
+        const cl = r.headers.get('content-length');
+        if (cl) n = +cl || 0;
+        else {
+          const b = await r.clone().blob();
+          n = b.size;
+        }
+      }
+      sizes.push(n);
+      total += n;
+    }
+    let i = 0;
+    while (total > THUMB_CAP && i < keys.length) {
+      await c.delete(keys[i]);
+      total -= sizes[i];
+      i++;
+    }
+  } catch (e) {}
+}
+function thumbCacheFirst(req) {
+  return caches.open(THUMBS).then((tc) =>
+    tc.match(req).then(
+      (hit) =>
+        hit ||
+        fetch(req).then((r) => {
+          if (r.ok) {
+            const cl = r.clone();
+            tc.put(req, cl).then(() => trimThumbs());
+          }
+          return r;
+        })
+    )
+  );
+}
 const RAW = 'https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
 
 // استریم فیلم از روی پارت‌های گیت‌هاب: سرویس‌ورکر (بخشی از خود اپ، روی دستگاه کاربر) درخواست‌های
@@ -115,7 +162,7 @@ self.addEventListener('message', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil(
     caches.keys()
-      .then((ks) => Promise.all(ks.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((ks) => Promise.all(ks.filter((k) => k !== CACHE && k !== THUMBS).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });
@@ -148,9 +195,20 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
+  // hg-v15 (۳۰۵): بندانگشتی‌های weserv (نسخه‌ی WebP عکس‌ها) هم در کش بندانگشتی روی دستگاه می‌نشینند
+  if (url.hostname === 'images.weserv.nl') {
+    e.respondWith(thumbCacheFirst(req));
+    return;
+  }
+
   // مدیای خام گیت‌هاب: کش‌اول (عکس‌ها)؛ درخواست‌های Range فیلم دست نخورده از شبکه
   if (url.hostname === 'raw.githubusercontent.com') {
     if (req.headers.has('range')) return;
+    // hg-v15 (۳۰۵): تصویرها (تامنیل فیلم، عکس، پیش‌نمایش GIF) → کش بندانگشتی اختصاصی؛ بقیه مثل قبل
+    if (/\.(jpe?g|png|webp|gif)$/i.test(url.pathname)) {
+      e.respondWith(thumbCacheFirst(req));
+      return;
+    }
     e.respondWith(
       caches.match(req).then(
         (hit) =>
