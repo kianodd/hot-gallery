@@ -15,10 +15,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.css">
 <script>
-(function(){try{var t=localStorage.getItem('hg-theme')||'auto';var dark=t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.dataset.themePref=t;var a=localStorage.getItem('hg-accent');if(a)document.documentElement.style.setProperty('--blue',a);}catch(e){document.documentElement.dataset.theme='dark';}})();
+(function(){try{var t=localStorage.getItem('hg-theme')||'auto';var dark=t==='dark'||(t==='auto'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.dataset.theme=dark?'dark':'light';document.documentElement.dataset.themePref=t;var a=localStorage.getItem('hg-accent');if(a)document.documentElement.style.setProperty('--blue',a);var fs=localStorage.getItem('hg-font');if(['0.88','1','1.14','1.28'].indexOf(fs)<0)fs='1';document.documentElement.dataset.fs=fs;document.documentElement.style.setProperty('--fsk',fs);}catch(e){document.documentElement.dataset.theme='dark';}})();
 </script>
 <style>
-:root{--blue:#0a84ff;--red:#ff453a;--hair:rgba(120,120,128,.28)}
+:root{--blue:#0a84ff;--red:#ff453a;--hair:rgba(120,120,128,.28);--fsk:1}
 html[data-theme="light"]{--bg:#fff;--bg2:#f2f2f7;--card:#fff;--text:#000;--sub:#3c3c43;--faint:#8e8e93;--bar:rgba(249,249,249,.88);--sheet:#fff;--field:#f2f2f7;--menu:#fff;--pressed:rgba(120,120,128,.14);color-scheme:light}
 html[data-theme="dark"]{--bg:#000;--bg2:#1c1c1e;--card:#1c1c1e;--text:#fff;--sub:#ebebf5;--faint:#8e8e93;--bar:rgba(22,22,23,.82);--sheet:#1c1c1e;--field:#2c2c2e;--menu:#2c2c2e;--pressed:rgba(120,120,128,.24);color-scheme:dark}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;font-family:"Vazirmatn",-apple-system,BlinkMacSystemFont,system-ui,Tahoma,sans-serif !important;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none}
@@ -279,6 +279,56 @@ body.selecting .qpill{display:none}
 #rootBar.open{display:block}
 .rootbar-in{position:relative;height:52px;max-width:1100px;margin:0 auto}
 .rootbar-in .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15.5px;font-weight:700;pointer-events:none}
+/* hg-v23: نشانگر سرعت موقت (نگه‌داشتن سمت راست فیلم در فول‌اسکرین) — بالای وسط ویوئر */
+.boostpill{position:absolute;top:calc(16px + env(safe-area-inset-top));left:50%;transform:translate(-50%,-8px);z-index:40;background:rgba(0,0,0,.62);color:#fff;font-size:15px;font-weight:700;padding:8px 18px;border-radius:999px;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);direction:rtl}
+.boostpill.show{opacity:1;transform:translate(-50%,0)}
+/* hg-v23: اندازه‌ی متن — ضریب --fsk از تنظیمات (۰٫۸۸/۱/۱٫۱۴/۱٫۲۸) روی متن‌های اصلی رابط؛
+   اینپوت‌ها عمداً بیرون‌اند تا روی iOS زوم خودکار فوکوس نیاید (۱۶px می‌مانند) */
+body{font-size:calc(16px * var(--fsk))}
+.htitle{font-size:calc(17px * var(--fsk))}
+.selbar-in .t,.rootbar-in .t{font-size:calc(15.5px * var(--fsk))}
+.selcancel{font-size:calc(16px * var(--fsk))}
+.fbar{font-size:calc(12px * var(--fsk))}
+.fbar .fcount{font-size:calc(11.5px * var(--fsk))}
+.as-sub{font-size:calc(13px * var(--fsk))}
+.as-title{font-size:calc(13.5px * var(--fsk))}
+.as-group button{font-size:calc(17px * var(--fsk))}
+.badge{font-size:calc(11.5px * var(--fsk))}
+.shardbadge{font-size:calc(10.5px * var(--fsk))}
+.pvbtn{font-size:calc(10.5px * var(--fsk))}
+.toolbtn{font-size:calc(11px * var(--fsk))}
+.empty .big{font-size:calc(17px * var(--fsk))}
+.empty p{font-size:calc(14px * var(--fsk))}
+.menu button{font-size:calc(15px * var(--fsk))}
+.sheet h2{font-size:calc(19px * var(--fsk))}
+.sheet .sub{font-size:calc(13.5px * var(--fsk))}
+.primary,.cancel{font-size:calc(16px * var(--fsk))}
+.sback{font-size:calc(16px * var(--fsk))}
+.stitle{font-size:calc(17px * var(--fsk))}
+.slabel{font-size:calc(13px * var(--fsk))}
+.opt{font-size:calc(16px * var(--fsk))}
+.snote{font-size:calc(13px * var(--fsk))}
+.seekfb .seekfb-t{font-size:calc(14px * var(--fsk))}
+.vmeta .d{font-size:calc(14px * var(--fsk))}
+.vmeta .n{font-size:calc(11.5px * var(--fsk))}
+.toast{font-size:calc(14px * var(--fsk))}
+.lk-title{font-size:calc(21px * var(--fsk))}
+.lk-sub{font-size:calc(14px * var(--fsk))}
+.lk-btn{font-size:calc(16px * var(--fsk))}
+.lk-err{font-size:calc(13.5px * var(--fsk))}
+.busypill,.qpill{font-size:calc(13.5px * var(--fsk))}
+.qbadge{font-size:calc(12px * var(--fsk))}
+.qrow .u{font-size:calc(12.5px * var(--fsk))}
+.qrow .s{font-size:calc(13.5px * var(--fsk))}
+.qrow .acts button{font-size:calc(14px * var(--fsk))}
+.grid.tl .tl-head{font-size:calc(19px * var(--fsk))}
+.grid.tl .tl-head .tl-sub{font-size:calc(12.5px * var(--fsk))}
+.irow{font-size:calc(14.5px * var(--fsk))}
+.statbox .n{font-size:calc(23px * var(--fsk))}
+.statbox .l{font-size:calc(12.5px * var(--fsk))}
+#miViewState,#miUpdateSub{font-size:calc(13.5px * var(--fsk)) !important}
+#lockState,#decoyState{font-size:calc(14px * var(--fsk)) !important}
+#folderPathBar{font-size:calc(12.5px * var(--fsk)) !important}
 </style>
 </head>
 <body>
@@ -392,6 +442,14 @@ body.selecting .qpill{display:none}
       <button class="opt" data-theme-opt="dark"><span>تاریک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
     </div>
     <p class="snote">در حالت خودکار، تم از تنظیمات سیستم دستگاه پیروی می‌کند.</p>
+    <p class="slabel" style="margin-top:26px">اندازه‌ی متن</p>
+    <div class="group">
+      <button class="opt" data-font-opt="0.88"><span>کوچک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-font-opt="1"><span>متوسط</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-font-opt="1.14"><span>بزرگ</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-font-opt="1.28"><span>خیلی بزرگ</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+    </div>
+    <p class="snote">اندازه‌ی نوشته‌های رابط برنامه روی همین دستگاه عوض می‌شود.</p>
     <p class="slabel" style="margin-top:26px">رنگ اصلی</p>
     <div class="group" style="padding:14px 16px">
       <div id="accentRow" style="display:flex;gap:12px;flex-wrap:wrap;align-items:center"></div>
@@ -405,6 +463,14 @@ body.selecting .qpill{display:none}
     </div>
     <p class="snote">وقتی روشن باشد، اپِ نصب‌شده (PWA) هنگام باز شدن و بعد از چند دقیقه ماندن در پس‌زمینه، با اثر انگشت باز می‌شود. در تب مرورگر قفل نمی‌آید. اگر اثر انگشت کار نکرد، سایت را در مرورگر باز کن و از همین‌جا قفل را خاموش کن.</p>
     <p class="snote" id="decoyNote">رمز دوم یک درِ محلی روی همین دستگاه است: در «حالت مهمان»، پوشه‌هایی که خصوصی انتخابشان کنی کاملاً پنهان می‌شوند، انگار وجود ندارند. این رمز روی سرور نیست و داده‌های گالری مثل قبل روی مخزن داده می‌مانند؛ برای قفل‌کردن خود برنامه از قفل اثر انگشت استفاده کن.</p>
+    <p class="slabel" style="margin-top:26px">پخش ویدیو</p>
+    <div class="group">
+      <button class="opt" data-boost-opt="1.25"><span>سرعت نگه‌داشتن: ۱٫۲۵×</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-boost-opt="1.5"><span>سرعت نگه‌داشتن: ۱٫۵×</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-boost-opt="1.75"><span>سرعت نگه‌داشتن: ۱٫۷۵×</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-boost-opt="2"><span>سرعت نگه‌داشتن: ۲×</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+    </div>
+    <p class="snote">در حالت تمام‌صفحه، وقتی فیلم در حال پخش است، سمت راست فیلم را نگه دار تا پخش موقتاً با این سرعت جلو برود؛ با رها کردن، سرعت به حالت عادی (۱×) برمی‌گردد. مثل پلیر یوتیوب.</p>
     <p class="slabel" style="margin-top:26px">حافظه‌ی کش</p>
     <div class="group">
       <div class="irow"><span class="k">حجم کش روی این دستگاه</span><span class="v" id="cacheSizeVal">…</span></div>
@@ -424,12 +490,12 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 08:24</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 09:21</span></p>
   </div>
 </section>
 
 <div class="viewer" id="viewer">
-  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline muted style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div>
+  <div class="vstage" id="vStage"><img id="vImg" alt="" crossorigin="anonymous"><video id="vVid" controls playsinline muted style="display:none"></video><div class="vprog" id="vProg"><div class="vp-bar"><div class="vp-fill" id="vProgFill"></div></div><div class="vp-txt" id="vProgTxt"></div></div></div><div class="seekfb l" id="seekFbL"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M20 6l-7 6 7 6z"/><path d="M12 6l-7 6 7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="seekfb r" id="seekFbR"><div class="seekfb-in"><svg viewBox="0 0 24 24" width="36" height="36" fill="currentColor"><path d="M4 6l7 6-7 6z"/><path d="M12 6l7 6-7 6z"/></svg><span class="seekfb-t"></span></div></div><div class="boostpill" id="boostPill"></div>
   <div class="vtop"><div class="vtop-in">
     <button id="vClose" aria-label="بازگشت"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
     <div class="vmeta"><div class="d" id="vDate"></div><div class="n" id="vNum"></div></div>
@@ -545,7 +611,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 08:24';
+var RUN_BUILD='2026-11-06 09:21';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1692,7 +1758,7 @@ window.addEventListener('popstate',function(){
   if(suppressPop){suppressPop=false;return;}
   var l=layers.pop();if(l&&l.closeFn)l.closeFn();
 });
-function vCloseVisual(){watchFlush();if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');viewerEl.classList.remove('hg-fs');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
+function vCloseVisual(){if(typeof boostOff==='function')boostOff();watchFlush();if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');viewerEl.classList.remove('hg-fs');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
 function closeViewer(){vCloseVisual();releaseLayer('viewer');}
 function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
 document.getElementById('vClose').addEventListener('click',function(ev){ev.stopPropagation();closeViewer();});
@@ -1848,6 +1914,8 @@ function vPtrUp(e){
   if(curItemIsVideo()){
     if(vTapTimer){clearTimeout(vTapTimer);vTapTimer=null;}
     vTapInfo=null;
+    /* hg-v23: رها کردنِ نگه‌داشتنِ بوست نباید کروم را تاگل کند */
+    if(typeof boostUsed!=='undefined'&&boostUsed)return;
     viewerEl.classList.toggle('nochrome');
     return;
   }
@@ -1921,6 +1989,54 @@ vStage.addEventListener('wheel',function(e){
   zoomAt(e.clientX,e.clientY,ns);
   if(ns>1)viewerEl.classList.add('nochrome');
 },{passive:false});
+/* hg-v23: نگه‌داشتن سمت راست فیلم در فول‌اسکرین = سرعت موقت (مثل یوتیوب) —
+   فقط وقتی فیلم در حال پخش است و فقط در فول‌اسکرین (کلاس hg-fs). بعد از ۳۰۰ms بی‌حرکتی
+   فعال می‌شود؛ با رها کردن/لغو/خروج از فول‌اسکرین سرعت به ۱ برمی‌گردد. کلیکِ بعد از
+   رها کردن خورده می‌شود تا Plyr فیلم را پاز نکند و تاگل کروم هم با boostUsed مهار شده. */
+var boostOn=false,boostUsed=false,boostTimer=null,boostPtr=null,boostSX=0,boostSY=0,boostSuppressClick=false,boostSuppressTimer=null;
+var boostPill=document.getElementById('boostPill');
+function boostLabel(r){return 'سرعت '+faNum(String(r).replace('.','٫'))+'×';}
+function boostOff(){
+  if(boostTimer){clearTimeout(boostTimer);boostTimer=null;}
+  boostPtr=null;
+  if(boostOn){
+    boostOn=false;
+    try{liveVid().playbackRate=1;}catch(e){}
+    if(boostPill)boostPill.classList.remove('show');
+  }
+}
+vStage.addEventListener('pointerdown',function(e){
+  if(!viewerEl.classList.contains('open')||!curItemIsVideo())return;
+  if(!viewerEl.classList.contains('hg-fs'))return;
+  if(boostPtr!==null)return;
+  if(e.target&&e.target.closest&&e.target.closest('.plyr__controls,.vtop,.vbot,button'))return;
+  var r=vStage.getBoundingClientRect();
+  if(e.clientX<r.left+r.width*0.62)return;
+  boostPtr=e.pointerId;boostSX=e.clientX;boostSY=e.clientY;
+  if(boostTimer)clearTimeout(boostTimer);
+  boostTimer=setTimeout(function(){
+    boostTimer=null;
+    if(boostPtr===null||!vPtrs.has(boostPtr))return;
+    if(!viewerEl.classList.contains('open')||!viewerEl.classList.contains('hg-fs')||!curItemIsVideo())return;
+    var m=liveVid();
+    if(!m||m.paused||m.ended)return;
+    boostOn=true;boostUsed=true;boostSuppressClick=true;
+    if(boostSuppressTimer)clearTimeout(boostSuppressTimer);
+    boostSuppressTimer=setTimeout(function(){boostSuppressClick=false;},1500);
+    try{m.playbackRate=boostRate();}catch(err){}
+    if(boostPill){boostPill.textContent=boostLabel(boostRate());boostPill.classList.add('show');}
+    if(navigator.vibrate)try{navigator.vibrate(8);}catch(err){}
+  },300);
+});
+vStage.addEventListener('pointermove',function(e){
+  if(boostTimer&&e.pointerId===boostPtr&&Math.hypot(e.clientX-boostSX,e.clientY-boostSY)>14){clearTimeout(boostTimer);boostTimer=null;boostPtr=null;}
+});
+window.addEventListener('pointerup',function(e){if(e.pointerId===boostPtr||boostOn)boostOff();boostUsed=false;});
+window.addEventListener('pointercancel',function(e){if(e.pointerId===boostPtr||boostOn)boostOff();boostUsed=false;});
+vStage.addEventListener('click',function(e){
+  if(boostSuppressClick){e.stopPropagation();e.preventDefault();boostSuppressClick=false;if(boostSuppressTimer){clearTimeout(boostSuppressTimer);boostSuppressTimer=null;}}
+},true);
+document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement)boostOff();});
 /* menu */
 var menu=document.getElementById('menu'),scrim=document.getElementById('scrim'),menuBtn=document.getElementById('menuBtn');
 function closeMenu(){menu.classList.remove('open');scrim.classList.remove('open');}
@@ -2151,7 +2267,7 @@ document.getElementById('selMove').addEventListener('click',function(){
 document.getElementById('miSelect').addEventListener('click',function(){closeMenu();enterSelect();});
 document.getElementById('miQueue').addEventListener('click',function(){closeMenu();qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
-document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncAccent();syncDecoyUI();refreshCacheSize();refreshShards();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
+document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncFontOpts();syncBoostOpts();syncAccent();syncDecoyUI();refreshCacheSize();refreshShards();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
 document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');});
 /* theme */
 function applyTheme(pref){
@@ -2165,6 +2281,29 @@ function syncThemeOpts(){
   document.querySelectorAll('[data-theme-opt]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-theme-opt')===pref);});
 }
 document.querySelectorAll('[data-theme-opt]').forEach(function(b){b.addEventListener('click',function(){applyTheme(b.getAttribute('data-theme-opt'));syncThemeOpts();});});
+/* hg-v23: اندازه‌ی متن — ضریب --fsk روی <html>؛ انتخاب روی همین دستگاه می‌ماند */
+function fontScale(){var v=document.documentElement.dataset.fs||'1';return ['0.88','1','1.14','1.28'].indexOf(v)>=0?v:'1';}
+function applyFont(v){
+  if(['0.88','1','1.14','1.28'].indexOf(v)<0)v='1';
+  document.documentElement.dataset.fs=v;
+  document.documentElement.style.setProperty('--fsk',v);
+  try{localStorage.setItem('hg-font',v);}catch(e){}
+}
+function syncFontOpts(){
+  var cur=fontScale();
+  document.querySelectorAll('[data-font-opt]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-font-opt')===cur);});
+}
+document.querySelectorAll('[data-font-opt]').forEach(function(b){b.addEventListener('click',function(){applyFont(b.getAttribute('data-font-opt'));syncFontOpts();});});
+/* hg-v23: سرعت نگه‌داشتن (بوست موقت پخش) — انتخاب از همین‌جا، اعمال در ماژول بوستِ ویوئر */
+function boostRate(){
+  var v=2;try{v=parseFloat(localStorage.getItem('hg-boost'))||2;}catch(e){}
+  return [1.25,1.5,1.75,2].indexOf(v)>=0?v:2;
+}
+function syncBoostOpts(){
+  var cur=String(boostRate());
+  document.querySelectorAll('[data-boost-opt]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-boost-opt')===cur);});
+}
+document.querySelectorAll('[data-boost-opt]').forEach(function(b){b.addEventListener('click',function(){try{localStorage.setItem('hg-boost',b.getAttribute('data-boost-opt'));}catch(e){}syncBoostOpts();});});
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change',function(){if((document.documentElement.dataset.themePref||'auto')==='auto')applyTheme('auto');});
 /* قفل اثر انگشت — فقط در حالت PWA (نصب‌شده) فعال می‌شود؛ اعتبار وب‌آتن روی خود دستگاه می‌ماند */
 var lockView=document.getElementById('lockView'),lockErr=document.getElementById('lockErr'),lockStateEl=document.getElementById('lockState');
