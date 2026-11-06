@@ -1,5 +1,5 @@
 // هات گالری — سرویس‌ورکر: پوسته‌ی اپ برای نصب و اجرای آفلاین؛ لیست گالری آخرین نسخه‌ی کش‌شده را آفلاین نشان می‌دهد
-const CACHE = 'hg-v34';
+const CACHE = 'hg-v35';
 /* hg-v15 (۳۰۵): کش اختصاصی بندانگشتی‌ها روی دستگاه — سقف ~۱۵۰MB با حذف قدیمی‌ترین‌ها (LRU تقریبی
    بر اساس ترتیب درج). فقط تصویرهای بندانگشتی/پیش‌نمایش اینجا می‌نشینند؛ پارت‌های فیلم هرگز کش نمی‌شوند. */
 const THUMBS = 'hg-thumbs';
@@ -182,7 +182,7 @@ self.addEventListener('fetch', (e) => {
   }
 
   // API ورکر: لیست عکس‌ها شبکه‌اول با fallback به کش (نمایش آفلاین)؛ بقیه‌ی API فقط شبکه
-  if (url.hostname === 'hot-gallery.kiandevteam.workers.dev') {
+  if (url.hostname === 'hot-gallery.kiandevteam.workers.dev' || url.hostname === 'gapi.kiandevteam.ir') {
     if (url.pathname === '/api/photos') {
       e.respondWith(
         fetch(req)
