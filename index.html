@@ -548,7 +548,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:36</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:43</span></p>
   </div>
 </section>
 
@@ -739,8 +739,46 @@ body{font-size:calc(16px * var(--fsk))}
 
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
-var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 12:36';
+var API='https://gapi.kiandevteam.ir';
+var RUN_BUILD='2026-11-06 12:43';
+/* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
+   (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
+   هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
+   خطای HTTP)، همان تماس روی آدرس بعدیِ چرخش تکرار می‌شود و آدرسی که جواب داد
+   برای تماس بعدی می‌ماند — اگر هر دو شکست خوردند، تماس بعدی از آدرس دیگر شروع
+   می‌شود. فراخوانی‌های غیر-API و لغوشده‌ها (Abort) دست نمی‌خورند. */
+var API_BASES=['https://gapi.kiandevteam.ir','https://hot-gallery.kiandevteam.workers.dev'];
+var _hgFetch=window.fetch.bind(window);
+window.fetch=function(input,init){
+  var url=typeof input==='string'?input:'';
+  var base=null;
+  if(url){
+    if(API&&url.indexOf(API)===0)base=API;
+    else if(!API&&url.charAt(0)==='/'&&url.charAt(1)!=='/')base='';
+  }
+  if(base===null)return _hgFetch(input,init);
+  var path=url.slice(base.length);
+  var startBase=base===''?location.origin:base;
+  var order=[startBase];
+  var si=API_BASES.indexOf(startBase);
+  if(si<0){API_BASES.forEach(function(b){if(order.indexOf(b)<0)order.push(b);});}
+  else{for(var i=1;i<API_BASES.length;i++){var b=API_BASES[(si+i)%API_BASES.length];if(order.indexOf(b)<0)order.push(b);}}
+  function attempt(k){
+    var b=order[k];
+    var u=k===0?url:(b+path);
+    return _hgFetch(u,init).then(function(res){
+      if(API_BASES.indexOf(b)>=0)API=b;else if(b===location.origin)API='';
+      return res;
+    }).catch(function(err){
+      if(err&&err.name==='AbortError')throw err;
+      if(k+1<order.length)return attempt(k+1);
+      var nxt=order[1];
+      if(nxt&&API_BASES.indexOf(nxt)>=0)API=nxt;
+      throw err;
+    });
+  }
+  return attempt(0);
+};
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -2839,6 +2877,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:35,d:'۱۵ آبان ۱۴۰۵',items:['اتصال سرور بین دو آدرس ورکر (دامنه‌ی اختصاصی گالری و آدرس اصلی) چرخشی شد: اگه یکی وصل نشه، اپ خودکار اون یکی رو امتحان می‌کنه']},
  {n:34,d:'۱۵ آبان ۱۴۰۵',items:['اگه پینگ سرور یا گیت‌هاب بیشتر از ۱۰ ثانیه طول بکشه، خودکار یه پینگ تازه گرفته می‌شه']},
  {n:33,d:'۱۵ آبان ۱۴۰۵',items:['کارت پوشه‌های آیکون‌دار در نمای تک‌ستونه: عرض کامل صفحه و ارتفاع ۷۰٪ حالت قبلی']},
  {n:32,d:'۱۵ آبان ۱۴۰۵',items:['طول کارت پوشه‌های آیکون‌دار در نمای تک‌ستونه به اندازه‌ی قبلی (تمام‌عرض) برگشت؛ فقط عرض‌شان ۶۶٪ است']},
