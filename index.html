@@ -412,7 +412,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 04:03</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 07:42</span></p>
   </div>
 </section>
 
@@ -531,24 +531,25 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 04:03';
+var RUN_BUILD='2026-11-06 07:42';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
 var photos=[],urls={},selecting=false,selected={};
 function isVideo(it){return it.kind==='video'||(it.mime&&it.mime.indexOf('video/')===0);}
 var RAW_BASE='https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/';
+function rawB(item){return item&&item.repo?('https://raw.githubusercontent.com/kianodd/'+item.repo+'/main/'):RAW_BASE;}
 /* بندانگشتی چندسایزه + نسخه‌ی بهینه: اول پروکسی weserv (WebP) امتحان می‌شود؛ weserv برای فایل‌های این
    ریپو 404 می‌دهد (لایو تست شد)، پس با اولین خطا در نشست خاموش می‌شود و آدرس خام برمی‌گردد و نسخه‌ی
    WebP بهینه با Canvas از روی خود عکس ساخته و کش می‌شود. فایل اصلی در ریپو همیشه دست‌نخورده می‌ماند. */
 var weservBad={};
-function weservUrl(item,w,q){return 'https://images.weserv.nl/?url='+encodeURIComponent('ssl:raw.githubusercontent.com/kianodd/hot-gallery-data/main/'+item.path)+'&w='+w+'&output=webp&q='+(q||82);}
+function weservUrl(item,w,q){return 'https://images.weserv.nl/?url='+encodeURIComponent('ssl:raw.githubusercontent.com/kianodd/'+(item.repo||'hot-gallery-data')+'/main/'+item.path)+'&w='+w+'&output=webp&q='+(q||82);}
 function thumbUrl(item,w){
   if(!item||isVideo(item)||item.manifest||!item.path)return null;
-  if(weservBad[item.id])return RAW_BASE+item.path;
+  if(weservBad[item.id])return rawB(item)+item.path;
   return weservUrl(item,w||400);
 }
-function imgFallback(el,item){if(item&&item.id)weservBad[item.id]=1;if(item&&item.path){var raw=RAW_BASE+item.path;if(el.getAttribute('src')!==raw)el.src=raw;}}
+function imgFallback(el,item){if(item&&item.id)weservBad[item.id]=1;if(item&&item.path){var raw=rawB(item)+item.path;if(el.getAttribute('src')!==raw)el.src=raw;}}
 function gridThumbW(){var cw=Math.min(window.innerWidth,1100)/gridCols*(window.devicePixelRatio||1);return cw<=220?200:cw<=480?400:800;}
 var imgLoadedOnce={};
 var webpCache={};
@@ -582,7 +583,7 @@ function isLoaded(it){return !!(it&&it.id&&loadedIds[it.id]);}
 function persistLoaded(){try{localStorage.setItem('hg-loaded',JSON.stringify(loadedIds));}catch(e){}}
 function realThumbFor(it,w){
   if(!it)return null;
-  if(isVideo(it))return it.thumb?RAW_BASE+it.thumb:null;
+  if(isVideo(it))return it.thumb?rawB(it)+it.thumb:null;
   return thumbUrl(it,w||(activeView()==='single'?1200:gridThumbW()));
 }
 function markLoaded(it){
@@ -635,14 +636,14 @@ var streamFailed={};
 function streamUrlFor(item){
   try{
     if(item.manifest&&navigator.serviceWorker&&navigator.serviceWorker.controller){
-      return location.href.replace(/[#?].*$/,'').replace(/[^/]*$/,'')+'hgstream/'+item.id;
+      return location.href.replace(/[#?].*$/,'').replace(/[^/]*$/,'')+'hgstream/'+(item.repo||'hot-gallery-data')+'/'+item.id;
     }
   }catch(e){}
   return null;
 }
 function mediaUrl(item){
   if(item.manifest)return Promise.resolve(urls[item.id]||'');
-  if(!urls[item.id])urls[item.id]=RAW_BASE+item.path;
+  if(!urls[item.id])urls[item.id]=rawB(item)+item.path;
   return Promise.resolve(urls[item.id]);
 }
 function fmtDur(s){if(!isFinite(s))return '';s=Math.round(s);var m=Math.floor(s/60),r=s%60;return m+':'+(r<10?'0':'')+r;}
@@ -679,9 +680,9 @@ function pvShow(cell,item){
   if(pvActive&&pvActive.cell===cell)return;
   pvStop();
   var t=cell.querySelector('img:not(.blurph)');if(!t)return;
-  if(t.getAttribute('src')===RAW_BASE+item.preview)return;
+  if(t.getAttribute('src')===rawB(item)+item.preview)return;
   pvActive={cell:cell,item:item,img:t,prev:t.getAttribute('src')};
-  t.src=RAW_BASE+item.preview;pvBtnSync(cell,true);
+  t.src=rawB(item)+item.preview;pvBtnSync(cell,true);
 }
 function cellPreviewOff(cell){if(pvActive&&(!cell||pvActive.cell===cell))pvStop();}
 /* hg-v11: پری‌لود پیش‌نمایش + تامنیل کامل برای کارت‌های ویدیوییِ داخل ویوپورت + دو ویدیوی بعدی صف
@@ -689,13 +690,13 @@ function cellPreviewOff(cell){if(pvActive&&(!cell||pvActive.cell===cell))pvStop(
 var pvPre={},pvPreImgs={},pvThumbPre={},pvPending=null,pvVisibleIds={};
 function pvPreload(item){
   if(!item||!isVideo(item)||!item.preview)return;
-  if(item.thumb&&!pvThumbPre[item.id]){pvThumbPre[item.id]=1;var ti=new Image();ti.src=RAW_BASE+item.thumb;}
+  if(item.thumb&&!pvThumbPre[item.id]){pvThumbPre[item.id]=1;var ti=new Image();ti.src=rawB(item)+item.thumb;}
   if(pvPre[item.id])return;
   pvPre[item.id]='loading';
   var im=new Image();pvPreImgs[item.id]=im;
   im.onload=function(){pvPre[item.id]='ready';if(pvPending&&pvPending.item.id===item.id){var pd=pvPending;pvPending=null;pvHideSpin(pd);pvShow(pd.cell,pd.item);}};
   im.onerror=function(){pvPre[item.id]='error';if(pvPending&&pvPending.item.id===item.id){pvHideSpin(pvPending);pvPending=null;}};
-  im.src=RAW_BASE+item.preview;
+  im.src=rawB(item)+item.preview;
 }
 function addPvButton(c,item){
   var b=document.createElement('span');b.className='pvbtn';b.innerHTML='▶ GIF';b.setAttribute('role','button');b.setAttribute('aria-label','پیش‌نمایش GIF');
@@ -770,7 +771,7 @@ function hqUpgrade(item){
     else markLoaded(item);
   };
   pre.onerror=function(){delete hqLoading[item.id];};
-  pre.src=RAW_BASE+item.thumb;
+  pre.src=rawB(item)+item.thumb;
 }
 /* hg-v15 (۳۱۵): صف اولویت بندانگشتی — سورس واقعی فقط وقتی به سلول داده می‌شود که داخل یا
    نزدیک ویوپورت باشد (IntersectionObserver با حاشیه‌ی ۳۵۰px)؛ حداکثر ۴ لود هم‌زمان.
@@ -875,7 +876,7 @@ function buildCell(item,idx,list){
   }else if(useThumb){
     el.addEventListener('load',function(){ph.style.display='none';fadeBlur();},{once:true});
     el.addEventListener('error',function(){ph.innerHTML='<svg width="26" height="26" viewBox="0 0 24 24" fill="var(--faint)"><path d="M7 4.8v14.4L19 12z"/></svg>';},{once:true});
-    prioThumb(el,RAW_BASE+item.thumb);
+    prioThumb(el,rawB(item)+item.thumb);
     var bspT=c.querySelector('.badge span');if(bspT&&item.dur)bspT.textContent=fmtDur(item.dur);
   }else if(item.manifest){
     var su0=streamUrlFor(item);
@@ -904,7 +905,7 @@ function folderCell(f){
     var el=document.createElement(isVideo(first)&&first.thumb?'img':(isVideo(first)?'video':'img'));el.alt='';
     if(isVideo(first)&&!first.thumb){el.muted=true;el.playsInline=true;el.preload='metadata';}
     c.appendChild(el);
-    if(isVideo(first)&&first.thumb){el.src=RAW_BASE+first.thumb;}
+    if(isVideo(first)&&first.thumb){el.src=rawB(first)+first.thumb;}
     else if(first.manifest){var su=streamUrlFor(first);if(su)el.src=su;}
     else loadInto(first,el,400);
   }else{
@@ -946,7 +947,7 @@ function favFolderCell(){
     var el=document.createElement(isVideo(first)&&first.thumb?'img':(isVideo(first)?'video':'img'));el.alt='';
     if(isVideo(first)&&!first.thumb){el.muted=true;el.playsInline=true;el.preload='metadata';}
     c.appendChild(el);
-    if(isVideo(first)&&first.thumb){el.src=RAW_BASE+first.thumb;}
+    if(isVideo(first)&&first.thumb){el.src=rawB(first)+first.thumb;}
     else if(first.manifest){var su=streamUrlFor(first);if(su)el.src=su;}
     else loadInto(first,el,400);
   }else{
@@ -1254,13 +1255,13 @@ function assignStripSrc(t,p){
   if(!t||t._srcDone||!p)return;t._srcDone=true;
   if(isLoaded(p)){
     if(t.tagName==='IMG'){
-      if(isVideo(p)&&p.thumb){t.src=RAW_BASE+p.thumb;return;}
+      if(isVideo(p)&&p.thumb){t.src=rawB(p)+p.thumb;return;}
       if(!isVideo(p)){var tuS=thumbUrl(p,200);if(tuS){t.src=tuS;return;}}
       if(p.blur){t.src=blurUri(p);return;}
     }
   }
   else if(p.blur){t.src=blurUri(p);return;}
-  if(isVideo(p)&&p.thumb){t.src=RAW_BASE+p.thumb;t.addEventListener('load',function(){markLoaded(p);},{once:true});return;}
+  if(isVideo(p)&&p.thumb){t.src=rawB(p)+p.thumb;t.addEventListener('load',function(){markLoaded(p);},{once:true});return;}
   if(urls[p.id]){t.src=isVideo(p)?urls[p.id]+'#t=0.1':(thumbUrl(p,200)||urls[p.id]);return;}
   if(p.manifest){var su2=streamUrlFor(p);if(su2){t.src=su2;return;}}
   if(p.path)mediaUrl(p).then(function(u){if(!t.src)t.src=isVideo(p)?u+'#t=0.1':(thumbUrl(p,200)||u);}).catch(function(){});
@@ -1293,11 +1294,11 @@ function updateProg(loaded,total){var pc=total?Math.floor(loaded/total*100):0;vP
 var assembling={};
 function assembleVideo(item){
   if(assembling[item.id]||urls[item.id])return;assembling[item.id]=true;
-  fetch(RAW_BASE+item.manifest).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(man){
+  fetch(rawB(item)+item.manifest).then(function(r){if(!r.ok)throw new Error(r.status);return r.json();}).then(function(man){
     var bufs=[],loaded=0,total=man.size||item.size||0,seq=Promise.resolve();
     man.parts.forEach(function(p){
       seq=seq.then(function(){
-        return fetch(RAW_BASE+p.path).then(function(r){if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}).then(function(ab){
+        return fetch(rawB(item)+p.path).then(function(r){if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}).then(function(ab){
           bufs.push(ab);loaded+=ab.byteLength;
           if(viewerId===item.id)updateProg(loaded,total);
         });
@@ -1315,7 +1316,7 @@ function assembleVideo(item){
 /* hg-v9: پلیر حرفه‌ای Plyr روی همان #vVid — اگر CDN لود نشود، کنترل‌های بومی مرورگر جایگزین‌اند */
 var plyr=null,plyrFailed=false,lastVidSrc='',lastSrcSetAt=0;
 var vSnapPoster=null;
-function posterFor(item){return item?(item.thumb?(RAW_BASE+item.thumb):(item.blur?blurUri(item):null)):null;}
+function posterFor(item){return item?(item.thumb?(rawB(item)+item.thumb):(item.blur?blurUri(item):null)):null;}
 /* hg-v11: ریشه‌ی خرابی سیک و ادامه‌ی تماشا در hg-v10 پیدا شد — Plyr هنگام ست‌شدن سورس، المنت
    <video> اصلی را با المنت تازه‌ای جایگزین می‌کند و ارجاع vVid به المنت جداشده‌ای می‌رسد که
    سورسش blank.mp4 یک‌ثانیه‌ای Plyr است؛ پس currentTime/duration و همه‌ی رویدادها روی ویدیوی
@@ -1577,7 +1578,7 @@ function showCurrentMedia(){
     vImg.style.display='none';liveVid().style.display='block';syncVidWrap();addSeekButtons();resetMutedDefault();
     var postSrc=vSnapPoster||posterFor(item);
     if(postSrc){liveVid().poster=postSrc;if(plyr){try{plyr.poster=postSrc;}catch(e){}}}
-    if(item.thumb){var tp=new Image();tp.onload=function(){if(viewerId===item.id)markLoaded(item);};tp.src=RAW_BASE+item.thumb;}
+    if(item.thumb){var tp=new Image();tp.onload=function(){if(viewerId===item.id)markLoaded(item);};tp.src=rawB(item)+item.thumb;}
     if(item.manifest){
       var su3=streamUrlFor(item);
       if(su3&&!streamFailed[item.id]){hideProg();setVidSource(su3);playVideoSmart(item);return;}
@@ -2504,7 +2505,7 @@ function ensureClientExif(item){
   if(!item||isVideo(item)||item.manifest||!item.path||item._exifTried)return;
   if(item.exif&&item.w)return;
   item._exifTried=1;
-  fetch(RAW_BASE+item.path).then(function(r){return r.arrayBuffer();}).then(function(ab){
+  fetch(rawB(item)+item.path).then(function(r){return r.arrayBuffer();}).then(function(ab){
     var b=new Uint8Array(ab);
     var ex=clientJpegExif(b);if(ex&&!item.exif)item.exif=ex;
     var dm=clientImageDims(b);if(dm&&!item.w){item.w=dm.w;item.h=dm.h;}
@@ -2576,7 +2577,7 @@ function openCoverPicker(f){
     if(f.cover===item.id){var mk=document.createElement('span');mk.className='selmark';mk.style.display='grid';mk.style.background='var(--blue)';mk.style.borderColor='var(--blue)';mk.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';c.appendChild(mk);}
     c.addEventListener('click',function(){closePicker();folderUpdate(f,{cover:item.id},'در حال ذخیره‌ی کاور…','کاور پوشه عوض شد');});
     g.appendChild(c);
-    if(isVideo(item)&&item.thumb){el.src=RAW_BASE+item.thumb;}
+    if(isVideo(item)&&item.thumb){el.src=rawB(item)+item.thumb;}
     else if(item.manifest){var su=streamUrlFor(item);if(su)el.src=su;}
     else loadInto(item,el,400);
   });
@@ -2785,7 +2786,7 @@ function maybeThumb(item){
   if(!item||!isVideo(item)||item.thumb||thumbBusy[item.id])return;
   thumbBusy[item.id]=1;
   var url=streamUrlFor(item);
-  if(!url&&!item.manifest&&item.path)url=RAW_BASE+item.path;
+  if(!url&&!item.manifest&&item.path)url=rawB(item)+item.path;
   if(!url)return;
   var v=document.createElement('video');v.muted=true;v.playsInline=true;v.preload='auto';try{v.crossOrigin='anonymous';}catch(e){}
   var done=false;
@@ -2812,7 +2813,7 @@ function maybeThumb(item){
           if(!blob){fail();return;}
           fetch(API+'/api/thumb/'+encodeURIComponent(item.id)+'?dur='+Math.round(d),{method:'POST',headers:{'Content-Type':'image/jpeg'},body:blob}).then(function(r){return r.json();}).then(function(res){
             done=true;
-            if(res&&res.item&&res.item.thumb){item.thumb=res.item.thumb;if(res.item.dur)item.dur=res.item.dur;if(viewerId===item.id){markLoaded(item);liveVid().poster=RAW_BASE+item.thumb;if(plyr){try{plyr.poster=RAW_BASE+item.thumb;}catch(e){}}}render();if(curFolder)renderFolder();if(favViewEl.classList.contains('open'))renderFavs();if(viewerEl.classList.contains('open'))buildStrip();}
+            if(res&&res.item&&res.item.thumb){item.thumb=res.item.thumb;if(res.item.dur)item.dur=res.item.dur;if(viewerId===item.id){markLoaded(item);liveVid().poster=rawB(item)+item.thumb;if(plyr){try{plyr.poster=rawB(item)+item.thumb;}catch(e){}}}render();if(curFolder)renderFolder();if(favViewEl.classList.contains('open'))renderFavs();if(viewerEl.classList.contains('open'))buildStrip();}
           }).catch(function(){done=true;});
         },'image/jpeg',0.82);
       }catch(e){fail();}
