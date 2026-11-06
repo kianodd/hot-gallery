@@ -45,7 +45,10 @@ header{position:sticky;top:0;z-index:50;background:var(--bar);backdrop-filter:bl
 .htitle.refreshing #appTitle{opacity:.5}
 .hbtn{position:absolute;top:50%;transform:translateY(-50%);width:38px;height:38px;display:grid;place-items:center;color:var(--blue);border-radius:50%}
 .hbtn:active{background:var(--pressed)}
-#addBtn{left:6px}
+#topBtn{left:6px}
+/* hg-v28: دکمه‌ی شناور افزودن (FAB) — پایینِ سمت راست صفحه‌ی اصلی */
+#fabAdd{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;border:none;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.35);z-index:45;transition:transform .15s ease}
+#fabAdd:active{transform:scale(.93)}
 #menuBtn{right:6px;color:var(--text)}
 /* hg-v27: دکمه‌ی صف آپلود در نوار بالا، بغل دکمه‌ی منو — آیکون + شمارنده؛ صف خالی = مخفی */
 #qBtn{right:52px;color:var(--text)}
@@ -56,7 +59,7 @@ body.selecting #selBar{display:block}
 .selbar-in{position:relative;height:52px;max-width:1100px;margin:0 auto}
 .selbar-in .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:15.5px;font-weight:700;pointer-events:none}
 .selcancel{position:absolute;top:50%;transform:translateY(-50%);right:10px;color:var(--blue);font-size:16px;height:38px;padding:0 6px}
-main{max-width:1100px;margin:0 auto;padding:0 0 calc(30px + env(safe-area-inset-bottom))}
+main{max-width:1100px;margin:0 auto;padding:0 0 calc(96px + env(safe-area-inset-bottom))}
 .grid{display:grid;grid-template-columns:repeat(var(--cols,3),1fr);gap:2px;touch-action:pan-y}
 .cell{position:relative;aspect-ratio:1;background:var(--bg2);overflow:hidden;cursor:pointer;border:0;padding:0}
 .cell img,.cell video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
@@ -382,8 +385,8 @@ body{font-size:calc(16px * var(--fsk))}
 <body>
 <header>
   <div class="hbar">
-    <button class="hbtn" id="addBtn" aria-label="افزودن">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    <button class="hbtn" id="topBtn" aria-label="پربازدیدترین فیلم‌ها">
+      <svg width="23" height="23" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 16.5L9 11l3.5 3.5L20 7"/><path d="M14.6 7H20v5.4"/></svg>
     </button>
     <div class="htitle"><span class="pdot" id="dotW" title="ورکر"></span><span id="appTitle">گالری</span><span class="pdot" id="dotGh" title="گیت‌هاب"></span><span class="spin tspin"></span></div>
     <button class="hbtn" id="menuBtn" aria-label="منو">
@@ -396,6 +399,9 @@ body{font-size:calc(16px * var(--fsk))}
     </button>
   </div>
 </header>
+<button id="fabAdd" aria-label="افزودن">
+  <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
 <div id="rootBar"><div class="rootbar-in">
   <div class="t">مرتب‌سازی</div>
   <button class="sback" id="rootDoneBtn" style="right:auto;left:8px;font-weight:700" aria-label="تمام">تمام</button>
@@ -539,7 +545,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:03</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:06</span></p>
   </div>
 </section>
 
@@ -731,7 +737,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 12:03';
+var RUN_BUILD='2026-11-06 12:06';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1887,16 +1893,29 @@ function openViewer(i,thumbEl,list){
 }
 // لایه‌های تمام‌صفحه: دکمه‌ی بک گوشی فقط همان نما را می‌بندد، نه کل اپ را
 var layers=[],suppressPop=false;
-function pushLayer(name,closeFn){layers.push({name:name,closeFn:closeFn});try{history.pushState({hgLayer:name},'');}catch(e){}}
+function pushLayer(name,closeFn){layers.push({name:name,closeFn:closeFn});try{history.pushState({hgLayer:name},'');}catch(e){}fabSync();}
 function releaseLayer(name){
   var i=-1;for(var k=layers.length-1;k>=0;k--)if(layers[k].name===name){i=k;break;}
   if(i<0)return;var wasTop=i===layers.length-1;layers.splice(i,1);
   if(wasTop){suppressPop=true;try{history.back();}catch(e){}}
+  fabSync();
 }
 window.addEventListener('popstate',function(){
   if(suppressPop){suppressPop=false;return;}
   var l=layers.pop();if(l&&l.closeFn)l.closeFn();
+  fabSync();
 });
+/* hg-v28: دکمه‌ی شناور افزودن فقط روی صفحه‌ی اصلی دیده می‌شود؛ با باز شدن هر نما،
+   شیت، ویوئر، حالت انتخاب یا صفحه‌ی قفل پنهان می‌شود */
+function fabSync(){
+  var f=document.getElementById('fabAdd');if(!f)return;
+  var lv=document.getElementById('lockView');
+  var hide=(typeof viewerEl!=='undefined'&&viewerEl&&viewerEl.classList.contains('open'))
+    ||document.body.classList.contains('selecting')
+    ||(lv&&lv.classList.contains('open'))
+    ||!!document.querySelector('.view-settings.open,.overlay.open,.as-wrap.open');
+  f.style.display=hide?'none':'grid';
+}
 function vCloseVisual(){if(typeof boostOff==='function')boostOff();watchFlush();if(viewerId)savePosFor(viewerId);vGateId=null;vGateDone=true;liveVid().pause();hideProg();hideVidUI();viewerEl.classList.remove('open');viewerEl.classList.remove('pre');viewerEl.classList.remove('on-photo');viewerEl.classList.remove('on-video');viewerEl.classList.remove('hg-fs');document.querySelectorAll('.flip').forEach(function(e){e.remove();});vImg.style.opacity='';vImg.style.transition='';viewerId=null;vList=null;resetZoom();document.body.style.overflow='';if(favViewEl.classList.contains('open'))renderFavs();busyLift();}
 function closeViewer(){vCloseVisual();releaseLayer('viewer');}
 function stepViewer(d){var L=vItems();if(!L.length)return;var n=vIdx+d;if(n<0||n>=L.length)return;showPhoto(n,d);}
@@ -2223,8 +2242,9 @@ function showSheet(title,rows){
     lsRows.appendChild(b);
   });
   lsWrap.classList.add('open');
+  fabSync();
 }
-function closeSheet(){lsWrap.classList.remove('open');}
+function closeSheet(){lsWrap.classList.remove('open');fabSync();}
 document.getElementById('lsScrim').addEventListener('click',closeSheet);
 document.getElementById('lsCancel').addEventListener('click',closeSheet);
 
@@ -2800,6 +2820,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:28,d:'۱۵ آبان ۱۴۰۵',items:['دکمه‌ی «افزودن» شد یک دکمه‌ی شناور پایینِ سمت راست صفحه‌ی اصلی','جای دکمه‌ی افزودن در نوار بالا، دکمه‌ی «پربازدیدترین فیلم‌ها» آمد']},
  {n:27,d:'۱۵ آبان ۱۴۰۵',items:['دکمه‌ی صف آپلود به نوار بالا رفت: آیکون با شمارنده، و وقتی صف خالی است مخفی می‌شود','همه‌ی آیتم‌های منو آیکون گرفتند','صفحه‌ی «شاردها» به منوی کناری منتقل شد','برای پیش‌نمایش پوشه می‌شود آیکون انتخاب کرد: فهرست کامل آیکون‌ها با رنگ و پس‌زمینه‌ی قابل تنظیم','صفحه‌ی هر شارد اگر هم فیلم داشته باشد هم عکس، بالای صفحه‌اش تب «فیلم‌ها» و «عکس‌ها» می‌آید']},
  {n:26,d:'۱۵ آبان ۱۴۰۵',items:['در پخش تمام‌صفحه، پینگ گیت‌هاب به شکل یک پیل شیشه‌ای بالا سمت چپ نمایش داده می‌شود','فیلم‌ها دیگر خودکار پخش نمی‌شوند؛ پخش فقط با لمس خودت شروع می‌شود','تامنیلِ ویدیویی که کاور پوشه است، به‌محض دیده‌شدن پوشه لود می‌شود','بخش «شاردها» از تنظیمات به صفحه‌ی جدا منتقل شد']},
  {n:25,d:'۱۵ آبان ۱۴۰۵',items:['«پربازدیدترین فیلم‌ها» صفحه‌ی جدا شد و از منو باز می‌شود','داخل صفحه‌اش دو تب هست: «تعداد پخش» و «زمان تماشا»؛ لیست بر اساس تب انتخابی مرتب می‌شود و انتخابت می‌ماند']},
@@ -2955,7 +2976,10 @@ var topViewEl=document.getElementById('topView');
 document.querySelectorAll('#topSeg .segbtn').forEach(function(b){
   b.addEventListener('click',function(){try{localStorage.setItem('hg-topsort',b.dataset.topSort);}catch(e){}renderTopList();});
 });
-document.getElementById('miTop').addEventListener('click',function(){closeMenu();renderTopList();topViewEl.classList.add('open');pushLayer('panel',function(){topViewEl.classList.remove('open');});});
+function openTopPage(){renderTopList();topViewEl.classList.add('open');pushLayer('panel',function(){topViewEl.classList.remove('open');});}
+document.getElementById('miTop').addEventListener('click',function(){closeMenu();openTopPage();});
+/* hg-v28: دکمه‌ی پربازدیدترین‌ها در نوار بالا، جای دکمه‌ی افزودنِ قبلی */
+document.getElementById('topBtn').addEventListener('click',function(){openTopPage();});
 document.getElementById('topBack').addEventListener('click',function(){topViewEl.classList.remove('open');releaseLayer('panel');});
 
 
@@ -3895,13 +3919,14 @@ window.addEventListener('focus',checkUpdate);
 
 /* add sheet */
 var addOverlay=document.getElementById('addOverlay'),urlInput=document.getElementById('urlInput'),doAdd=document.getElementById('doAdd');
-document.getElementById('addBtn').addEventListener('click',function(){addOverlay.classList.add('open');setTimeout(function(){urlInput.focus();},80);});
-document.querySelectorAll('[data-close-add]').forEach(function(el){el.addEventListener('click',function(){addOverlay.classList.remove('open');});});
+/* hg-v28: دکمه‌ی شناور افزودن همان شیت افزودن قبلی را باز می‌کند */
+document.getElementById('fabAdd').addEventListener('click',function(){addOverlay.classList.add('open');fabSync();setTimeout(function(){urlInput.focus();},80);});
+document.querySelectorAll('[data-close-add]').forEach(function(el){el.addEventListener('click',function(){addOverlay.classList.remove('open');fabSync();});});
 doAdd.addEventListener('click',function(){
   var raw=urlInput.value.trim();if(!raw){toast('لینک را وارد کن');return;}
   var parts=raw.split(/\s+/).filter(function(s){return /^https?:\/\//i.test(s);});
   if(!parts.length){toast('لینک معتبر نیست');return;}
-  urlInput.value='';addOverlay.classList.remove('open');
+  urlInput.value='';addOverlay.classList.remove('open');fabSync();
   var addedN=qEnqueue(parts);
   if(addedN)toast(addedN>1?addedN+' مورد به صف آپلود اضافه شد':'به صف آپلود اضافه شد');
 });
