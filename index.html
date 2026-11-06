@@ -411,7 +411,7 @@ body.selecting .qpill{display:none}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 03:53</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 03:57</span></p>
   </div>
 </section>
 
@@ -530,7 +530,7 @@ body.selecting .qpill{display:none}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://hot-gallery.kiandevteam.workers.dev';
-var RUN_BUILD='2026-11-06 03:53';
+var RUN_BUILD='2026-11-06 03:57';
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -845,7 +845,7 @@ function buildCell(item,idx,list){
     /* عکسِ لودشده (یا بدون بلور): تامنیل واقعی روی زیرلایه‌ی بلور می‌نشیند و جایش را می‌گیرد */
     blurEl=document.createElement('img');blurEl.className='blurph';blurEl.alt='';
     if(bu)blurEl.src=bu;
-    else{blurEl.src=thumbUrl(item,20);blurEl.onerror=function(){if(blurEl.parentNode)blurEl.remove();};}
+    else blurEl.src='data:image/gif;base64,R0lGODlhAQABAAAAACw=';/* hg-v15 (۳۱۵): بدون بلور درون‌خطی، جای‌نگهدار هیچ درخواست شبکه‌ای نمی‌دهد */
     c.appendChild(blurEl);
     el.className='mainimg';
     if(imgLoadedOnce[item.id])el.classList.add('ld');
