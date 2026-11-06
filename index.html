@@ -49,6 +49,11 @@ header{position:sticky;top:0;z-index:50;background:var(--bar);backdrop-filter:bl
 /* hg-v28: دکمه‌ی شناور افزودن (FAB) — پایینِ سمت راست صفحه‌ی اصلی */
 #fabAdd{position:fixed;right:18px;bottom:calc(20px + env(safe-area-inset-bottom));width:58px;height:58px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;border:none;cursor:pointer;box-shadow:0 10px 26px rgba(0,0,0,.35);z-index:45;transition:transform .15s ease}
 #fabAdd:active{transform:scale(.93)}
+/* hg-v36: نوار حالت فقط‌خواندنی — بالای گرید، فقط وقتی فعال است دیده می‌شود */
+#roBanner{display:none;margin:10px 14px 0;padding:10px 14px;border-radius:14px;background:rgba(255,159,10,.16);color:var(--text);font-size:13.5px;align-items:center;gap:10px}
+#roBanner.show{display:flex}
+#roBanner .grow{flex:1}
+#roBanner button{flex:none;border:0;background:var(--blue);color:#fff;border-radius:10px;padding:7px 12px;font-size:13px;cursor:pointer}
 #menuBtn{right:6px;color:var(--text)}
 /* hg-v27: دکمه‌ی صف آپلود در نوار بالا، بغل دکمه‌ی منو — آیکون + شمارنده؛ صف خالی = مخفی */
 #qBtn{right:52px;color:var(--text)}
@@ -415,7 +420,7 @@ body{font-size:calc(16px * var(--fsk))}
   <div class="t" id="selTitle">موارد را انتخاب کنید</div>
   <button class="selcancel" id="selCancel">لغو</button>
 </div></div>
-<main><div class="grid" id="grid"></div>
+<main><div id="roBanner"><span class="grow">حالت فقط‌خواندنی: گالری مستقیم از گیت‌هاب خوانده می‌شود؛ افزودن و حذف و ویرایش غیرفعال است.</span><button id="roExitBtn">بازگشت به سرور</button></div><div class="grid" id="grid"></div>
 <div class="empty" id="empty" style="display:none"><div class="big">چیزی اینجا نیست</div><p>با دکمه‌ی + بالای صفحه، لینک اولین عکس یا فیلم را اضافه کن.</p></div>
 </main>
 <div id="selTools">
@@ -505,6 +510,14 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" data-theme-opt="dark"><span>تاریک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
     </div>
     <p class="snote">در حالت خودکار، تم از تنظیمات سیستم دستگاه پیروی می‌کند.</p>
+    <p class="slabel" style="margin-top:26px">اتصال سرور</p>
+    <div class="group">
+      <button class="opt" data-conn-opt="auto"><span>خودکار (چرخشی بین دو آدرس)</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-conn-opt="gapi"><span>دامنه‌ی اختصاصی (gapi)</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-conn-opt="workers"><span>آدرس اصلی (workers.dev)</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+      <button class="opt" data-conn-opt="ro"><span>فقط‌خواندنی از گیت‌هاب (بدون سرور)</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
+    </div>
+    <p class="snote">در حالت خودکار، اگر یک آدرس وصل نشود، اپ سراغ آدرس دیگر می‌رود. در حالت فقط‌خواندنی، گالری مستقیم از گیت‌هاب خوانده می‌شود و افزودن، حذف و ویرایش غیرفعال است. انتخابت روی همین دستگاه می‌ماند.</p>
     <p class="slabel" style="margin-top:26px">اندازه‌ی متن</p>
     <div class="group">
       <button class="opt" data-font-opt="0.88"><span>کوچک</span><svg class="ck" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg></button>
@@ -548,7 +561,7 @@ body{font-size:calc(16px * var(--fsk))}
       <button class="opt" id="decoyExitBtn"><span>خروج از حالت مهمان</span></button>
     </div>
     <p class="snote" id="decoyExitNote" style="display:none">برای خروج از حالت مهمان: اگر قفل اثر انگشت روشن باشد، خروج با همان اثر انگشت انجام می‌شود. در غیر این صورت برنامه را ببند و گالری را در یک تب تازه‌ی مرورگر باز کن؛ حالت مهمان فقط در همین نشست فعال است.</p>
-    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:43</span></p>
+    <p class="snote" style="margin-top:26px">نسخه‌ی اپ: <span dir="ltr">2026-11-06 12:52</span></p>
   </div>
 </section>
 
@@ -740,7 +753,7 @@ body{font-size:calc(16px * var(--fsk))}
 <script src="https://cdn.jsdelivr.net/npm/plyr@3/dist/plyr.polyfilled.min.js"></script>
 <script>
 var API='https://gapi.kiandevteam.ir';
-var RUN_BUILD='2026-11-06 12:43';
+var RUN_BUILD='2026-11-06 12:52';
 /* hg-v35: اتصال سرور بین دو آدرسِ همان ورکر چرخشی است: دامنه‌ی اختصاصی گالری
    (gapi.kiandevteam.ir) و آدرس اصلی (hot-gallery.kiandevteam.workers.dev).
    هر تماس از پایگاه فعلی شروع می‌شود؛ اگر شبکه‌ای شکست خورد (قطعی/اختلال، نه
@@ -748,6 +761,14 @@ var RUN_BUILD='2026-11-06 12:43';
    برای تماس بعدی می‌ماند — اگر هر دو شکست خوردند، تماس بعدی از آدرس دیگر شروع
    می‌شود. فراخوانی‌های غیر-API و لغوشده‌ها (Abort) دست نمی‌خورند. */
 var API_BASES=['https://gapi.kiandevteam.ir','https://hot-gallery.kiandevteam.workers.dev'];
+/* hg-v36: انتخاب دستی روش اتصال از تنظیمات (hg-conn روی دستگاه می‌ماند):
+   auto=چرخشی بین دو آدرس، gapi/workers=فقط همان آدرس، ro=فقط‌خواندنی از گیت‌هاب */
+var CONN='auto';
+try{CONN=localStorage.getItem('hg-conn')||'auto';}catch(e){}
+if(['auto','gapi','workers','ro'].indexOf(CONN)<0)CONN='auto';
+function roMode(){return CONN==='ro';}
+if(CONN==='gapi')API=API_BASES[0];
+else if(CONN==='workers')API=API_BASES[1];
 var _hgFetch=window.fetch.bind(window);
 window.fetch=function(input,init){
   var url=typeof input==='string'?input:'';
@@ -757,12 +778,15 @@ window.fetch=function(input,init){
     else if(!API&&url.charAt(0)==='/'&&url.charAt(1)!=='/')base='';
   }
   if(base===null)return _hgFetch(input,init);
+  if(roMode()){var roErr=new Error('readonly');roErr.roMode=true;return Promise.reject(roErr);}
   var path=url.slice(base.length);
   var startBase=base===''?location.origin:base;
   var order=[startBase];
-  var si=API_BASES.indexOf(startBase);
-  if(si<0){API_BASES.forEach(function(b){if(order.indexOf(b)<0)order.push(b);});}
-  else{for(var i=1;i<API_BASES.length;i++){var b=API_BASES[(si+i)%API_BASES.length];if(order.indexOf(b)<0)order.push(b);}}
+  if(CONN==='auto'){
+    var si=API_BASES.indexOf(startBase);
+    if(si<0){API_BASES.forEach(function(b){if(order.indexOf(b)<0)order.push(b);});}
+    else{for(var i=1;i<API_BASES.length;i++){var b=API_BASES[(si+i)%API_BASES.length];if(order.indexOf(b)<0)order.push(b);}}
+  }
   function attempt(k){
     var b=order[k];
     var u=k===0?url:(b+path);
@@ -779,6 +803,25 @@ window.fetch=function(input,init){
   }
   return attempt(0);
 };
+/* hg-v36: ابزارهای حالت فقط‌خواندنی و انتخاب دستی اتصال */
+var _roToastT=0;
+function roToast(){var n=Date.now();if(n-_roToastT<3000)return;_roToastT=n;toast('حالت فقط‌خواندنی فعال است؛ برای این کار از تنظیمات ← اتصال سرور، یک آدرس سرور را انتخاب کن');}
+function connBannerSync(){var b=document.getElementById('roBanner');if(b)b.classList.toggle('show',roMode());}
+function syncConnOpts(){document.querySelectorAll('[data-conn-opt]').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-conn-opt')===CONN);});}
+function setConn(m){
+  if(['auto','gapi','workers','ro'].indexOf(m)<0)m='auto';
+  CONN=m;try{localStorage.setItem('hg-conn',m);}catch(e){}
+  if(m==='gapi')API=API_BASES[0];
+  else if(m==='workers')API=API_BASES[1];
+  else if(m==='auto')API=API_BASES[0];
+  syncConnOpts();connBannerSync();
+  if(m==='ro')toast('حالت فقط‌خواندنی فعال شد — گالری مستقیم از گیت‌هاب خوانده می‌شود');
+  load();
+}
+document.querySelectorAll('[data-conn-opt]').forEach(function(b){b.addEventListener('click',function(){setConn(b.getAttribute('data-conn-opt'));});});
+var _roExit=document.getElementById('roExitBtn');
+if(_roExit)_roExit.addEventListener('click',function(){setConn('auto');toast('اتصال سرور روی حالت خودکار برگشت');});
+connBannerSync();
 var grid=document.getElementById('grid'),emptyEl=document.getElementById('empty');
 var toastEl=document.getElementById('toast'),toastT=null;
 function toast(m){toastEl.textContent=m;toastEl.classList.add('show');clearTimeout(toastT);toastT=setTimeout(function(){toastEl.classList.remove('show')},2600);}
@@ -1415,7 +1458,9 @@ document.addEventListener('gesturechange',function(e){e.preventDefault();});
 document.addEventListener('wheel',function(e){if(e.ctrlKey&&!(e.target&&e.target.closest&&e.target.closest('#vStage')))e.preventDefault();},{passive:false});
 document.addEventListener('visibilitychange',function(){if(document.hidden)pinchReset();});
 function load(){
-  return fetch(API+'/api/photos').then(function(r){return r.json();}).then(function(d){
+  /* hg-v36: در حالت فقط‌خواندنی، ایندکس همان شکلِ پاسخ سرور را دارد و مستقیم از گیت‌هاب خوانده می‌شود */
+  var src=roMode()?fetch('https://raw.githubusercontent.com/kianodd/hot-gallery-data/main/index.json?x='+Date.now(),{cache:'no-store'}):fetch(API+'/api/photos');
+  return src.then(function(r){return r.json();}).then(function(d){
     folders=(d&&d.folders)||[];
     var all=(d&&d.photos)||[];
     if(decoyMode){
@@ -1489,6 +1534,7 @@ function busyLift(){
 function showBusy(t){busyCount++;if(t)busyTxt.textContent=t;busyLift();busyPill.classList.add('show');}
 function hideBusy(){busyCount=Math.max(0,busyCount-1);if(busyCount===0)busyPill.classList.remove('show');}
 function deleteIds(ids){
+  if(roMode()){roToast();return;}
   showBusy(ids.length>1?'در حال حذف '+ids.length+' مورد…':'در حال حذف…');
   var chain=Promise.resolve(),failed=0;
   ids.forEach(function(id){
@@ -1980,6 +2026,7 @@ document.getElementById('vShare').addEventListener('click',function(ev){
 var favViewEl=document.getElementById('favView'),favGrid=document.getElementById('favGrid'),favEmpty=document.getElementById('favEmpty');
 vFavBtn.addEventListener('click',function(ev){
   ev.stopPropagation();var item=vItems()[vIdx];if(!item)return;
+  if(roMode()){roToast();return;}
   var nf=!item.fav;item.fav=nf;syncFavBtn();
   if(navigator.vibrate)navigator.vibrate(8);
   fetch(API+'/api/fav/'+encodeURIComponent(item.id),{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({fav:nf})}).then(function(r){if(!r.ok)throw new Error(r.status);}).catch(function(){item.fav=!nf;syncFavBtn();toast('ثبت مورد علاقه ناموفق بود');});
@@ -2284,8 +2331,8 @@ function folderPath(f){var names=[];var cur=f,guard=0;while(cur&&guard<30){names
 function folderChain(f){var chain=[];var cur=f,guard=0;while(cur&&guard<30){chain.unshift(cur);cur=cur.parent?folderById(cur.parent):null;guard++;}return chain;}
 function foldersHier(){var out=[];function walk(pid,depth){childFolders(pid).forEach(function(f){out.push({f:f,depth:depth});walk(f.id,depth+1);});}walk(null,0);folders.forEach(function(f){if(!out.some(function(o){return o.f.id===f.id;}))out.push({f:f,depth:0});});return out;}
 function folderPathShort(f){return folderPath(f).replace(/^گالری › /,'');}
-function apiPost(path,body){return fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
-function apiDel(path){return fetch(API+path,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
+function apiPost(path,body){if(roMode()){roToast();return Promise.reject(new Error('readonly'));}return fetch(API+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body||{})}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
+function apiDel(path){if(roMode()){roToast();return Promise.reject(new Error('readonly'));}return fetch(API+path,{method:'DELETE'}).then(function(r){return r.json();}).then(function(d){if(d&&d.error)throw new Error(d.error);return d;});}
 
 var lsWrap=document.getElementById('lsWrap'),lsRows=document.getElementById('lsRows'),lsTitle=document.getElementById('lsTitle');
 function showSheet(title,rows){
@@ -2460,7 +2507,7 @@ function createFolder(cb,parent){
     }).catch(function(e){hideBusy();toast(e.message||'خطا');});
   });
 }
-document.getElementById('miNewFolder').addEventListener('click',function(){closeMenu();createFolder();});
+document.getElementById('miNewFolder').addEventListener('click',function(){closeMenu();if(roMode()){roToast();return;}createFolder();});
 
 function doMove(ids,target){
   showBusy('در حال انتقال…');
@@ -2484,7 +2531,7 @@ document.getElementById('selMove').addEventListener('click',function(){
 document.getElementById('miSelect').addEventListener('click',function(){closeMenu();enterSelect();});
 document.getElementById('qBtn').addEventListener('click',function(){qRender();document.getElementById('queueView').classList.add('open');updatePill();pushLayer('panel',function(){document.getElementById('queueView').classList.remove('open');updatePill();});});
 document.getElementById('qBack').addEventListener('click',function(){document.getElementById('queueView').classList.remove('open');updatePill();releaseLayer('panel');});
-document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncFontOpts();syncBoostOpts();syncAccent();syncDecoyUI();refreshCacheSize();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
+document.getElementById('miSettings').addEventListener('click',function(){closeMenu();syncThemeOpts();syncFontOpts();syncBoostOpts();syncConnOpts();syncAccent();syncDecoyUI();refreshCacheSize();document.getElementById('settingsView').classList.add('open');pushLayer('panel',function(){document.getElementById('settingsView').classList.remove('open');});});
 document.getElementById('backBtn').addEventListener('click',function(){document.getElementById('settingsView').classList.remove('open');releaseLayer('panel');});
 /* theme */
 function applyTheme(pref){
@@ -2771,7 +2818,20 @@ function shardNameOf(repo){
 }
 function refreshShards(){
   var g=document.getElementById('shardGroup');if(!g)return;
-  fetch(API+'/api/shards').then(function(r){return r.json();}).then(function(d){
+  if(roMode()){
+    /* hg-v36: در حالت فقط‌خواندنی، فهرست شاردها از همان ایندکسِ خوانده‌شده از گیت‌هاب ساخته می‌شود */
+    var byRepo={};
+    photos.forEach(function(p){
+      var rp=p.repo||'hot-gallery-data';
+      var s=byRepo[rp]||(byRepo[rp]={repo:rp,items:0,videos:0,photos:0,bytes:0,active:true,repoSizeKB:null});
+      s.items++;if(isVideo(p))s.videos++;else s.photos++;s.bytes+=p.size||0;
+    });
+    var dl={ok:true,shards:Object.keys(byRepo).map(function(k){return byRepo[k];})};
+    paintShards(g,dl);return;
+  }
+  fetch(API+'/api/shards').then(function(r){return r.json();}).then(function(d){paintShards(g,d);}).catch(function(){g.innerHTML='<div class="irow"><span class="k">خطا در دریافت اطلاعات شاردها</span><span class="v">—</span></div>';});
+}
+function paintShards(g,d){
     if(!d||!d.ok||!d.shards){g.innerHTML='<div class="irow"><span class="k">خطا در دریافت اطلاعات شاردها</span><span class="v">—</span></div>';return;}
     g.innerHTML='';
     if(!d.shards.length){g.innerHTML='<div class="irow"><span class="k">—</span><span class="v"></span></div>';return;}
@@ -2785,7 +2845,6 @@ function refreshShards(){
       b.addEventListener('click',function(){openShardPage(s.repo);});
       g.appendChild(b);
     });
-  }).catch(function(){g.innerHTML='<div class="irow"><span class="k">خطا در دریافت اطلاعات شاردها</span><span class="v">—</span></div>';});
 }
 /* hg-v24: سازنده‌ی مشترک ردیف فیلم (تامنیل کوچک + عنوان/پوشه + زیرخطِ مشخصات) —
    هم لیست شارد و هم تاپِ پربازدیدهای آمار از همین استفاده می‌کنند */
@@ -2877,6 +2936,7 @@ document.getElementById('shardsBack').addEventListener('click',function(){shards
 /* hg-v24: صفحه‌ی «تغییرات نسخه‌ها» — تاریخچه‌ی کاربرپسند نسخه‌ها، تازه‌ترین اول.
    با هر نسخه‌ی تازه، یک ورودی به ابتدای این فهرست اضافه می‌شود. */
 var CHANGELOG=[
+ {n:36,d:'۱۵ آبان ۱۴۰۵',items:['در تنظیمات، بخش «اتصال سرور» اضافه شد: انتخاب دستی بین خودکار (چرخشی)، دامنه‌ی اختصاصی، آدرس اصلی و حالت فقط‌خواندنی','حالت فقط‌خواندنی: گالری مستقیم از گیت‌هاب خوانده می‌شود و بدون سرور هم عکس و فیلم‌ها دیده می‌شوند؛ افزودن و حذف و ویرایش در این حالت غیرفعال است']},
  {n:35,d:'۱۵ آبان ۱۴۰۵',items:['اتصال سرور بین دو آدرس ورکر (دامنه‌ی اختصاصی گالری و آدرس اصلی) چرخشی شد: اگه یکی وصل نشه، اپ خودکار اون یکی رو امتحان می‌کنه']},
  {n:34,d:'۱۵ آبان ۱۴۰۵',items:['اگه پینگ سرور یا گیت‌هاب بیشتر از ۱۰ ثانیه طول بکشه، خودکار یه پینگ تازه گرفته می‌شه']},
  {n:33,d:'۱۵ آبان ۱۴۰۵',items:['کارت پوشه‌های آیکون‌دار در نمای تک‌ستونه: عرض کامل صفحه و ارتفاع ۷۰٪ حالت قبلی']},
@@ -3765,6 +3825,7 @@ function qRunGha(q,sig){
   return attempt();
 }
 function apiPost(path,body,signal){
+  if(roMode()){roToast();return Promise.reject(new Error('readonly'));}
   return fetch(API+path,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body),signal:signal}).then(function(r){return r.json().then(function(d){return{ok:r.ok,d:d};});});
 }
 function qRunSteps(q,sig){
@@ -3925,6 +3986,7 @@ function qSrvEntry(j){
   return e;
 }
 function qSyncQueue(){
+  if(roMode())return;
   fetch(API+'/api/queue').then(function(r){return r.json();}).then(function(d){
     if(!d||!d.ok)return;
     var jobs=d.jobs||[];
@@ -4022,7 +4084,7 @@ window.addEventListener('focus',checkUpdate);
 /* add sheet */
 var addOverlay=document.getElementById('addOverlay'),urlInput=document.getElementById('urlInput'),doAdd=document.getElementById('doAdd');
 /* hg-v28: دکمه‌ی شناور افزودن همان شیت افزودن قبلی را باز می‌کند */
-document.getElementById('fabAdd').addEventListener('click',function(){addOverlay.classList.add('open');fabSync();setTimeout(function(){urlInput.focus();},80);});
+document.getElementById('fabAdd').addEventListener('click',function(){if(roMode()){roToast();return;}addOverlay.classList.add('open');fabSync();setTimeout(function(){urlInput.focus();},80);});
 document.querySelectorAll('[data-close-add]').forEach(function(el){el.addEventListener('click',function(){addOverlay.classList.remove('open');fabSync();});});
 doAdd.addEventListener('click',function(){
   var raw=urlInput.value.trim();if(!raw){toast('لینک را وارد کن');return;}
